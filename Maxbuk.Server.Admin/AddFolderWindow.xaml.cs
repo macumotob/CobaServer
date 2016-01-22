@@ -15,15 +15,17 @@ namespace Maxbuk.Server.Admin
 {
   using Maxbuk.Server.Core;
   using System.Windows.Forms;
+  using xsrv;
+
   public partial class AddFolderWindow : Window
   {
-    MaxbukDriverInfo _driverInfo;
+    FileFolderInfo _driverInfo;
     private bool _isNewFolder;
     public AddFolderWindow()
     {
       InitializeComponent();
     }
-    public MaxbukDriverInfo DriverInfo
+    public FileFolderInfo DriverInfo
     {
       set
       {
@@ -31,20 +33,20 @@ namespace Maxbuk.Server.Admin
         _isNewFolder = value == null;
         if(_isNewFolder)
         {
-          _driverInfo = new MaxbukDriverInfo();
+          _driverInfo = new FileFolderInfo();
         }
         _updateControls();
       }
     }
     private void _updateControls()
     {
-      _textFolder.Text = _driverInfo.Folder;
-      _textName.Text = _driverInfo.Name;
+      _textFolder.Text = _driverInfo.path;
+      _textName.Text = _driverInfo.name;
     }
     private void _updateData()
     {
-      _driverInfo.Folder = _textFolder.Text;
-      _driverInfo.Name = _textName.Text;
+      _driverInfo.path = _textFolder.Text;
+      _driverInfo.name = _textName.Text;
     }
     private bool _validateInputs()
     {
@@ -90,7 +92,7 @@ namespace Maxbuk.Server.Admin
         dialog.ShowDialog();
         if (string.IsNullOrEmpty(dialog.SelectedPath)) return;
 
-        _driverInfo.Folder = dialog.SelectedPath;
+        _driverInfo.path = dialog.SelectedPath;
         _updateControls();
       }
     }
