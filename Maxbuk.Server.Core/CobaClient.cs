@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace xsrv
 {
-	class FileFolderInfo
+	public class FileFolderInfo
 	{
 		public string name { get; set; }
 		public string path { get; set; }
