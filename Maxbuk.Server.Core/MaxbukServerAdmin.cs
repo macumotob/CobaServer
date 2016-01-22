@@ -312,7 +312,7 @@ namespace Maxbuk.Server.Core
       try
       {
         string wdir = MaxbukServerAdmin.SiteFolderName;
-        wdir = @"E:\github\MyDrives\site\";
+       // wdir = @"E:\github\MyDrives\site\";
         _server = new CobaServer(wdir,host,port);//@"E:\github\MyDrives\site\", host, port);
         return "OK";
 
