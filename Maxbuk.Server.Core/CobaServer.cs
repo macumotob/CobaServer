@@ -145,17 +145,25 @@ namespace xsrv
 			_listener.Prefixes.Add( string.Format("http://{0}:{1}/",_host,_port));
 			_listener.Start();
 			_listener.IgnoreWriteExceptions = true;
+      int thread_id = 0;
 			Task.Factory.StartNew(() =>
 				{
 					while (true)
 					{
 						HttpListenerContext context = _listener.GetContext();
-						Task.Factory.StartNew((cntx) =>
-							{
-								Process((HttpListenerContext)cntx);
-							}, context,TaskCreationOptions.LongRunning);
-					}
-				},TaskCreationOptions.LongRunning);
+
+						//Task.Factory.StartNew((cntx) =>
+						//	{
+						//		Process((HttpListenerContext)cntx);
+						//	}, context,TaskCreationOptions.LongRunning);
+
+            Thread thread = new Thread(_client_thread_procedure);
+            thread.IsBackground = true;
+            thread.Name = "T" + (thread_id++).ToString();
+            thread.Start(context);
+
+          }
+        },TaskCreationOptions.LongRunning);
 			/*
 			while (true)
 			{
@@ -179,6 +187,11 @@ namespace xsrv
 		private CobaClient _createClient(){
 			return new CobaClient (_rootDirectory);
 		}
+
+    private void _client_thread_procedure(object data)
+    {
+      Process((HttpListenerContext)data);
+    }
 		private void Process(HttpListenerContext context)
 		{
 //      if (context.Request.IsWebSocketRequest) {

@@ -16,6 +16,9 @@ using System.Windows.Shapes;
 namespace Maxbuk.Server.Admin
 {
   using Maxbuk.Server.Core;
+  using xsrv;
+
+
   public partial class MainWindow : Window
   {
    
@@ -67,13 +70,13 @@ namespace Maxbuk.Server.Admin
       GridViewColumn col = new GridViewColumn();
       col.Header = "Name";
       col.Width = 200;
-      col.DisplayMemberBinding = new Binding("Name");
+      col.DisplayMemberBinding = new Binding("name");
       grid.Columns.Add(col);
 
       col = new GridViewColumn();
       col.Header = "Folder";
       col.Width = 200;
-      col.DisplayMemberBinding = new Binding("Folder");
+      col.DisplayMemberBinding = new Binding("path");
       grid.Columns.Add(col);
       _listFolders.View = grid;
     }
@@ -104,7 +107,7 @@ namespace Maxbuk.Server.Admin
     }
     private void _refreshDrivers()
     {
-      List<MaxbukDriverInfo> list = MaxbukServerAdmin.LoadDriversList();
+      List<FileFolderInfo> list = MaxbukServerAdmin.LoadDriversList();
       _listFolders.Items.Clear();
       foreach (var item in list)
       {
@@ -119,13 +122,13 @@ namespace Maxbuk.Server.Admin
         return (_listFolders.SelectedItem != null);
       }
     }
-    private MaxbukDriverInfo _selectedDriverInfo
+    private FileFolderInfo _selectedDriverInfo
     {
       get
       {
         if(_listFolders.SelectedItem != null)
         {
-          return (MaxbukDriverInfo) _listFolders.SelectedItem;
+          return (FileFolderInfo) _listFolders.SelectedItem;
         }
         return null;
       }
@@ -194,7 +197,7 @@ namespace Maxbuk.Server.Admin
     {
       if(_IsDriverSelected)
       {
-        string text = string.Format("Delete {0}?{1}{2}", _selectedDriverInfo.Name, Environment.NewLine, _selectedDriverInfo.Folder);
+        string text = string.Format("Delete {0}?{1}{2}", _selectedDriverInfo.name, Environment.NewLine, _selectedDriverInfo.path);
         if (MessageBox.Show(this,text, "Warning", MessageBoxButton.OKCancel, MessageBoxImage.Warning ) == MessageBoxResult.OK)
         {
           MaxbukServerAdmin.DriverInfoDelete(_selectedDriverInfo);

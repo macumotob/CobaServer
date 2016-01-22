@@ -192,10 +192,10 @@ namespace Maxbuk.Server.Core
 
     #region Work with Drivers
 
-    static public List<MaxbukDriverInfo> Drivers;
-    static public MaxbukDriverInfo CurrentDriver;
+    static public List<FileFolderInfo> Drivers;
+    static public FileFolderInfo CurrentDriver;
 
-    public static void DriverInfoDelete(MaxbukDriverInfo driverInfo)
+    public static void DriverInfoDelete(FileFolderInfo driverInfo)
     {
       if (MaxbukServerAdmin.Drivers != null)
       {
@@ -203,7 +203,7 @@ namespace Maxbuk.Server.Core
         MaxbukServerAdmin.SaveDriversList();
       }
     }
-    public static void DriverInfoAdd(MaxbukDriverInfo driverInfo)
+    public static void DriverInfoAdd(FileFolderInfo driverInfo)
     {
       if (MaxbukServerAdmin.Drivers != null)
       {
@@ -214,22 +214,36 @@ namespace Maxbuk.Server.Core
 
     public static void SaveDriversList()
     {
-
-      List<MaxbukDriverInfo> list = MaxbukServerAdmin.Drivers;
       string fileName = MaxbukServerAdmin.DriversFileName;
+
+      string xjson = new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(MaxbukServerAdmin.Drivers);
+      System.IO.File.WriteAllText(fileName, xjson, Encoding.UTF8);
+
+      //DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(List<FileFolderInfo>));
+      //ser.
+      //using (StreamWriter sw = new StreamWriter(fileName, false, Encoding.UTF8))
+      //{
+      //  ser.WriteObject(sw.BaseStream, MaxbukServerAdmin.Drivers);
+      //  sw.Close();
+      //  sw.Dispose();
+      //}
+      return;
+      List<FileFolderInfo> list = MaxbukServerAdmin.Drivers;
+
+
 
       StringBuilder sb = new StringBuilder("[");
 
       for (int i = 0; i < list.Count; i++)
       {
-        MaxbukDriverInfo driver = list[i];
+        FileFolderInfo driver = list[i];
 
         if (i > 0)
         {
           sb.Append("," + Environment.NewLine);
         }
         sb.Append("{");
-        sb.AppendFormat("\"Name\":\"{0}\",\"Folder\":\"{1}\"", driver.Name, driver.Folder);
+        sb.AppendFormat("\"Name\":\"{0}\",\"Folder\":\"{1}\"", driver.name, driver.path);
         sb.Append("}");
       }
       sb.Append("]");
@@ -241,30 +255,37 @@ namespace Maxbuk.Server.Core
     }
 
 
-    static public List<MaxbukDriverInfo> LoadDriversList()
+    static public List<FileFolderInfo> LoadDriversList()
     {
 
+
       string fileName = MaxbukServerAdmin.DriversFileName;
-      if(!System.IO.File.Exists(fileName))
+      if (!System.IO.File.Exists(fileName))
       {
-        MaxbukServerAdmin.Drivers = new List<MaxbukDriverInfo>();
-        MaxbukServerAdmin.Drivers.Add(new MaxbukDriverInfo() { Folder = "C:/Program Files/", Name = "Shared Folder" });
+        MaxbukServerAdmin.Drivers = new List<FileFolderInfo>();
+        MaxbukServerAdmin.Drivers.Add(new FileFolderInfo() { path = "C:/Program Files/", name = "Shared Folder" });
         MaxbukServerAdmin.SaveDriversList();
-        return MaxbukServerAdmin.Drivers;
       }
-      string json = System.IO.File.ReadAllText(fileName, Encoding.UTF8);
-      byte[] buffer = Encoding.UTF8.GetBytes(json);
-
-      List<MaxbukDriverInfo> list = null;
-      DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(List<MaxbukDriverInfo>));
-
-      using (MemoryStream ms = new MemoryStream(buffer))
+      else
       {
-        list = (List<MaxbukDriverInfo>)ser.ReadObject(ms);
-        ms.Close();
+        string json = System.IO.File.ReadAllText(fileName, Encoding.UTF8);
+        var ser = new System.Web.Script.Serialization.JavaScriptSerializer();
+        MaxbukServerAdmin.Drivers = ser.Deserialize<List<FileFolderInfo>>(json);
       }
-      MaxbukServerAdmin.Drivers = list;
-      return list;
+      return MaxbukServerAdmin.Drivers;
+
+      //byte[] buffer = Encoding.UTF8.GetBytes(json);
+
+      //List<FileFolderInfo> list = null;
+      //DataContractJsonSerializer ser2 = new DataContractJsonSerializer(typeof(List<FileFolderInfo>));
+
+      //using (MemoryStream ms = new MemoryStream(buffer))
+      //{
+      //  list = (List<FileFolderInfo>)ser2.ReadObject(ms);
+      //  ms.Close();
+      //}
+      //MaxbukServerAdmin.Drivers = list;
+      //return list;
     }
     #endregion
 
