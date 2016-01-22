@@ -1,0 +1,47 @@
+﻿<Window x:Class="Maxbuk.Server.Admin.AdvancedWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Advanced" Height="400" Width="600" WindowStartupLocation="CenterScreen"
+        >
+    <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition/>
+      <ColumnDefinition Width="40"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="30"/>
+      <RowDefinition/>
+      <RowDefinition Height="10"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="10"/>
+    </Grid.RowDefinitions>
+    <Label Grid.Column="0" Grid.Row="0" Content="Server Log File" HorizontalAlignment="Center"/>
+    <TextBox x:Name="_textInfo" Grid.Column="0" Grid.Row="1" Margin="2 0 0 0"
+               TextWrapping="NoWrap" ScrollViewer.CanContentScroll="True"/>
+    <StackPanel Grid.Column="1" Grid.Row="1">
+      <Button x:Name="_buttonLog" ToolTip="Show log file" Margin="2" Click="_buttonLog_Click">
+        <Image Source="appbar.book.perspective.help.png"/>
+      </Button>
+      <Button x:Name="_buttonClear" ToolTip="Clear log file" Margin="2" Click="_buttonClear_Click">
+        <Image Source="appbar.close.png"/>
+      </Button>
+    </StackPanel>
+    <Grid Grid.Row="3">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition/>
+        <ColumnDefinition/>
+        <ColumnDefinition/>
+        <ColumnDefinition/>
+      </Grid.ColumnDefinitions>
+      <Button x:Name="_buttonUnregister" Grid.Column="0" Content="Unregister Server" Margin="2" Click="_buttonUnregister_Click"/>
+      <Button x:Name="_buttonStop" Grid.Column="1" Content="Stop Server" Margin="2" ToolTip="Stop server" Click="_buttonStop_Click"/>
+      <Button x:Name="_buttonMax" Grid.Column="2"  Content="Maxbuk Site" ToolTip="View host site" Margin="2"
+              Click="_buttonMax_Click">
+      </Button>
+      <Button x:Name="_buttonWeb" Grid.Column="3" Content="My Site" ToolTip="View my site" Margin="2"
+              Click="_buttonWeb_Click">
+      </Button>
+
+    </Grid>
+  </Grid>
+</Window>
