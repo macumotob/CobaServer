@@ -7,24 +7,43 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxbuk.Server.Admin", "Maxb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxbuk.Server.Core", "..\Maxbuk.Server.Core\Maxbuk.Server.Core.csproj", "{57E6CD4B-2DCF-4AE4-8669-FDB0797368F7}"
 EndProject
+<<<<<<< HEAD
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "site", "..\site\", "{734144CF-3FC3-4101-B4B9-E714CF9C393B}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_23587"
 		Debug.AspNetCompiler.PhysicalPath = "..\site\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_23587\"
+=======
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "site", "..\site\", "{DE58D570-7E33-4960-B527-C1DE2099EAD2}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_65077"
+		Debug.AspNetCompiler.PhysicalPath = "..\site\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_65077\"
+>>>>>>> 78eda9a038441433def873d51e0383fde5a4d6ef
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
+<<<<<<< HEAD
 		Release.AspNetCompiler.VirtualPath = "/localhost_23587"
 		Release.AspNetCompiler.PhysicalPath = "..\site\"
 		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_23587\"
+=======
+		Release.AspNetCompiler.VirtualPath = "/localhost_65077"
+		Release.AspNetCompiler.PhysicalPath = "..\site\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_65077\"
+>>>>>>> 78eda9a038441433def873d51e0383fde5a4d6ef
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
+<<<<<<< HEAD
 		VWDPort = "23587"
+=======
+		VWDPort = "65077"
+>>>>>>> 78eda9a038441433def873d51e0383fde5a4d6ef
 		SlnRelativePath = "..\site\"
 	EndProjectSection
 EndProject
@@ -42,10 +61,17 @@ Global
 		{57E6CD4B-2DCF-4AE4-8669-FDB0797368F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57E6CD4B-2DCF-4AE4-8669-FDB0797368F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57E6CD4B-2DCF-4AE4-8669-FDB0797368F7}.Release|Any CPU.Build.0 = Release|Any CPU
+<<<<<<< HEAD
 		{734144CF-3FC3-4101-B4B9-E714CF9C393B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{734144CF-3FC3-4101-B4B9-E714CF9C393B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{734144CF-3FC3-4101-B4B9-E714CF9C393B}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{734144CF-3FC3-4101-B4B9-E714CF9C393B}.Release|Any CPU.Build.0 = Debug|Any CPU
+=======
+		{DE58D570-7E33-4960-B527-C1DE2099EAD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE58D570-7E33-4960-B527-C1DE2099EAD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE58D570-7E33-4960-B527-C1DE2099EAD2}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE58D570-7E33-4960-B527-C1DE2099EAD2}.Release|Any CPU.Build.0 = Debug|Any CPU
+>>>>>>> 78eda9a038441433def873d51e0383fde5a4d6ef
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
