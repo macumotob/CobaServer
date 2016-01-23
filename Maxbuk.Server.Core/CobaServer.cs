@@ -9,6 +9,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
 //using System.Net.WebSockets;
+using Maxbuk.Server.Core;
 
 namespace xsrv
 {
@@ -185,7 +186,7 @@ namespace xsrv
 			return string.Format ("host {0} port: {1}\nFolder:{2}", _host, _port, _rootDirectory);
 		}
 		private CobaClient _createClient(){
-			return new CobaClient (_rootDirectory);
+			return new CobaClient (_rootDirectory , MaxbukServerAdmin.DriversFileName);
 		}
 
     private void _client_thread_procedure(object data)
@@ -218,7 +219,13 @@ namespace xsrv
 				client.CreateFolder (context);
 				return;
 			}
-			if (filename.Equals ("/mouse")) {
+      if (filename.Equals("/textview"))
+      {
+        CobaClient client = _createClient();
+        client.SendTextViewPage(context);
+        return;
+      }
+      if (filename.Equals ("/mouse")) {
 				CobaClient client = _createClient ();
 				client.ExecuteMouse (context);
 				return;
@@ -251,48 +258,79 @@ namespace xsrv
 			}
 
 			filename = Path.Combine(_rootDirectory, filename);
+      CobaServer.SendFile(context, filename);
 
-			if (File.Exists(filename))
-			{
-				//Console.WriteLine ("File :" + filename);
-				try
-				{
-					Stream input = new FileStream(filename, FileMode.Open ,
-						FileAccess.Read,    
-						FileShare.Read);
+   //   if (File.Exists(filename))
+			//{
+			//	//Console.WriteLine ("File :" + filename);
+			//	try
+			//	{
+			//		Stream input = new FileStream(filename, FileMode.Open ,
+			//			FileAccess.Read,    
+			//			FileShare.Read);
 
-					//Adding permanent http response headers
-					string mime;
-					context.Response.StatusCode = (int)HttpStatusCode.OK;
-					context.Response.ContentType = _mimeTypeMappings.TryGetValue(Path.GetExtension(filename), out mime) ? mime : "application/octet-stream";
-					context.Response.ContentLength64 = input.Length;
-					context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
-					context.Response.AddHeader("Last-Modified", System.IO.File.GetLastWriteTime(filename).ToString("r"));
+			//		//Adding permanent http response headers
+			//		string mime;
+			//		context.Response.StatusCode = (int)HttpStatusCode.OK;
+			//		context.Response.ContentType = _mimeTypeMappings.TryGetValue(Path.GetExtension(filename), out mime) ? mime : "application/octet-stream";
+			//		context.Response.ContentLength64 = input.Length;
+			//		context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
+			//		context.Response.AddHeader("Last-Modified", System.IO.File.GetLastWriteTime(filename).ToString("r"));
 
-					byte[] buffer = new byte[1024 * 64];
-					int nbytes;
-					while ((nbytes = input.Read(buffer, 0, buffer.Length)) > 0)
-						context.Response.OutputStream.Write(buffer, 0, nbytes);
-					input.Close();
-					context.Response.OutputStream.Flush();
+			//		byte[] buffer = new byte[1024 * 64];
+			//		int nbytes;
+			//		while ((nbytes = input.Read(buffer, 0, buffer.Length)) > 0)
+			//			context.Response.OutputStream.Write(buffer, 0, nbytes);
+			//		input.Close();
+			//		context.Response.OutputStream.Flush();
 
-				}
-				catch (Exception ex)
-				{
-					Console.WriteLine ("exception: " + ex.ToString ());
-					context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-				}
+			//	}
+			//	catch (Exception ex)
+			//	{
+			//		Console.WriteLine ("exception: " + ex.ToString ());
+			//		context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+			//	}
 
-			}
-			else
-			{
-				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-			}
+			//}
+			//else
+			//{
+			//	context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+			//}
 
 			context.Response.OutputStream.Close();
 		}
+    public static void SendFile(HttpListenerContext context, string filename)
+    {
+      if (File.Exists(filename))
+      {
+        //Console.WriteLine ("File :" + filename);
+        try
+        {
+          Stream input = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-		private void Initialize(string path, int port)
+          string mime;
+          context.Response.StatusCode = (int)HttpStatusCode.OK;
+          context.Response.ContentType = _mimeTypeMappings.TryGetValue(Path.GetExtension(filename), out mime) ? mime : "application/octet-stream";
+          context.Response.ContentLength64 = input.Length;
+          context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
+          context.Response.AddHeader("Last-Modified", System.IO.File.GetLastWriteTime(filename).ToString("r"));
+
+          byte[] buffer = new byte[1024 * 64];
+          int nbytes;
+          while ((nbytes = input.Read(buffer, 0, buffer.Length)) > 0)
+            context.Response.OutputStream.Write(buffer, 0, nbytes);
+          input.Close();
+          context.Response.OutputStream.Flush();
+
+        }
+        catch (Exception ex)
+        {
+          //          Console.WriteLine("exception: " + ex.ToString());
+          context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        }
+      }
+    }
+    private void Initialize(string path, int port)
 		{
 			_rootDirectory = path;
 			_port = port;

@@ -7,25 +7,25 @@ namespace Maxbuk.Server.Core
 {
   public class MaxbukDriverInfo
   {
-    public string Name { get; set; }
+    public string name { get; set; }
 
 
-    private string _Folder;
-    public string Folder
+    private string _path;
+    public string path
     {
       get
       {
-        return _Folder;
+        return _path;
       }
       set
       {
-        _Folder = value;
-        if (_Folder != null)
+        _path = value;
+        if (_path != null)
         {
-          _Folder = _Folder.Replace('\\', '/');
-          if (!(_Folder[_Folder.Length - 1] == '\\' || _Folder[_Folder.Length - 1] == '/'))
+          _path = _path.Replace('\\', '/');
+          if (!(_path[_path.Length - 1] == '\\' || _path[_path.Length - 1] == '/'))
           {
-            _Folder += '/';
+            _path += '/';
           }
         }
       }

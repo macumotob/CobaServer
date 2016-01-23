@@ -224,7 +224,7 @@ var fm = {
 , get_file_type: function (ext) {
   if ("pdf;doc;mobi;fb2;txt;epub;rtf;doc;".indexOf(ext + ';') >= 0) return this.file_type.document;
   if ("mp4;mov;3gp;ogg;avi;mkv;vob;".indexOf(ext + ';') >= 0) return this.file_type.video;
-  if ("jpg;png;".indexOf(ext + ';') >= 0) return this.file_type.image;
+  if ("jpg;png;jpeg;".indexOf(ext + ';') >= 0) return this.file_type.image;
   if ("mp3;3gpp;".indexOf(ext + ';') >= 0) return this.file_type.audio;
   if ("html;".indexOf(ext + ';') >= 0) return this.file_type.html;
   return this.file_type.unknown;
@@ -273,10 +273,17 @@ var fm = {
   return s;
 }
 , open_file: function (file) {
-  var link = document.createElement("a");
-  link.href = decodeURI(fm.join_path() + file);
-  link.target = "_blank";
-  link.click();
+
+  //var link = document.createElement("a");
+  //link.href = decodeURI(fm.join_path() + file);
+  //link.target = "_blank";
+  //link.click();
+  var url = decodeURI(fm.join_path() + file);
+
+//  var win = window.open('', '_blank');
+  window.open( window.location.href + "/textview?file=" + url, '_blank', 'toolbar=yes, location=yes, status=yes, menubar=yes, scrollbars=yes');
+  //win.location = url;
+  //win.focus();
 }
 , open_site: function (url) {
   var link = document.createElement("a");

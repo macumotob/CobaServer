@@ -48,6 +48,14 @@ function coba_create_upload_info(file) {
   return td;
 }
 
+function coba_gen_file_name()
+{
+  var d = new Date();
+  var dMonth = d.getMonth() + 1;
+  var dMinutes = d.getMinutes() + '_' + d.getSeconds();
+  var df = d.getDate() + '-' + dMonth + '-' + d.getFullYear() + ' ' + d.getHours() + '_' + dMinutes;
+  return df;
+}
 function coba_upload_part(file, blobs, poss, first, dv)
 {
   var blob = blobs.shift();
@@ -55,8 +63,14 @@ function coba_upload_part(file, blobs, poss, first, dv)
  // var file_name = encodeURIComponent(coba_get_remote_path() + file.name);
  // var file_name = join_path(true) + file.name;
   
+  if (!file.new_name) {
+    file.new_name = (file.name == "image.jpeg" ? coba_gen_file_name() + ".jpeg" : file.name);
+  }
+  var fname = file.new_name;
+
+  //fname = file.name;
   var info =
-         "name=" + encodeURI(fm.join_path() + file.name)
+         "name=" + encodeURI(fm.join_path() + fname)
        + "&type=" + file.type
        + "&size=" + (blob ? blob.size : -1)
        + "&filesize=" + file.size

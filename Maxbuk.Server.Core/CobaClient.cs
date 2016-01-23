@@ -8,17 +8,21 @@ namespace xsrv
 {
 	public class FileFolderInfo
 	{
+    //todo path check
 		public string name { get; set; }
 		public string path { get; set; }
 		public int d { get; set; }
 	}
+
 	public class CobaClient
 	{
 		private List<FileFolderInfo> _disks;
 		private string _workingFolder;
-		public CobaClient (string workingFolder)
+    private string _drivers_info_filename;
+		public CobaClient (string workingFolder, string drivers_info_filename)
 		{
-			_workingFolder = workingFolder;
+      _drivers_info_filename = drivers_info_filename;
+      _workingFolder = workingFolder;
 		}
 		private void _printRequestHeaders(HttpListenerContext context){
 			Console.WriteLine ("***");
@@ -66,7 +70,7 @@ namespace xsrv
 				long filesize = long.Parse (sfilesize);
 				long size = long.Parse (ssize);
 
-				_loadPublicFolders ();
+				_load_public_folders ();
 				name = _redirect (name);
 
 //				if(System.IO.File.Exists(name)){
@@ -107,9 +111,32 @@ namespace xsrv
 				context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 			}
 		}
-		public void CreateFolder(HttpListenerContext context){
+
+    public void SendTextViewPage(HttpListenerContext context)
+    {
+      try
+      {
+        _load_public_folders();
+
+        const string marker = "/textview?";
+        string url = context.Request.Url.ToString();
+
+        url = url.Substring(url.IndexOf(marker) + marker.Length);
+        //url = System.Web.HttpUtility.UrlDecode (url);
+        string file = System.Web.HttpUtility.ParseQueryString(url).Get("file");
+        file = _redirect(file);
+        CobaServer.SendFile(context, file);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("exception: " + ex.ToString());
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+      }
+    }
+
+    public void CreateFolder(HttpListenerContext context){
 			try {
-				_loadPublicFolders ();
+				_load_public_folders ();
 
 				const string marker ="/mkdir?";
 			    string url = context.Request.Url.ToString();
@@ -175,8 +202,9 @@ namespace xsrv
 		private void _sendTextFile(HttpListener context, string fileName){
 			
 		}
-		public void Send(HttpListenerContext context, string url){
-			_loadPublicFolders ();
+		public void Send(HttpListenerContext context, string url)
+    {
+			_load_public_folders ();
 			url = System.Web.HttpUtility.UrlDecode (url);
 			string filename = _redirect (url);
 
@@ -299,14 +327,12 @@ namespace xsrv
 			context.Response.OutputStream.Flush();
 			context.Response.OutputStream.Close();
 		}
-		private void _loadPublicFolders()
+		private void _load_public_folders()
 		{
-			string filename = _workingFolder + @"data\folders.json";
-			string s = File.ReadAllText(filename,System.Text.Encoding.UTF8);
+			//string filename = _workingFolder + @"data\folders.json";
+			string s = File.ReadAllText( _drivers_info_filename ,System.Text.Encoding.UTF8);
 			var ser = new System.Web.Script.Serialization.JavaScriptSerializer ();
-			{
-				_disks = ser.Deserialize<List<FileFolderInfo>> (s);
-			}
+			_disks = ser.Deserialize<List<FileFolderInfo>> (s);
 		}
 		private int _findPosition(string name,string folder){
 			if (folder == "~" + name)
@@ -332,8 +358,9 @@ namespace xsrv
 		}
 		private void SendFolderContent(HttpListenerContext context){
 		//	string mime;
-			try{
-				_loadPublicFolders();
+			try
+      { 
+				_load_public_folders();
 				string x = context.Request.RawUrl.Substring("/get.folder?".Length);
 				string u = System.Web.HttpUtility.UrlDecode(x);
 			    string folder = System.Web.HttpUtility.ParseQueryString(u).Get("folder");
