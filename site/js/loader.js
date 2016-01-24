@@ -1,8 +1,11 @@
 
 
 function id(name) {
-  var items = document.querySelectorAll(name);
-  return items[0];
+  var item = document.getElementById(name);
+  if (!item) {
+    alert('error in function id ' + name);
+  }
+  return item;
  //return document.getElementById(name);
 }
 

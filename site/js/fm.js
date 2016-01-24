@@ -180,7 +180,7 @@ var fm = {
   stack: [],
   is_popup_visible: false,
   consts: {
-    main_content: "#fm-main-content"
+    main_content: "fm-main-content"
   },
   state: {
     current: 0,
@@ -342,7 +342,7 @@ var fm = {
     }
     else {
       fm_set_main_content(generator.generate_one(data.msg, "fm-mysql-error"));
-      $("#myModal").modal();
+      $("myModal").modal();
       self.show_ext_menu();
     }
   });
@@ -354,10 +354,10 @@ var fm = {
   }
 }
 ,hide_left_popup : function(){
-  this.dropdown_hide("#dropdown-left");
+  this.dropdown_hide("dropdown-left");
 }
 , hide_right_popup: function () {
-  this.dropdown_hide("#dropdown-right");
+  this.dropdown_hide("dropdown-right");
 }
 , offset: 0
 , last_notes: false
@@ -455,7 +455,22 @@ var fm = {
       elem.value = data.msg + "\n\n" + elem.value;
     }
   });
-
+},
+  // new notes on local disk, without using database
+save_note :function(){
+  var elem = id("notes");
+  
+  post("note.save?", "date=0&txt=" + encodeURI(elem.value), function (data) {
+    alert(data);
+  });
+},
+show_notes_page: function () {
+  load_async("/notes_edit_page.html", function (data) {
+    fm_set_main_content(data);
+    load_async("/notes?date=0", function (data) {
+      id("notes").value = data;
+    });
+  });
 }
 };
 
@@ -558,7 +573,7 @@ function fm_refresh() {
     //alert('refresh:' + folder);
 
     init_document(folder);
-    fm.dropdown_hide("#dropdown-right");
+   // fm.dropdown_hide("#dropdown-right");
   } catch (err) {
     alert('error refresh ' + err);
   }
@@ -623,15 +638,17 @@ function make_popup() {
   elem.innerHTML = html;
   fm.dropdown_hide("#dropdown-right");
 }
+/*
 function make_breadcrumbs() {
 
   var html = generator.generate_one(fm.stack, "fm-bread-header")
    + generator.generate(fm.stack, "fm-bread-body")
    + generator.generate_one(fm.stack, "fm-bread-footer");
 
-  id("#td-path").innerHTML = html;
+  id("td-path").innerHTML = html;
 
 }
+*/
 function fm_delete_file(file) {
   confirm("delete " + file);
 }
@@ -686,7 +703,7 @@ function init_document(folder) {
 
     fm.state.current = fm.state.navigator;
     folder = fm.set_folder(folder);
-    make_breadcrumbs();
+    //make_breadcrumbs();
 
     fm.video.reset();
     fm.audio.reset();

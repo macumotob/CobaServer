@@ -218,19 +218,25 @@ namespace xsrv
     }
 		private void Process(HttpListenerContext context)
 		{
-//      if (context.Request.IsWebSocketRequest) {
-//        SocketClient.CreateSocketThread (context);
-////				SocketClient client = new SocketClient ();
-////				client.Execute (context);
-//        return;
-//      }
-			if (context.Request.HttpMethod == "POST") {
-				CobaClient client = _createClient ();
+      string filename = context.Request.Url.AbsolutePath;
+      //      if (context.Request.IsWebSocketRequest) {
+      //        SocketClient.CreateSocketThread (context);
+      ////				SocketClient client = new SocketClient ();
+      ////				client.Execute (context);
+      //        return;
+      //      }
+      if (context.Request.HttpMethod == "POST") {
+
+        CobaClient client = _createClient();
+        if (filename.Equals("/note.save"))
+        {
+          client.SaveNote(context);
+          return;
+        }
 				client.ExecutePost (context);
 				return;
 			}
 		//	Console.WriteLine ("client : " + context.Request.RemoteEndPoint.ToString ());
-			string filename = context.Request.Url.AbsolutePath;
 			if (filename.Equals ("/get.folder")) {
 				CobaClient client = _createClient ();
 				client.Execute (context, filename);
@@ -248,6 +254,13 @@ namespace xsrv
         client.SendTextViewPage(context);
         return;
       }
+      if (filename.Equals("/notes"))
+      {
+        CobaClient client = _createClient();
+        client.SendNotes(context);
+        return;
+      }
+
       if (filename.Equals ("/mouse")) {
 				CobaClient client = _createClient ();
 				client.ExecuteMouse (context);
