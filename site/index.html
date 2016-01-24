@@ -47,8 +47,10 @@ img1:active {
 
   function fm_load_document(){
     //load_async_script("js/generator.js", function () {
+    
     generator.load(function () {
-   //       load_async_script("js/fm.js", function () {
+      //       load_async_script("js/fm.js", function () 
+      fm_restore_main();
             init_document("root");
    //         load_async_script("js/coba_upload.js", function () { });
          });
@@ -114,6 +116,7 @@ function toggleFullScreen() {
  });
 
 // alert('version 2.0');
+ 
 
 </script>
 
@@ -123,6 +126,7 @@ function toggleFullScreen() {
 <div id="dd">
   
     <!--   <nav class="navbar navbar-fixed-top">                      -->
+  <!--
     <table class="table">
       <tr>
         <td class="btn text-primary" onclick="init_document('root'); " style="cursor:pointer;">
@@ -146,7 +150,7 @@ function toggleFullScreen() {
           <div class="dropdown" id="dropdown-left">
             <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
               <span class="glyphicon glyphicon-th-list"></span>
-              <!-- <span class="caret"></span>-->
+             
             </button>
 
             <ul class="dropdown-menu">
@@ -168,6 +172,7 @@ function toggleFullScreen() {
         </td>
       </tr>
     </table>
+    -->
     <!--</div>-->
 
     <div id="td-path" class="container-fluid"></div>
@@ -175,5 +180,6 @@ function toggleFullScreen() {
     <!-- pre-scrollable -->
     <div id="fm-main-content" class="container-fluid"></div>
 </div>
-    </body>
-    </html>
+
+</body>
+</html>
