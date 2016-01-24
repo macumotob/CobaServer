@@ -101,7 +101,21 @@ namespace xsrv
 			get { return _port; }
 			private set { }
 		}
-
+    public static string ApplicationDataFolder
+    {
+      get
+      {
+        string folder = Environment.GetFolderPath( Environment.SpecialFolder.ApplicationData) + "/CobaServer/";
+        return folder;
+      }
+    }
+    public static string NotesFolder
+    {
+      get
+      {
+        return CobaServer.ApplicationDataFolder + "Notes/";
+      }
+    }
 		/// <summary>
 		/// Construct server with given port.
 		/// </summary>
@@ -111,6 +125,15 @@ namespace xsrv
 		{
 			_host = host;
 			this.Initialize(path, port);
+
+      if (!Directory.Exists(CobaServer.ApplicationDataFolder))
+      {
+        Directory.CreateDirectory(CobaServer.ApplicationDataFolder);
+      }
+      if (!Directory.Exists(CobaServer.NotesFolder))
+      {
+        Directory.CreateDirectory(CobaServer.NotesFolder);
+      }
 		}
 
 		/// <summary>

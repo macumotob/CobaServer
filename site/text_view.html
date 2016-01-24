@@ -16,7 +16,41 @@
 
   -->
   <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
 
+  <script type="text/javascript">
+
+    function get_gelection_text() {
+      var text = "";
+      if (window.getSelection) {
+        text = window.getSelection().toString();
+      } else if (document.selection && document.selection.type != "Control") {
+        text = document.selection.createRange().text;
+      }
+      return text;
+    }
+    function trans_selected_text() {
+      var text = get_gelection_text();
+      //https://www.googleapis.com/language/translate/v2?q=hello%20world&source=en&target=ru
+      //alert(text);
+      $.ajax({
+        url: 'https://ajax.googleapis.com/ajax/services/language/translate',
+        dataType: 'jsonp',
+        data: {
+          q: text,  // text to translate
+          v: '2.0',
+          langpair: 'en|ru'
+        },   // '|es' for auto-detect
+        success: function (result) {
+          alert(result.responseData.translatedText);
+        },
+        error: function (XMLHttpRequest, errorMsg, errorThrown) {
+          alert(errorMsg);
+        }
+      });
+    }
+  </script>
 	
 </head>
 <body data-spy="scroll" data-target=".navbar" data-offset="50">
@@ -35,7 +69,7 @@
     <div class="row">
       <div class="col-xs-2"></div>
       <div class="col-xs-8">
-        <pre style="font-size:large">{{TEXT}}</pre>
+        <pre style="font-size:large" onmouseup="trans_selected_text();">{{TEXT}}</pre>
       </div>
       <div class="col-xs-2"></div>
     </div>

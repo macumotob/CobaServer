@@ -133,7 +133,7 @@ namespace xsrv
         }
         else
         {
-          CobaServer.SendFile(context, file);
+          CobaServer.SendFile(context, real_file);
         }
       }
       catch (Exception ex)
