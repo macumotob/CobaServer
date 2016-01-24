@@ -81,14 +81,15 @@ namespace xsrv
 
 
 				FileMode fm = (action == "open" ? FileMode.CreateNew : FileMode.Append);
-
+        long total_readed = 0;
 				using (FileStream fs = File.Open (name, fm)) {
 					//fs.Seek(start,SeekOrigin.Begin);
 					using (BinaryWriter writer = new BinaryWriter (fs)) {
 						byte[] data = new byte[1024 * 64];
 						while (size > 0) {
 							int read = body.Read (data, 0, data.Length);
-							size -= read;
+              total_readed += read;
+              size -= read;
 							if (read > 0) {
 								writer.Write (data, 0, read);
 							}
@@ -103,12 +104,13 @@ namespace xsrv
 				if (end >= filesize){
 					action = "close";
 				}
-				//Console.WriteLine("action : " + action + " end : " + end.ToString());
-				this.SendJson (context, "{result:'ok',msg:'" + action + "',offset:" + end.ToString() + "}");
-
-			} catch (Exception ex) {
+        float precent = (start + total_readed) * 100 / filesize;
+        //	this.SendJson (context, "{result:'ok',msg:'" + action + "',offset:" + end.ToString() + "}");
+        this.SendJson(context, "{result:'ok',msg:'" + action + "',offset:" + precent.ToString("F") + "}");
+      } catch (Exception ex) {
 				Console.WriteLine ("exception: " + ex.ToString ());
-				context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        this.SendJson(context, "{result:'error',msg:'" + ex.ToString().Replace("\r\n"," ").Replace('\'',' ') + "',offset: -1}");
+       // context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 			}
 		}
 

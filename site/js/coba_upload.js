@@ -94,8 +94,8 @@ function coba_upload_part(file, blobs, poss, first, dv)
       var x = eval("x=" + client.responseText);
       if (x.result == "ok")
       {
-        dv.innerHTML = ((x.offset * 100) / file.size).toFixed(2) + " %";
-
+        //dv.innerHTML = ((x.offset * 100) / file.size).toFixed(2) + " %";
+        dv.innerHTML = x.offset + " %";
         if (x.msg == 'close')
         {
           delete xhr;
@@ -116,7 +116,8 @@ function coba_upload_part(file, blobs, poss, first, dv)
         }
       }
       else {
-        alert('error send file ' + x.msg);
+        //alert('error send file ' + x.msg);
+        dv.innerHTML = x.msg;
       }
     }
   }
