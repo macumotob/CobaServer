@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxbuk.Server.Admin", "Maxb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxbuk.Server.Core", "..\Maxbuk.Server.Core\Maxbuk.Server.Core.csproj", "{57E6CD4B-2DCF-4AE4-8669-FDB0797368F7}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "site", "..\site\", "{734144CF-3FC3-4101-B4B9-E714CF9C393B}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "site(1)", "..\site\", "{734144CF-3FC3-4101-B4B9-E714CF9C393B}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_23587"

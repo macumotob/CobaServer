@@ -124,8 +124,17 @@ namespace xsrv
         url = url.Substring(url.IndexOf(marker) + marker.Length);
         //url = System.Web.HttpUtility.UrlDecode (url);
         string file = System.Web.HttpUtility.ParseQueryString(url).Get("file");
-        file = _redirect(file);
-        CobaServer.SendFile(context, file);
+        string real_file = _redirect(file);
+
+        string ext = System.IO.Path.GetExtension(real_file).ToLower();
+        if (ext == ".txt")
+        {
+          _send_text_file(context, real_file,file);
+        }
+        else
+        {
+          CobaServer.SendFile(context, file);
+        }
       }
       catch (Exception ex)
       {
@@ -199,9 +208,22 @@ namespace xsrv
 			//Console.WriteLine (start.ToString () + "-" + end.ToString () + "/" + filesize.ToString ());
 
 		}
-		private void _sendTextFile(HttpListener context, string fileName){
-			
-		}
+    private void _send_text_file(HttpListenerContext context, string fileName,string relativeName)
+    {
+      if (System.IO.File.Exists(fileName))
+      {
+        string maket = _workingFolder + "text_view.html";
+        string s = System.IO.File.ReadAllText(maket,Encoding.UTF8);
+        string text = File.ReadAllText(fileName, Encoding.UTF8);
+        s= s.Replace("{{NAME}}", relativeName);
+        s = s.Replace("{{TEXT}}", text);
+        _send_text(context, s, "text/html");
+      }
+      else
+      {
+        _send_text(context, "File not found","text/plain");
+      }
+    }
 		public void Send(HttpListenerContext context, string url)
     {
 			_load_public_folders ();
@@ -327,7 +349,22 @@ namespace xsrv
 			context.Response.OutputStream.Flush();
 			context.Response.OutputStream.Close();
 		}
-		private void _load_public_folders()
+
+    private void _send_text(HttpListenerContext context, string text, string content_type)
+    {
+      byte[] data = Encoding.UTF8.GetBytes(text);
+
+      context.Response.StatusCode = (int)HttpStatusCode.OK;
+      context.Response.ContentType = content_type;//"application/json";
+      context.Response.ContentLength64 = data.Length;
+      context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
+      //context.Response.KeepAlive = true;
+      context.Response.OutputStream.Write(data, 0, data.Length);
+      context.Response.OutputStream.Flush();
+      context.Response.OutputStream.Close();
+    }
+
+    private void _load_public_folders()
 		{
 			//string filename = _workingFolder + @"data\folders.json";
 			string s = File.ReadAllText( _drivers_info_filename ,System.Text.Encoding.UTF8);

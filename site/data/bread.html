@@ -42,7 +42,8 @@
         <div class="col-xs-3">{{coba_format_bytes(item.size)}}</div>
         <div class="col-xs-3 text-success text-center"
              onclick='fm_get_file("{{nm}}");'>view</div>
-        <div class="col-xs-3 text-primary text-center" data-method="fm.download_file" data-args="{{nm}}">download</div>
+        <div class="col-xs-3 text-primary text-center" data-method="fm.download_file" data-args="{{nm}}">
+          <span class="glyphicon glyphicon-cloud-download"></span></div>
         
       </div>
     </td>
