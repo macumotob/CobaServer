@@ -395,7 +395,60 @@ namespace xsrv
 			}
 			return folder;
 		}
-		private void SendFolderContent(HttpListenerContext context){
+    private void SendFolderContent(HttpListenerContext context)
+    {
+      //	string mime;
+      try
+      {
+        _load_public_folders();
+        string x = context.Request.RawUrl.Substring("/get.folder?".Length);
+        string u = System.Web.HttpUtility.UrlDecode(x);
+        string folder = System.Web.HttpUtility.ParseQueryString(u).Get("folder");
+
+        string result = "{'folders':[";
+        if (folder == "root")
+        {
+          for (int i = 0; i < _disks.Count; i++)
+          {
+            FileFolderInfo item = _disks[i];
+            result += (i == 0 ? "" : ",") + "{\"name\": \"~" + item.name + "\",d:1}";
+          }
+          result += "],'files':[]}";
+        }
+        else
+        {
+          string dir = _redirect(folder + "/");
+          
+          string[] dirs = System.IO.Directory.GetDirectories(dir);
+          for (int i = 0; i < dirs.Length; i++)
+          {
+            string item = dirs[i].Replace('\\', '/');
+            item = item.Substring(dir.Length);
+            result += (i == 0 ? "" : ",") + "{\"name\":\"" + item + "\",d:1,size:0}";
+          }
+          result += "], 'files' :[";
+          string[] files = System.IO.Directory.GetFiles(dir);
+          
+          for (int i = 0; i < files.Length; i++)
+          {
+            string item = files[i].Replace('\\', '/');
+            long size = new System.IO.FileInfo(item).Length;
+            item = item.Substring(dir.Length);
+            result += (i == 0 ? "" : ",") + "{\"name\":\"" + item + "\",d:0,size:" + size.ToString() + "}";
+          }
+          result += "]}";
+        }
+        this.SendJson(context, result);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("exception : " + ex.ToString());
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+      }
+
+    }
+
+    private void _send_folder_content(HttpListenerContext context){
 		//	string mime;
 			try
       { 

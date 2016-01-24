@@ -696,14 +696,17 @@ function init_document(folder) {
       if (data.length === 0) {
         return fm_set_main_content(generator.generate_one(decodeURIComponent(folder), "fm-empty-folder", null));
       }
-      data.sort(function (a, b) { return b.d - a.d; });
-
+    //  data.sort(function (a, b) { return b.d - a.d; });
+      
       img.reset(fm.join_path());
       var html = generator.generate_one(null, "fm-list-header");
+      fm.foreach(data.folders, function (item, i) {
+        html += generator.generate_one(item, "fm-list-folder-body", i);
+      });
 
-      fm.foreach(data, function (item, i) {
+      fm.foreach(data.files, function (item, i) {
 
-        html += generator.generate_one(item, (item.d ? "fm-list-folder-body" : "fm-list-file-body"), i);
+        html += generator.generate_one(item, "fm-list-file-body", i);
 
         var filename = item.name;
         var ext = get_file_ext(filename);
