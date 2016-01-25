@@ -115,7 +115,7 @@
       <b class="text-success" data-method="init_document" data-args="..">{{lng.ef.goback}}</b>
     </p>
   </div>
-  <button type="button" class="btn btn-success">{{lng.ef.create}}</button>
+  <button type="button" class="btn btn-success" data-method="create_folder_form">{{lng.ef.create}}</button>
 </form>
 
 
@@ -345,15 +345,13 @@
     <div class="carousel-inner" role="listbox">
 
       <div class="item active">
-        <img id="img-view" src="" onclick="fm_show_img_modal();" alt="" width="460" height="345"/>
+        <img id="img-view" src="" onclick="fm_show_img_modal();" alt="" style="width:20%;"/>
         <div class="carousel-caption">
           <h6 id="img-caption"></h6>
 <p><span id="img-index"></span> <span id="img-count"></span></p>
         </div>
       </div>
-      <!--#fm-images-body-->
-
-
+<!--#fm-images-body-->
 <!--#fm-images-footer-->
     </div>
     <!-- Left and right controls -->
@@ -442,15 +440,11 @@
 				-->
 </div>
 <div class="row-fluid">
-	<!--<div class="span9">
-	<div id="myCarousel" class="carousel slide">
-		<div class="carousel-inner">
-			<div class="item active">-->
-              <img  id="img-view" src="" width="100%" data-method="img.next">
+      <div class="col-xs-2"></div>	
+  		<div class="item active col-xs-8">
+           <img  id="img-view" src="" width="100%" data-method="img.next" style="margin:0 auto">
 			</div>
-	<!--	</div>
-	</div>
-	</div>-->
+     <div class="col-xs-2"></div>
 </div>
 
 <!--#fm-i-body-->
