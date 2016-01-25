@@ -457,10 +457,10 @@ var fm = {
   });
 },
   // new notes on local disk, without using database
-save_note :function(){
+save_note :function(name){
   var elem = id("notes");
-  
-  post("note.save?", "date=0&txt=" + encodeURI(elem.value), function (data) {
+  name = name ? name : "0";
+  post("note.save?", "date=" + name +"&txt=" + encodeURI(elem.value), function (data) {
     id("note-save-result").innerText = data.msg;
   });
 },
@@ -469,11 +469,12 @@ get_notes_list: function () {
     fm_set_main_content(generator.gen(data, "notes"));
   });
 },
-show_notes_page: function () {
+show_notes_page: function (name) {
   load_async("/notes_edit_page.html?tm="+ new Date().getTime(), function (data) {
     fm_set_main_content(data);
-    load_async("/notes?date=0", function (data) {
-
+    name = name ? name : "0";
+    load_async("/notes?date=" + name, function (data) {
+      id("current-note").innerText = name == "0" ? "Today" : name;
       id("notes").value = data;
     });
   });

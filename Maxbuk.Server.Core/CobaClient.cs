@@ -202,7 +202,14 @@ namespace xsrv
         //url = System.Web.HttpUtility.UrlDecode (url);
         string date = System.Web.HttpUtility.ParseQueryString(url).Get("date");
         string name = DateTime.Now.Day.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Year.ToString() + ".txt";
+        if(date == "0")
+        {
 
+        }
+        else
+        {
+          name = date;
+        }
         string file = CobaServer.NotesFolder + name;
         if (!File.Exists(file))
         {
