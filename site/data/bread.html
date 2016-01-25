@@ -168,34 +168,14 @@
 <!--#fm-servers-footer-->
 
 <!--#fm-notes-header-->
- 
-<ul class="pager">
-  <li class="previous"><a href="#" data-method="fm.show_notes_offset" data-args="-10">Prev</a></li>
-  <li><a href="#" data-method="fm.show_add_note">Add</a></li>
-  <li class="text-danger" id="notes-info">...</li>
-  <li class="next"><a href="#" data-method="fm.show_notes_offset" data-args="10">Next</a></li>
-</ul>
 <!--#fm-notes-body-->
-<div class="panel panel-default" id="tr{{index}}">
-  <div class="panel-heading" style="cursor:pointer;"
-data-method="fm.show_edit_note" data-args="{{item.id}}">{{(index+1+fm.offset)}}.
- <b class="text-primary">{{item.data}}</b>
+<div class="panel panel-default">
+  <div class="panel-heading" style="cursor:pointer;" data-method="fm.show_edit_note" data-args="{{item}}">
+  <b class="text-primary">{{item}}</b>
     <span class="glyphicon glyphicon-pencil"></span>
   </div>
-  <div class="panel-body">
-    {{item.txt}}
-  </div>
 </div>
-
 <!--#fm-notes-footer-->   
-<ul class="pager">
-  <li class="previous"><a href="#" data-method="fm.show_notes_offset" data-args="-10">Prev</a></li>
-  <li><a href="#" data-method="fm.show_add_note">Add</a></li>
-  <li class="text-danger" id="notes-info">...</li>
-  <li class="next"><a href="#" data-method="fm.show_notes_offset" data-args="10">Next</a></li>
-</ul>
-
-
 
 
 <!--#fm-add-note-header-->
@@ -516,6 +496,7 @@ data-method="fm.show_edit_note" data-args="{{item.id}}">{{(index+1+fm.offset)}}.
           <li><a href="#" data-method="fm.show_servers">Список серверов</a></li>
           <li><a href="http://www.maxbuk.com" target="_blank">Сайт www.maxbuk.com</a></li>
           <li class="divider"></li>
+          <li><a href="#" data-method="fm.show_notes_page">Notes</a></li>
           <li><a href="#" data-method="make_popup">Path</a></li>
         </ul>
       </div>
@@ -530,6 +511,7 @@ data-method="fm.show_edit_note" data-args="{{item.id}}">{{(index+1+fm.offset)}}.
 <!--#fm-main-body-->
 
 <!--#fm-main-footer-->
+
 
 <!--#fm-geo-header-->
 <div>

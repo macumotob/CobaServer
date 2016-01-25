@@ -3,6 +3,7 @@ using System.Net;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.Web;
 
 namespace xsrv
 {
@@ -52,7 +53,7 @@ namespace xsrv
 			}
 
 		}
-		public void ExecutePost(HttpListenerContext context){
+    public void ExecutePost(HttpListenerContext context){
 			//_printRequestHeaders (context);
 
 			try {
@@ -144,30 +145,114 @@ namespace xsrv
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
       }
     }
+    public void SaveNote(HttpListenerContext context)
+    {
+      string url = context.Request.Url.ToString();
+      var request = context.Request;
+      string text;
+      using (var reader = new StreamReader(request.InputStream,
+                                           request.ContentEncoding))
+      {
+        text = HttpUtility.UrlDecode(reader.ReadToEnd());
+      }
+      text = text.Substring(text.IndexOf("txt=") + 4);
+      string date = System.Web.HttpUtility.ParseQueryString(url).Get("date");
+      
+      string name = DateTime.Now.Day.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Year.ToString() + ".txt";
 
-    public void CreateFolder(HttpListenerContext context){
-			try {
-				_load_public_folders ();
+      string file = CobaServer.NotesFolder + name;
+      File.WriteAllText(file, text, Encoding.UTF8);
 
-				const string marker ="/mkdir?";
-			    string url = context.Request.Url.ToString();
+      SendJson(context, "{'result': true}");
+    }
+    public void SendNotesList(HttpListenerContext context)
+    {
+      try
+      {
+        const string marker = "/notes.list?";
+        string url = context.Request.Url.ToString();
 
-				url = url.Substring(url.IndexOf(marker) + marker.Length);
-				//url = System.Web.HttpUtility.UrlDecode (url);
-				string folder = System.Web.HttpUtility.ParseQueryString (url).Get ("folder");
-				folder = _redirect(folder);
+        url = url.Substring(url.IndexOf(marker) + marker.Length);
+        //url = System.Web.HttpUtility.UrlDecode (url);
 
-				string subfolder = System.Web.HttpUtility.ParseQueryString (url).Get ("name");
+        string[] files = Directory.GetFiles(CobaServer.NotesFolder);
+        string result = "[";
+        for(int i = 0;i < files.Length; i++)
+        {
+          result += (i == 0 ? "" : ",") + "'" + Path.GetFileName(files[i]) + "'";
+        }
+        result += "]";
+        SendJson(context, result);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("exception: " + ex.ToString());
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+      }
+    }
 
-				//Console.WriteLine ("Create folder : " + subfolder + " in " + folder);
-				System.IO.Directory.CreateDirectory(folder + subfolder);
-				this.SendJson(context,"{result:true,msg:'" + subfolder +"'}");
+    public void SendNotes(HttpListenerContext context)
+    {
+      try
+      {
+        const string marker = "/notes?";
+        string url = context.Request.Url.ToString();
 
-			} catch (Exception ex) {
-				Console.WriteLine ("exception: " + ex.ToString ());
-				context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-			}
-		}
+        url = url.Substring(url.IndexOf(marker) + marker.Length);
+        //url = System.Web.HttpUtility.UrlDecode (url);
+        string date = System.Web.HttpUtility.ParseQueryString(url).Get("date");
+        string name = DateTime.Now.Day.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Year.ToString() + ".txt";
+
+        string file = CobaServer.NotesFolder + name;
+        if (!File.Exists(file))
+        {
+          File.WriteAllText(file, "New File", Encoding.UTF8);
+        }
+        string text = File.ReadAllText(file, Encoding.UTF8);
+        if(date == "0")
+        {
+
+        }
+        else
+        {
+
+        }
+        _send_text(context, text,"text/plain");
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("exception: " + ex.ToString());
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+      }
+    }
+
+    public void CreateFolder(HttpListenerContext context)
+    {
+      try
+      {
+        _load_public_folders();
+
+        const string marker = "/mkdir?";
+        string url = context.Request.Url.ToString();
+
+        url = url.Substring(url.IndexOf(marker) + marker.Length);
+        //url = System.Web.HttpUtility.UrlDecode (url);
+        string folder = System.Web.HttpUtility.ParseQueryString(url).Get("folder");
+        folder = _redirect(folder);
+
+        string subfolder = System.Web.HttpUtility.ParseQueryString(url).Get("name");
+
+        //Console.WriteLine ("Create folder : " + subfolder + " in " + folder);
+        System.IO.Directory.CreateDirectory(folder + subfolder);
+        this.SendJson(context, "{result:true,msg:'" + subfolder + "'}");
+
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("exception: " + ex.ToString());
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+      }
+    }
 		private void prepareNSPlayerHeader(HttpListenerResponse response,
 			long start,long end,long chunkSize,long fileSize)
 		{
@@ -212,7 +297,7 @@ namespace xsrv
 		}
     private void _send_text_file(HttpListenerContext context, string fileName,string relativeName)
     {
-      if (System.IO.File.Exists(fileName))
+      if (File.Exists(fileName))
       {
         string maket = _workingFolder + "text_view.html";
         string s = System.IO.File.ReadAllText(maket,Encoding.UTF8);
@@ -447,72 +532,6 @@ namespace xsrv
       }
 
     }
-
-    private void _send_folder_content(HttpListenerContext context){
-		//	string mime;
-			try
-      { 
-				_load_public_folders();
-				string x = context.Request.RawUrl.Substring("/get.folder?".Length);
-				string u = System.Web.HttpUtility.UrlDecode(x);
-			    string folder = System.Web.HttpUtility.ParseQueryString(u).Get("folder");
-
-				string result = "[";
-				if(folder == "root")
-				{
-						for(int i = 0; i < _disks.Count; i ++)
-						{
-						FileFolderInfo item = _disks[i];
-							result += (i == 0 ? "" : ",") + "{\"name\": \"~" + item.name + "\",d:1}";
-						}
-
-				}
-				else
-				{
-					string dir = _redirect(folder + "/");
-					string strdirs = "";
-					string [] dirs = System.IO.Directory.GetDirectories(dir);
-					for(int i = 0; i < dirs.Length;i++){
-						string item = dirs[i].Replace('\\','/'); 
-						item = item.Substring(dir.Length);
-						strdirs += (i == 0 ? "" : ",") + "{\"name\":\"" + item + "\",d:1,size:0}";
-					}
-					string [] files = System.IO.Directory.GetFiles(dir);
-					string strfiles = "";
-					for(int i = 0; i < files.Length;i++){
-						string item = files[i].Replace('\\','/'); 
-						long size = new System.IO.FileInfo(item).Length;
-						item = item.Substring(dir.Length);
-						strfiles += (i == 0 ? "" : ",") + "{\"name\":\"" + item + "\",d:0,size:" + size.ToString() + "}";
-					}
-					string mask =  (strdirs.Length == 0 ? "0" : "1") + ( strfiles.Length == 0 ? "0" : "1");
-					switch(mask){
-					case "00":
-						break;
-					case "01":
-						result += strfiles;
-						break;
-					case "10":
-						result += strdirs;
-						break;
-					case "11":
-						result += strdirs + "," + strfiles;
-						break;
-						default:
-						break;
-					}
-				}
-
-				result += "]";
-				this.SendJson(context,result);
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine ("exception : " + ex.ToString ());
-				context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-			}
-
-		}
 
 		//--------------------------------------------------------------------
 		//  mouse
