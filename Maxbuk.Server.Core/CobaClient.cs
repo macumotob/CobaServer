@@ -163,7 +163,7 @@ namespace xsrv
       string file = CobaServer.NotesFolder + name;
       File.WriteAllText(file, text, Encoding.UTF8);
 
-      SendJson(context, "{'result': true}");
+      SendJson(context, "{'result': true,'msg':'saved " + DateTime.Now.ToString() +"'}");
     }
     public void SendNotesList(HttpListenerContext context)
     {
