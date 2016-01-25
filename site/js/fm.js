@@ -25,7 +25,7 @@ function fm_viewer(ident) {
     this.files.push(file);
   };
   this.play = function (i) {
-    var tr = id("#tr" + this.index);
+    var tr = id("tr" + this.index);
     if (tr) {
       tr.className = "text-default";
     }
@@ -34,13 +34,13 @@ function fm_viewer(ident) {
     elem.src = fm.join_path() + this.files[i].name;
     elem.play();
     this.index = i;
-    tr = id("#tr" + this.index);
+    tr = id("tr" + this.index);
     if (tr) {
       tr.className = "text-primary";
     }
   };
   this.hl = function () {
-    var tr = id("#tr" + this.index);
+    var tr = id("tr" + this.index);
     if (tr) {
       tr.className = "text-primary";
     }
@@ -89,10 +89,10 @@ var img = {
 }
 , find: function () {
   if (this.image == null) {
-    this.image = id("#img-view");
-    this.elem_index = id("#img-index");
-    this.elem_count = id("#img-count");
-    this.elem_caption = id("#img-caption");
+    this.image = id("img-view");
+    this.elem_index = id("img-index");
+    this.elem_count = id("img-count");
+    this.elem_caption = id("img-caption");
   }
 }
 , reset: function (path) {
@@ -348,7 +348,7 @@ var fm = {
   });
 }
 , dropdown_hide: function (dropdown_name) {
-  var drop = id(dropdown_name);//"#dropdown-left");
+  var drop = id(dropdown_name);//"dropdown-left");
   if (drop) {
     drop.removeClass("open");
   }
@@ -357,7 +357,7 @@ var fm = {
   this.dropdown_hide("dropdown-left");
 }
 , hide_right_popup: function () {
-  this.dropdown_hide("dropdown-right");
+  //this.dropdown_hide("dropdown-right");
 }
 , offset: 0
 , last_notes: false
@@ -381,7 +381,7 @@ var fm = {
   load_async_json(url, function (data) {
 
     if (data.result) {
-      var info = id("#notes-info");
+      var info = id("notes-info");
       if (data.msg.length == 0) {
         if (info) {
           self.last_notes = true;
@@ -394,10 +394,10 @@ var fm = {
       if (info) {
         info.innerHTML = "records:" + self.offset;
       }
-      self.dropdown_hide("#dropdown-left");
+      self.dropdown_hide("dropdown-left");
     } else {
       fm_set_main_content(generator.generate_one(data.msg, "fm-mysql-error"));
-      $("#myModal").modal();
+      $("myModal").modal();
     }
 
   });
@@ -415,7 +415,7 @@ var fm = {
   });
 }
 , save_new_note: function (txt) {
-    var elem = id("#txt");
+    var elem = id("txt");
     if (elem.value.length == 0) {
       elem.value = "Введите текст...";
       return;
@@ -445,7 +445,7 @@ var fm = {
   });
 }
 , update_note: function (ident) {
-  var elem = id("#txt");
+  var elem = id("txt");
   var self = this;
   post("note.update?", "id=" + ident + "&txt=" + encodeURI(elem.value), function (data) {
     if (data.result) {
@@ -464,10 +464,16 @@ save_note :function(){
     alert(data);
   });
 },
+get_notes_list: function () {
+  load_async_json("notes.list?tm=" + new Date().getTime(), function (data) {
+    fm_set_main_content(generator.gen(data, "notes"));
+  });
+},
 show_notes_page: function () {
-  load_async("/notes_edit_page.html", function (data) {
+  load_async("/notes_edit_page.html?tm="+ new Date().getTime(), function (data) {
     fm_set_main_content(data);
     load_async("/notes?date=0", function (data) {
+
       id("notes").value = data;
     });
   });
@@ -492,7 +498,7 @@ function create_image_view(parent, filename) {
 //  return;
 //  load_async("/img_view.html", function (text) {
 //    parent.innerHTML = text;
-//    var elem = id("#img-view");
+//    var elem = id("img-view");
 //    elem.onload = function () {
 //      var k = this.height / this.width;
 //    }
@@ -573,7 +579,7 @@ function fm_refresh() {
     //alert('refresh:' + folder);
 
     init_document(folder);
-   // fm.dropdown_hide("#dropdown-right");
+   // fm.dropdown_hide("dropdown-right");
   } catch (err) {
     alert('error refresh ' + err);
   }
@@ -594,12 +600,12 @@ function fm_set_main_content(html) {
 function fm_show_error(text) {
   load_async("/error.html", function (data) {
     fm_set_main_content(data);
-    id("#error-text").innerHTML = text;
+    id("error-text").innerHTML = text;
   });
 }
 function fm_create_folder() {
 
-  var elem = id("#input-folder-name");
+  var elem = id("input-folder-name");
   fm.state.current = fm.state.create_folder;
 
   if (elem.value.length < 1) {
@@ -636,7 +642,7 @@ function make_popup() {
   html += generator.generate(fm.stack, "fm-popup-body");
   html += generator.generate_one(fm.stack, "fm-popup-footer",0);
   elem.innerHTML = html;
-  fm.dropdown_hide("#dropdown-right");
+ // fm.dropdown_hide("dropdown-right");
 }
 /*
 function make_breadcrumbs() {

@@ -260,6 +260,12 @@ namespace xsrv
         client.SendNotes(context);
         return;
       }
+      if (filename.Equals("/notes.list"))
+      {
+        CobaClient client = _createClient();
+        client.SendNotesList(context);
+        return;
+      }
 
       if (filename.Equals ("/mouse")) {
 				CobaClient client = _createClient ();

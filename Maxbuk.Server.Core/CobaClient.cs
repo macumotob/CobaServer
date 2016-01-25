@@ -165,6 +165,31 @@ namespace xsrv
 
       SendJson(context, "{'result': true}");
     }
+    public void SendNotesList(HttpListenerContext context)
+    {
+      try
+      {
+        const string marker = "/notes.list?";
+        string url = context.Request.Url.ToString();
+
+        url = url.Substring(url.IndexOf(marker) + marker.Length);
+        //url = System.Web.HttpUtility.UrlDecode (url);
+
+        string[] files = Directory.GetFiles(CobaServer.NotesFolder);
+        string result = "[";
+        for(int i = 0;i < files.Length; i++)
+        {
+          result += (i == 0 ? "" : ",") + "'" + Path.GetFileName(files[i]) + "'";
+        }
+        result += "]";
+        SendJson(context, result);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("exception: " + ex.ToString());
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+      }
+    }
 
     public void SendNotes(HttpListenerContext context)
     {
