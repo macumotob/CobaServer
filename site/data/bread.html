@@ -173,16 +173,18 @@
   </div>
 </div>
 <!--#fm-servers-footer-->
+
+<!--        NOTES                          -->
 <!--#fm-notes-header-->
 <div class="row">
 
   <div class="col-xs-3"></div>
   <div class="col-xs-6">
     <div class="panel panel-default">
-      <div class="panel-heading" style="cursor:pointer;" data-method="fm.create_new_file" >
+      <div class="panel-heading" style="cursor:pointer;"  >
         <b class="text-primary">Create new file</b>
-        <input type="text" /> 
-        <button type="button" class="btn btn-success">Create</button> 
+        <input type="text" id="new-file-name" value="" /> 
+        <button type="button" class="btn btn-success" data-method="fm.create_new_file">Create</button> 
       </div>
     </div>
   </div>

@@ -364,7 +364,7 @@ var fm = {
 , reset_notes: function () {
   this.offset = 0;
   this.last_notes = false;
-}
+}/*
 , show_notes_offset: function (delta) {
 
   
@@ -455,11 +455,28 @@ var fm = {
       elem.value = data.msg + "\n\n" + elem.value;
     }
   });
+}*/,
+create_new_file: function () {
+  
+  //id("current-note").innerText = name == "0" ? "Today" : name;
+  var name = id("new-file-name").value;
+  
+  load_async_json("file.create?file=" + encodeURI(name), function (data) {
+    if (data.result) {
+      fm.get_notes_list();
+    }
+    else {
+      alert(data.msg);
+    }
+  });
 },
+
   // new notes on local disk, without using database
 save_note :function(name){
   var elem = id("notes");
-  name = name ? name : "0";
+  //id("current-note").innerText = name == "0" ? "Today" : name;
+  name = name ? name : id("current-note").innerText;
+  name = name == "Today" ? "0" : name;
   post("note.save?", "date=" + name +"&txt=" + encodeURI(elem.value), function (data) {
     id("note-save-result").innerText = data.msg;
   });

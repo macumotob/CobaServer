@@ -248,6 +248,13 @@ namespace xsrv
 				client.CreateFolder (context);
 				return;
 			}
+      if (filename.Equals("/file.create"))
+      {
+        CobaClient client = _createClient();
+        client.CreateFileInNoteFolder(context);
+        return;
+      }
+
       if (filename.Equals("/textview"))
       {
         CobaClient client = _createClient();
