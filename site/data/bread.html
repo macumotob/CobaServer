@@ -92,17 +92,23 @@
 <div class="text-center">Upload files to server</div>
 
 <input type="file"
-       onchange="coba_upload_show_info();"
+       onchange="uploader.show_selected_files();"
        id="control_upload_files" multiple style="visibility:hidden;position:absolute;top:-50px;left:-50px" />
 
 <table class="table">
   <tr>
-    <td class="text-center text-success" onclick="control_upload_files.click();"><b>Select</b></td>
+    <td class="btn btn-success" onclick="control_upload_files.click();"><b>Select</b></td>
     <td class="text-center text-success" onclick="coba_upload_files();"><b>Upload</b></td>
     <td class="text-center text-success" onclick="fm_refresh();"><b>Cancel</b></td>
   </tr>
 </table>
-
+<div class="row">
+  <div class="col-xs-2"></div>
+  <div class="col-xs-8">
+     <div class="btn btn-success" data-method="uploader.upload" id="upload-button">Выбрать файлы</div>
+  </div>
+  <div class="col-xs-2"></div>
+</div>
 <table class="table container" id="control_progress"></table>
 
 <!--#fm-empty-folder-->
