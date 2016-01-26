@@ -155,15 +155,34 @@ namespace xsrv
       {
         text = HttpUtility.UrlDecode(reader.ReadToEnd());
       }
+      string date = text.Substring(0, text.IndexOf("&txt="));
+      date = date.Substring(date.IndexOf('=')+1);
       text = text.Substring(text.IndexOf("txt=") + 4);
-      string date = System.Web.HttpUtility.ParseQueryString(url).Get("date");
-      
+      if(date == null)
+      {
+        SendJson(context, "{'result': false,'msg':'file name is null'}");
+        return;
+      }
       string name = DateTime.Now.Day.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Year.ToString() + ".txt";
+      if (date == "0")
+      {
 
+      }
+      else
+      {
+        name = date;
+      }
       string file = CobaServer.NotesFolder + name;
-      File.WriteAllText(file, text, Encoding.UTF8);
 
-      SendJson(context, "{'result': true,'msg':'saved " + DateTime.Now.ToString() +"'}");
+      if (File.Exists(file))
+      {
+        File.WriteAllText(file, text, Encoding.UTF8);
+        SendJson(context, "{'result': true,'msg':'saved " + DateTime.Now.ToString() + "'}");
+      }
+      else
+      {
+        SendJson(context, "{'result': false,'msg':'file " + name + " not found'}");
+      }
     }
     public void SendNotesList(HttpListenerContext context)
     {
@@ -216,19 +235,47 @@ namespace xsrv
           File.WriteAllText(file, "New File", Encoding.UTF8);
         }
         string text = File.ReadAllText(file, Encoding.UTF8);
-        if(date == "0")
-        {
-
-        }
-        else
-        {
-
-        }
         _send_text(context, text,"text/plain");
       }
       catch (Exception ex)
       {
         Console.WriteLine("exception: " + ex.ToString());
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+      }
+    }
+    public void CreateFileInNoteFolder(HttpListenerContext context)
+    {
+      try
+      {
+
+        const string marker = "/file.create?";
+        string url = context.Request.Url.ToString();
+
+        url = url.Substring(url.IndexOf(marker) + marker.Length);
+        
+        string file = System.Web.HttpUtility.ParseQueryString(url).Get("file");
+        if (String.IsNullOrEmpty(file))
+        {
+          this.SendJson(context, "{result:false,msg:'invalid file name'}");
+          return;
+        }
+        string note_file = CobaServer.NotesFolder + file;
+        if (File.Exists(note_file))
+        {
+          this.SendJson(context, "{result:false,msg:'file exists'}");
+        }
+        else
+        {
+          File.CreateText(note_file).Close();
+         // string text = File.ReadAllText(note_file, Encoding.UTF8);
+          this.SendJson(context, "{result:true,msg:'created'}");
+        }
+
+      }
+      catch (Exception ex)
+      {
+        string error = ex.ToString().Replace("\r\n", " ");
+        this.SendJson(context, "{result:false,msg:'"+ error +"'}");
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
       }
     }
