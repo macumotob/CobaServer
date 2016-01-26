@@ -1,5 +1,134 @@
 ﻿
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+var uploader = (function () {
+
+    var file_selector = false;
+    var button = false;
+    var control_progress = false;
+    var status = 0;
+
+    function init() {
+
+      if (!file_selector) {
+        file_selector = document.getElementById("control_upload_files");
+      }
+      if (!button) {
+        button = document.getElementById("upload-button");
+      }
+      if (!control_progress) {
+        control_progress = document.getElementById("control_progress");
+      }
+      COBA_UPLOAD_FILES = [];
+    }
+
+    function upload() {
+      if (status === 2) {
+        alert('todo stop upload');
+        return;
+      }
+      if (status === 1) {
+        button.innerText = "Отмена";
+        status = 2;
+        upload_files();
+        return;
+      }
+      init();
+      button.innerText = "Выбрать файлы";
+      if (status === 0) {
+        control_progress.innerHTML = "";
+        file_selector.click();
+      }
+    }
+
+
+    function show_files_info(files) {
+      for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        var td = create_file_info(file);
+        COBA_UPLOAD_FILES.push({ file: file, td: td });
+      }
+    }
+    function create_file_info(file) {
+      //var control = document.getElementById("control_progress");
+
+      var tr = document.createElement("tr");
+
+      var td = document.createElement("td");
+      //td.className = "col-xs-1";
+      td.innerText = file.name;
+      tr.appendChild(td);
+      td.setAttribute("colspan", "2");
+      control_progress.appendChild(tr);
+
+      tr = document.createElement("tr");
+
+      td = document.createElement("td");
+      //td.style.textAlign = "right";
+      td.innerText = coba_format_bytes(file.size);
+      //td.className = "col-xs-6";
+      tr.appendChild(td);
+
+      td = document.createElement("td");
+      // td.style.textAlign = "right";
+      td.innerText = "0%";
+      //td.className = "col-xs-3";
+      tr.appendChild(td);
+
+      control_progress.appendChild(tr);
+
+      return td;
+    }
+
+    function show_selected_files() {
+
+      var files = file_selector.files;
+      if (files && files.length > 0) {
+        status = 1;
+        show_files_info(files);
+        button.innerText = "Upload selected files";
+      }
+      file_selector.value = [];
+    }
+
+    function upload_file(file, td) {
+
+      var blobs = [];
+      var poss = [];
+
+      //var bytes_per_chunk = 1024 * 1024;
+      var bytes_per_chunk = 1024 * 512;
+      var start = 0;
+      var end = bytes_per_chunk;
+      var size = file.size;
+
+      while (start < size) {
+        poss.push([start, end]);
+        blobs.push(file.slice(start, end));
+        start = end;
+        end = start + bytes_per_chunk;
+      }
+      coba_upload_part(file, blobs, poss, true, td);
+    }
+
+    function upload_files() {
+      try {
+        var i = 0;
+        var file = COBA_UPLOAD_FILES[i].file;
+        var td = COBA_UPLOAD_FILES[i].td;
+        upload_file(file, td);
+      }
+      catch (err) {
+        alert(err);
+      }
+    }
+
+    return {
+      'upload': upload,
+      "show_selected_files": show_selected_files
+    };
+  }
+  )();
 var COBA_UPLOAD_FILES = [];
 var coba_upload_cancel = false;
 
@@ -17,36 +146,36 @@ function coba_format_bytes(bytes)
   else return (bytes / 1073741824).toFixed(2) + " G";
 }
 
-function coba_create_upload_info(file) {
-  var control = document.getElementById("control_progress");
+//function coba_create_upload_info(file) {
+//  var control = document.getElementById("control_progress");
 
-  var tr = document.createElement("tr");
+//  var tr = document.createElement("tr");
 
-  var td = document.createElement("td");
-  //td.className = "col-xs-1";
-  td.innerText = file.name;
-  tr.appendChild(td);
-  td.setAttribute("colspan", "2");
-  control.appendChild(tr);
+//  var td = document.createElement("td");
+//  //td.className = "col-xs-1";
+//  td.innerText = file.name;
+//  tr.appendChild(td);
+//  td.setAttribute("colspan", "2");
+//  control.appendChild(tr);
 
-  tr = document.createElement("tr");
+//  tr = document.createElement("tr");
 
-  td = document.createElement("td");
-  //td.style.textAlign = "right";
-  td.innerText = coba_format_bytes(file.size);
-  //td.className = "col-xs-6";
-  tr.appendChild(td);
+//  td = document.createElement("td");
+//  //td.style.textAlign = "right";
+//  td.innerText = coba_format_bytes(file.size);
+//  //td.className = "col-xs-6";
+//  tr.appendChild(td);
 
-  td = document.createElement("td");
- // td.style.textAlign = "right";
-  td.innerText = "0%";
-  //td.className = "col-xs-3";
-  tr.appendChild(td);
+//  td = document.createElement("td");
+// // td.style.textAlign = "right";
+//  td.innerText = "0%";
+//  //td.className = "col-xs-3";
+//  tr.appendChild(td);
 
-  control.appendChild(tr);
+//  control.appendChild(tr);
 
-  return td;
-}
+//  return td;
+//}
 
 function coba_gen_file_name()
 {
@@ -140,66 +269,67 @@ function coba_upload_part(file, blobs, poss, first, dv)
 }
 
 
-function coba_upload_file(file,td)
-{
+//function coba_upload_file(file,td)
+//{
 
-  var blobs = [];
-  var poss = [];
+//  var blobs = [];
+//  var poss = [];
 
-  //var bytes_per_chunk = 1024 * 1024;
-  var bytes_per_chunk = 1024 * 512;
-  var start = 0;
-  var end = bytes_per_chunk;
-  var size = file.size;
+//  //var bytes_per_chunk = 1024 * 1024;
+//  var bytes_per_chunk = 1024 * 512;
+//  var start = 0;
+//  var end = bytes_per_chunk;
+//  var size = file.size;
 
-  while (start < size)
-  {
-    poss.push([start, end]);
-    blobs.push(file.slice(start, end));
-    start = end;
-    end = start + bytes_per_chunk;
-  }
-  coba_upload_part(file, blobs, poss, true, td);
-}
+//  while (start < size)
+//  {
+//    poss.push([start, end]);
+//    blobs.push(file.slice(start, end));
+//    start = end;
+//    end = start + bytes_per_chunk;
+//  }
+//  coba_upload_part(file, blobs, poss, true, td);
+//}
 
-function coba_upload_files() {
-  try {
-    if (COBA_UPLOAD_FILES.length == 0) {
-      fm_show_error("select files to upload!");
-      return;
-    }
-    var i = 0;
+//function coba_upload_files() {
+//  try {
+//    if (COBA_UPLOAD_FILES.length == 0) {
+//      fm_show_error("select files to upload!");
+//      return;
+//    }
+//    var i = 0;
 
-    var file = COBA_UPLOAD_FILES[i].file;
-    var td = COBA_UPLOAD_FILES[i].td;
-    coba_upload_file(file, td);
-  }
-  catch (err) {
-    alert(err);
-  }
-}
+//    var file = COBA_UPLOAD_FILES[i].file;
+//    var td = COBA_UPLOAD_FILES[i].td;
+//    coba_upload_file(file, td);
+//  }
+//  catch (err) {
+//    alert(err);
+//  }
+//}
 
-function coba_upload_files2()
-{
-  try{
-    if (COBA_UPLOAD_FILES.length == 0)
-    {
-      fm_show_error("select files to upload!");
-      return;
-    }
-    for (var i = 0; i < COBA_UPLOAD_FILES.length; i++) {
-      var file = COBA_UPLOAD_FILES[i].file;
-      var td = COBA_UPLOAD_FILES[i].td;
-      coba_upload_file(file, td);
-    }
-  }
-  catch (err) {
-    alert(err);
-  }
-}
+//function coba_upload_files2()
+//{
+//  try{
+//    if (COBA_UPLOAD_FILES.length == 0)
+//    {
+//      fm_show_error("select files to upload!");
+//      return;
+//    }
+//    for (var i = 0; i < COBA_UPLOAD_FILES.length; i++) {
+//      var file = COBA_UPLOAD_FILES[i].file;
+//      var td = COBA_UPLOAD_FILES[i].td;
+//      coba_upload_file(file, td);
+//    }
+//  }
+//  catch (err) {
+//    alert(err);
+//  }
+//}
 
 
 /////////////////////////////////////////////////////////
+/*
 function coba_upload_info(files)
 {
   for (var i = 0; i < files.length; i++)
@@ -209,6 +339,8 @@ function coba_upload_info(files)
     COBA_UPLOAD_FILES.push({file:file,td:td});
   }
 }
+*/
+/*
 function coba_upload_show_info()
 {
   var control = document.getElementById("control_upload_files");
@@ -219,4 +351,4 @@ function coba_upload_show_info()
   }
   control.value = [];
 }
-
+*/

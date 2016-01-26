@@ -19,32 +19,23 @@ namespace Maxbuk.Server.Admin
     public AdvancedWindow()
     {
       InitializeComponent();
-      _textInfo.Text = MaxbukServerAdmin.ReadLogFile(); 
+      _textInfo.Text = "See log files in folder : " + xsrv.CobaServer.Logger.Folder; 
     }
 
     private void _buttonLog_Click(object sender, RoutedEventArgs e)
     {
-      _textInfo.Text = MaxbukServerAdmin.ReadLogFile(); 
+      
     }
 
     private void _buttonClear_Click(object sender, RoutedEventArgs e)
     {
-      MaxbukServerAdmin.ClearLogFile();
-      _textInfo.Text = MaxbukServerAdmin.ReadLogFile(); 
+      
     }
 
     private void _buttonStop_Click(object sender, RoutedEventArgs e)
     {
-      Exception ex;
-      string result = MaxbukServerAdmin.StopServer(MaxbukServerAdmin.ServerInfo.Host, MaxbukServerAdmin.ServerInfo.Port,out ex);
-      if(ex != null)
-      {
-        MessageBox.Show(ex.Message);
-      }
-      else
-      {
-        MessageBox.Show(result);
-      }
+      string result = MaxbukServerAdmin.StopServer();
+      MessageBox.Show(result);
     }
 
     private void _buttonWeb_Click(object sender, RoutedEventArgs e)

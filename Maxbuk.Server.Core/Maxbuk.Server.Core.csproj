@@ -51,6 +51,7 @@
     <Compile Include="CobaClient.cs" />
     <Compile Include="CobaServer.cs" />
     <Compile Include="Database.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="MaxbukJsonResult.cs" />
     <Compile Include="MaxbukServerAdmin.cs" />
     <Compile Include="MaxbukServerInfo.cs" />

@@ -33,14 +33,6 @@ namespace Maxbuk.Server.Core
         return MaxbukServerAdmin.DriversFileName;
       }
     }
-    public string LogFile 
-    {
-      get 
-      {
-        return MaxbukServerAdmin.LogFileName;
-      }
-    }
-    
 
     public void Parse(string name, string value)
     {
@@ -80,8 +72,8 @@ namespace Maxbuk.Server.Core
 
     public override string ToString()
     {
-      string s = string.Format("host :{0}\r\nport :{1}\r\nsite :{2}\r\nfolders :{3}\r\nlog :{4}\r\nname :{5}\r\n",
-        this.Host, this.Port, this.Site, this.VirtualFolders, this.LogFile,this.Name);
+      string s = string.Format("host :{0}\r\nport :{1}\r\nsite :{2}\r\nfolders :{3}\r\nname :{4}\r\n",
+        this.Host, this.Port, this.Site, this.VirtualFolders, this.Name);
       return s;
     }
   }

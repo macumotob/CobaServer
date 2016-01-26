@@ -34,7 +34,7 @@
         <ColumnDefinition/>
       </Grid.ColumnDefinitions>
       <Button x:Name="_buttonUnregister" Grid.Column="0" Content="Unregister Server" Margin="2" Click="_buttonUnregister_Click"/>
-      <Button x:Name="_buttonStop" Grid.Column="1" Content="Stop Server" Margin="2" ToolTip="Stop server" Click="_buttonStop_Click"/>
+      
       <Button x:Name="_buttonMax" Grid.Column="2"  Content="Maxbuk Site" ToolTip="View host site" Margin="2"
               Click="_buttonMax_Click">
       </Button>

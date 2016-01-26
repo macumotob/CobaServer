@@ -235,7 +235,7 @@ namespace xsrv
           File.WriteAllText(file, "New File", Encoding.UTF8);
         }
         string text = File.ReadAllText(file, Encoding.UTF8);
-        _send_text(context, text,"text/plain");
+        CobaServer.SendText(context, text);
       }
       catch (Exception ex)
       {
@@ -358,11 +358,11 @@ namespace xsrv
         string text = File.ReadAllText(fileName, Encoding.UTF8);
         s= s.Replace("{{NAME}}", relativeName);
         s = s.Replace("{{TEXT}}", text);
-        _send_text(context, s, "text/html");
+        CobaServer.SendText(context, s, "text/html");
       }
       else
       {
-        _send_text(context, "File not found","text/plain");
+        CobaServer.SendText(context, "File not found");
       }
     }
 		public void Send(HttpListenerContext context, string url)
@@ -479,31 +479,23 @@ namespace xsrv
 		}
 		private void SendJson(HttpListenerContext context,string text)
 		{
-			byte [] data = Encoding.UTF8.GetBytes(text);
-
-			context.Response.StatusCode = (int)HttpStatusCode.OK;
-			context.Response.ContentType = "application/json";
-			context.Response.ContentLength64 = data.Length;
-			context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
-			//context.Response.KeepAlive = true;
-			context.Response.OutputStream.Write(data, 0, data.Length);
+      try
+      {
+        byte[] data = Encoding.UTF8.GetBytes(text);
+        context.Response.StatusCode = (int)HttpStatusCode.OK;
+        context.Response.ContentType = "application/json";
+        context.Response.ContentLength64 = data.Length;
+        context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
+        //context.Response.KeepAlive = true;
+        context.Response.OutputStream.Write(data, 0, data.Length);
+      }
+      catch(Exception ex)
+      {
+        CobaServer.Logger.Log(ex, "exception send json{0}", text);
+      }
 			context.Response.OutputStream.Flush();
 			context.Response.OutputStream.Close();
 		}
-
-    private void _send_text(HttpListenerContext context, string text, string content_type)
-    {
-      byte[] data = Encoding.UTF8.GetBytes(text);
-
-      context.Response.StatusCode = (int)HttpStatusCode.OK;
-      context.Response.ContentType = content_type;//"application/json";
-      context.Response.ContentLength64 = data.Length;
-      context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
-      //context.Response.KeepAlive = true;
-      context.Response.OutputStream.Write(data, 0, data.Length);
-      context.Response.OutputStream.Flush();
-      context.Response.OutputStream.Close();
-    }
 
     private void _load_public_folders()
 		{
