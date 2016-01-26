@@ -9,7 +9,8 @@ using System.Text;
 
 namespace Maxbuk.Server.Core
 {
-  
+  using System.Net.Sockets;
+  using System.Threading;
   using xsrv;
 
   public class MaxbukServerAdmin
@@ -29,14 +30,6 @@ namespace Maxbuk.Server.Core
         return AppDomain.CurrentDomain.BaseDirectory + "virtual_drivers.txt";
       }
     }
-    static public string LogFileName
-    {
-      get
-      {
-        return AppDomain.CurrentDomain.BaseDirectory + "server_log.txt";
-      }
-    }
-
     static public string SiteFolderName
     {
       get
@@ -44,23 +37,6 @@ namespace Maxbuk.Server.Core
         return AppDomain.CurrentDomain.BaseDirectory + "\\..\\Site\\";//index.html";
       }
     }
-    static public string ReadLogFile()
-    {
-      if (System.IO.File.Exists(MaxbukServerAdmin.LogFileName))
-      {
-        string text = System.IO.File.ReadAllText(MaxbukServerAdmin.LogFileName, Encoding.UTF8);
-        return text;
-      }
-      return "Log File Not Exists!";
-    }
-    static public void ClearLogFile()
-    {
-      if (System.IO.File.Exists(MaxbukServerAdmin.LogFileName))
-      {
-        System.IO.File.Delete(MaxbukServerAdmin.LogFileName);
-      }
-    }
-
     static private MaxbukJsonResult _getJsonResult(string response)
     {
       response = response.Replace('\'', '\"');
@@ -99,54 +75,7 @@ namespace Maxbuk.Server.Core
       return result;
     }
 
-    static public string StopServer(string host,int port,out Exception exception)
-    {
-      exception = null;
-      WebClient client = null;
-      string response = null;
-      try
-      {
-        client = new WebClient();
-        string query = string.Format("http://{0}:{1}/CobaSoft.StopServer.0\n\n", host, port);
-        response = client.DownloadString(query);
-      }
-      catch (Exception ex)
-      {
-        exception = ex;
-      }
-      finally
-      {
-        if(client != null)
-        {
-          client.Dispose();
-        }
-      }
-      return response;
-    }
-    private static bool _IsValidIP(string ip)
-    {
-      string[] items = ip.Split('.');
 
-      return items.Length == 4;
-    }
-    static public List<string> GetIPAddress()
-    {
-      List<string> list = new List<string>();
-
-      string localIP = "";
-
-      IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
-
-      foreach (IPAddress ip in host.AddressList)
-      {
-        localIP = ip.ToString();
-        if (_IsValidIP(localIP))
-        {
-          list.Add(localIP);
-        }
-      }
-      return list;
-    }
     static public MaxbukServerInfo LoadSetting()
     {
       string file = MaxbukServerAdmin.ServerSettingFileName;
@@ -227,7 +156,9 @@ namespace Maxbuk.Server.Core
       //  sw.Close();
       //  sw.Dispose();
       //}
+      /*
       return;
+
       List<FileFolderInfo> list = MaxbukServerAdmin.Drivers;
 
 
@@ -251,7 +182,7 @@ namespace Maxbuk.Server.Core
       {
         sw.Write(sb.ToString());
         sw.Close();
-      }
+      }*/
     }
 
 
@@ -289,43 +220,56 @@ namespace Maxbuk.Server.Core
     }
     #endregion
 
-    static private Process _findRunningServer(string caption)
+    //static private Process _findRunningServer(string caption)
+    //{
+    //  var pps = System.Diagnostics.Process.GetProcessesByName("CobaServer");
+    //  if (pps.Length > 0)
+    //  {
+    //    foreach (var p in pps)
+    //    {
+    //      try
+    //      {
+    //        string title = p.MainWindowTitle;
+    //        if(caption == title)
+    //        {
+    //          return p;
+    //        }
+    //      }
+    //      catch(Exception ex)
+    //      {
+
+    //      }
+
+    //    }
+    //  }
+    //  return null;
+    //}
+    //static private string _getSeverTitle(string host, int port)
+    //{
+    //  return string.Format("CobaServer (c) 0.1 {0}:{1}", host, port);
+
+    //}
+    static public bool IsServerRunning()
     {
-      var pps = System.Diagnostics.Process.GetProcessesByName("CobaServer");
-      if (pps.Length > 0)
+      if(_server != null)
       {
-        foreach (var p in pps)
-        {
-          try
-          {
-            string title = p.MainWindowTitle;
-            if(caption == title)
-            {
-              return p;
-            }
-          }
-          catch(Exception ex)
-          {
-
-          }
-
-        }
+        return _server.IsWorking;
       }
-      return null;
-    }
-    static private string _getSeverTitle(string host, int port)
-    {
-      return string.Format("CobaServer (c) 0.1 {0}:{1}", host, port);
-
-    }
-    static public bool IsServerRunning(string host,int port)
-    {
-      Process p = _findRunningServer(_getSeverTitle(host, port));
-      return p != null;
+      return false;
     }
 
-    static private Process _serverProcess;
+    //static private Process _serverProcess;
     static private CobaServer _server;
+    static public string StopServer()
+    {
+      if(_server != null)
+      {
+        string result = _server.Stop();
+        Thread.Sleep(200);
+        return result;
+      }
+      return "server not running";
+    }
     static public string RunServer(string host,int port)
     {
       string result = null;
@@ -336,7 +280,7 @@ namespace Maxbuk.Server.Core
        // wdir = @"E:\github\MyDrives\site\";
         _server = new CobaServer(wdir,host,port);//@"E:\github\MyDrives\site\", host, port);
         return "OK";
-
+/*
         bool createNoWindow = true;
         _serverProcess = _findRunningServer(_getSeverTitle(host,port));
         if(_serverProcess != null)
@@ -372,14 +316,16 @@ namespace Maxbuk.Server.Core
         else
         {
           result = "Error start server!";
-        }
+        }*/
       }
       catch (Exception ex)
       {
         result = "Exception " + ex.Message;
       }
       return result;
+      
     }
+    /*
     static public string RunServer_Original(string host, int port)
     {
       string result = null;
@@ -429,7 +375,7 @@ namespace Maxbuk.Server.Core
       }
       return result;
     }
-
+    */
     static public string RunSite(string host, int port)
     {
       string result = null;
@@ -447,7 +393,7 @@ namespace Maxbuk.Server.Core
           bool stoped = process.WaitForExit(1000);
           if (stoped)
           {
-            result = "Error: start chrome!\r\nSee log file " + MaxbukServerAdmin.LogFileName;
+            result = "Error: start chrome!\r\n";
           }
           else
           {
@@ -483,7 +429,7 @@ namespace Maxbuk.Server.Core
           bool stoped = process.WaitForExit(1000);
           if (stoped)
           {
-            result = "Error: start chrome!\r\nSee log file " + MaxbukServerAdmin.LogFileName;
+            result = "Error: start chrome!\r\nSee log file";
           }
           else
           {

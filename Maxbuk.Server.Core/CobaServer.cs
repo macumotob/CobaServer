@@ -90,6 +90,18 @@ namespace xsrv
 			{".zip", "application/zip"},
 			#endregion
 		};
+    private volatile static coba.Logger _logger;
+    public static coba.Logger  Logger
+    {
+      get
+      {
+        if(_logger == null)
+        {
+          _logger = new coba.Logger("mb", CobaServer.LogFolder);
+        }
+        return _logger;
+      }
+    }
 		private Thread _serverThread;
 		private string _rootDirectory;
 		private string _host;
@@ -116,12 +128,19 @@ namespace xsrv
         return CobaServer.ApplicationDataFolder + "Notes/";
       }
     }
-		/// <summary>
-		/// Construct server with given port.
-		/// </summary>
-		/// <param name="path">Directory path to serve.</param>
-		/// <param name="port">Port of the server.</param>
-		public CobaServer(string path, string host, int port)
+    public static string LogFolder
+    {
+      get
+      {
+        return CobaServer.ApplicationDataFolder + "Log/";
+      }
+    }
+    /// <summary>
+    /// Construct server with given port.
+    /// </summary>
+    /// <param name="path">Directory path to serve.</param>
+    /// <param name="port">Port of the server.</param>
+    public CobaServer(string path, string host, int port)
 		{
 			_host = host;
 			this.Initialize(path, port);
@@ -134,13 +153,17 @@ namespace xsrv
       {
         Directory.CreateDirectory(CobaServer.NotesFolder);
       }
-		}
+      if (!Directory.Exists(CobaServer.LogFolder))
+      {
+        Directory.CreateDirectory(CobaServer.LogFolder);
+      }
+    }
 
-		/// <summary>
-		/// Construct server with suitable port.
-		/// </summary>
-		/// <param name="path">Directory path to serve.</param>
-		public CobaServer(string path)
+    /// <summary>
+    /// Construct server with suitable port.
+    /// </summary>
+    /// <param name="path">Directory path to serve.</param>
+    public CobaServer(string path)
 		{
 			//get an empty port
 			TcpListener l = new TcpListener(IPAddress.Loopback, 0);
@@ -150,17 +173,42 @@ namespace xsrv
 			this.Initialize(path, port);
 		}
 
-		/// <summary>
-		/// Stop server and dispose all functions.
-		/// </summary>
+    /// <summary>
+    /// Stop server and dispose all functions.
+    /// </summary>
+    /// 
+    private object _locker = new object();
+    private volatile bool _is_working = false;
+    public  bool IsWorking
+    {
+      get
+      {
+        lock (_locker)
+        {
+          return _is_working;
+        }
+      }
+      set
+      {
+        lock (_locker)
+        {
+          _is_working = value;
+        }
+      }
+    }
+    /*
 		public void Stop()
 		{
+      is_working = false;
+      Thread.Sleep(200);
 			_serverThread.Abort();
 			_listener.Stop();
 		}
-
+    */
 		private void Listen()
 		{
+
+
 			_listener = new HttpListener();
 			//_listener.Prefixes.Add("http://*:" + _port.ToString() + "/");
 			//_listener.Prefixes.Add("http://localhost:" + _port.ToString() + "/");
@@ -172,38 +220,27 @@ namespace xsrv
       int thread_id = 0;
 			Task.Factory.StartNew(() =>
 				{
-					while (true)
+          IsWorking = true;
+          CobaServer.Logger.Log("Server thread running.");
+          while (IsWorking)
 					{
 						HttpListenerContext context = _listener.GetContext();
-
-						//Task.Factory.StartNew((cntx) =>
-						//	{
-						//		Process((HttpListenerContext)cntx);
-						//	}, context,TaskCreationOptions.LongRunning);
-
+            if (!IsWorking) break;
+            string url = context.Request.Url.AbsolutePath;
+            if (url.Equals("/-stop_coba-server-"))
+            {
+              IsWorking = false;
+              CobaServer.SendText(context, "server stopped");
+              break;
+            }
             Thread thread = new Thread(_client_thread_procedure);
             thread.IsBackground = true;
             thread.Name = "T" + (thread_id++).ToString();
             thread.Start(context);
-
           }
+          CobaServer.Logger.Log("Server thread stopped.");
+          _listener.Stop();
         },TaskCreationOptions.LongRunning);
-			/*
-			while (true)
-			{
-				try
-				{
-					HttpListenerContext context = _listener.GetContext();
-					Task.Factory.StartNew((cntx) =>
-						{
-							Process((HttpListenerContext)cntx);
-						}, context,TaskCreationOptions.LongRunning);
-				}
-				catch (Exception ex)
-				{
-
-				}
-			}*/
 		}
 		public override string ToString(){
 			return string.Format ("host {0} port: {1}\nFolder:{2}", _host, _port, _rootDirectory);
@@ -348,6 +385,21 @@ namespace xsrv
 
 			context.Response.OutputStream.Close();
 		}
+    public static void SendText(HttpListenerContext context, string text, string content_type = "text/plain")
+    {
+      byte[] data = Encoding.UTF8.GetBytes(text);
+
+      context.Response.StatusCode = (int)HttpStatusCode.OK;
+      context.Response.ContentType = content_type;//"application/json";
+      context.Response.ContentLength64 = data.Length;
+      context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
+      //context.Response.KeepAlive = true;
+      context.Response.OutputStream.Write(data, 0, data.Length);
+      context.Response.OutputStream.Flush();
+      context.Response.OutputStream.Close();
+    }
+
+
     public static void SendFile(HttpListenerContext context, string filename)
     {
       if (File.Exists(filename))
@@ -386,9 +438,60 @@ namespace xsrv
 			_serverThread = new Thread(this.Listen);
 			_serverThread.Start();
 		}
+    public string Stop()
+    {
+      if (!IsWorking)
+      {
+        return "server not running";
+      }
+      WebClient client = null;
+      string response = null;
+      try
+      {
+        client = new WebClient();
+        string query = string.Format("http://{0}:{1}/-stop_coba-server-", _host, _port);
+        response = client.DownloadString(query);
+      }
+      catch (Exception ex)
+      {
+        response = ex.ToString();
+      }
+      finally
+      {
+        if (client != null)
+        {
+          client.Dispose();
+        }
+      }
+      return response;
+    }
 
+    private static bool _IsValidIP(string ip)
+    {
+      string[] items = ip.Split('.');
 
-	}
+      return items.Length == 4;
+    }
+    static public List<string> GetIPAddress()
+    {
+      List<string> list = new List<string>();
+
+      string localIP = "";
+
+      IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+
+      foreach (IPAddress ip in host.AddressList)
+      {
+        localIP = ip.ToString();
+        if (_IsValidIP(localIP))
+        {
+          list.Add(localIP);
+        }
+      }
+      return list;
+    }
+
+  }//end of class
 
 }
 

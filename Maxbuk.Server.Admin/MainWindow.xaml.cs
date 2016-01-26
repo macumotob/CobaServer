@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 namespace Maxbuk.Server.Admin
 {
   using Maxbuk.Server.Core;
+  using System.Threading;
   using xsrv;
 
 
@@ -91,7 +92,7 @@ namespace Maxbuk.Server.Admin
 
       _refreshDrivers();
 
-      _listIp = MaxbukServerAdmin.GetIPAddress();
+      _listIp = CobaServer.GetIPAddress();
    //   _listIp.Add(Environment.MachineName);
       _ipIndex = _listIp.IndexOf(_host) + 1;
       if (_ipIndex > _listIp.Count - 1) _ipIndex = 0;
@@ -237,20 +238,22 @@ namespace Maxbuk.Server.Admin
     {
       _updateData();
 
-      if(MaxbukServerAdmin.IsServerRunning(_host, _port))
+      if(MaxbukServerAdmin.IsServerRunning())
       {
-        _showMessage("Server is running");
-        _buttonRun.IsEnabled = false;
+        MaxbukServerAdmin.StopServer();
+        //_buttonRun.IsEnabled = false;
+        _labelServerStatus.Content = "Run Server";
         return;
       }
-      string result = MaxbukServerAdmin.RunServer(_host, _port);
-      if (result.IndexOf("Error:") == -1)
+      MaxbukServerAdmin.RunServer(_host, _port);
+      Thread.Sleep(200);
+      if (MaxbukServerAdmin.IsServerRunning())
       {
-        _buttonRun.IsEnabled = MaxbukServerAdmin.IsServerRunning(_host, _port);
+        _labelServerStatus.Content = "Stop Server";
       }
       else
       {
-        _showMessage(result);
+        _labelServerStatus.Content = "Run Server";
       }
     }
 
