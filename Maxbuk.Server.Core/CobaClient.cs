@@ -109,7 +109,7 @@ namespace xsrv
         //	this.SendJson (context, "{result:'ok',msg:'" + action + "',offset:" + end.ToString() + "}");
         this.SendJson(context, "{result:'ok',msg:'" + action + "',offset:" + precent.ToString("F") + "}");
       } catch (Exception ex) {
-				Console.WriteLine ("exception: " + ex.ToString ());
+				
         this.SendJson(context, "{result:'error',msg:'" + ex.ToString().Replace("\r\n"," ").Replace('\'',' ') + "',offset: -1}");
        // context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 			}
