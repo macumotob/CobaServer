@@ -31,7 +31,7 @@ var generator = {
 , load: function (onsuccess) {
   var self = this;
 
-  load_async("/data/bread.html", function (text) {
+  load_async("/data/bread.html?tm=" + new Date().getTime(), function (text) {
 
     self.makets = [];
     var arr = text.split(self.BEGIN);

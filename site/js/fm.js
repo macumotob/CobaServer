@@ -552,6 +552,7 @@ function create_upload_form() {
     fm_show_error(fm.errors.upload_select_folder) 
   }
   fm_set_main_content(generator.generate_one(null, "fm-upload-form"));
+  
   fm.hide_right_popup();
   //control_upload_files.click();
 }

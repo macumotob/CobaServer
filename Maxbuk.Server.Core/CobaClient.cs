@@ -74,11 +74,12 @@ namespace xsrv
 				_load_public_folders ();
 				name = _redirect (name);
 
-//				if(System.IO.File.Exists(name)){
-//					this.SendJson (context, "{result:'ok',msg:'close',offset:" + filesize.ToString() + "}");
-//					return;
-//				}
-				System.IO.Stream body = context.Request.InputStream;
+        if (action == "open" && System.IO.File.Exists(name) )
+        {
+          this.SendJson(context, "{result:false,msg:' FILE EXISTS !!!'}");
+          return;
+        }
+        System.IO.Stream body = context.Request.InputStream;
 
 
 				FileMode fm = (action == "open" ? FileMode.CreateNew : FileMode.Append);
@@ -105,12 +106,11 @@ namespace xsrv
 				if (end >= filesize){
 					action = "close";
 				}
-        float precent = (start + total_readed) * 100 / filesize;
-        //	this.SendJson (context, "{result:'ok',msg:'" + action + "',offset:" + end.ToString() + "}");
-        this.SendJson(context, "{result:'ok',msg:'" + action + "',offset:" + precent.ToString("F") + "}");
+        float precent = (float)( (start + total_readed) * 100.000 / filesize);
+        this.SendJson(context, "{result:true,msg:'" + action + "',offset:" + precent.ToString("N3") + "}");
       } catch (Exception ex) {
 				
-        this.SendJson(context, "{result:'error',msg:'" + ex.ToString().Replace("\r\n"," ").Replace('\'',' ') + "',offset: -1}");
+        this.SendJson(context, "{result:false,msg:'" + ex.ToString().Replace("\r\n"," ").Replace('\'',' ') + "'}");
        // context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 			}
 		}
