@@ -222,7 +222,7 @@ var fm = {
   "<br>Longitude: " + position.coords.longitude; 
 }
 , get_file_type: function (ext) {
-  if ("pdf;doc;mobi;fb2;txt;epub;rtf;doc;".indexOf(ext + ';') >= 0) return this.file_type.document;
+  if ("pdf;doc;mobi;fb2;txt;epub;rtf;doc;zip;rar;muse;tex;".indexOf(ext + ';') >= 0) return this.file_type.document;
   if ("mp4;mov;3gp;ogg;avi;mkv;vob;".indexOf(ext + ';') >= 0) return this.file_type.video;
   if ("jpg;png;jpeg;bmp;".indexOf(ext + ';') >= 0) return this.file_type.image;
   if ("mp3;3gpp;".indexOf(ext + ';') >= 0) return this.file_type.audio;
@@ -277,13 +277,24 @@ var fm = {
   //var link = document.createElement("a");
   //link.href = decodeURI(fm.join_path() + file);
   //link.target = "_blank";
-  //link.click();
+  //link.click();\
   var url = decodeURI(fm.join_path() + file);
-
-//  var win = window.open('', '_blank');
-  window.open( window.location.href + "/textview?file=" + url, '_blank', 'toolbar=yes, location=yes, status=yes, menubar=yes, scrollbars=yes');
-  //win.location = url;
-  //win.focus();
+  var ext = get_file_ext(file);
+  if (ext === "zip" || ext === "rar") {
+    load_async_json("/textview?file=" + url, function (data) {
+      
+      if (data.result) {
+        init_document(data.msg);
+      }
+      else {
+        alert(data.msg);
+      }
+    });
+    return;
+  }
+  else {
+    window.open(window.location.href + "/textview?file=" + url, '_blank', 'toolbar=yes, location=yes, status=yes, menubar=yes, scrollbars=yes');
+  }
 }
 , open_site: function (url) {
   var link = document.createElement("a");

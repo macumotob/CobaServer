@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Collections.Generic;
 using System.Web;
@@ -130,9 +131,25 @@ namespace xsrv
         string real_file = _redirect(file);
 
         string ext = System.IO.Path.GetExtension(real_file).ToLower();
-        if (ext == ".txt")
+        if (ext == ".txt" || ext ==".muse" || ext == ".tex")
         {
           _send_text_file(context, real_file,file);
+        }
+        else if(ext == ".zip" || ext == ".rar")
+        {
+          string new_folder_name = Path.GetFileNameWithoutExtension(real_file);
+          string folder = Path.GetDirectoryName(real_file) + "\\" + new_folder_name ;
+          if (Directory.Exists(folder))
+          {
+            SendJson(context, "{'result':true,'msg':'"+ new_folder_name +"'}");
+          }
+          else
+          {
+            Directory.CreateDirectory(folder);
+            ZipFile.ExtractToDirectory(real_file, folder);
+            SendJson(context, "{'result':true,'msg':'"+ new_folder_name +"'}");
+          }
+          return;
         }
         else
         {
@@ -141,7 +158,7 @@ namespace xsrv
       }
       catch (Exception ex)
       {
-        Console.WriteLine("exception: " + ex.ToString());
+        SendJson(context, "{'result':true,'msg':'" + ex.ToString().Replace("\r\n"," ") + "'}");
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
       }
     }

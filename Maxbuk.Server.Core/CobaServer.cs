@@ -343,6 +343,11 @@ namespace xsrv
 			}
 
 			filename = Path.Combine(_rootDirectory, filename);
+      string ext = Path.GetExtension(filename).ToLower();
+      if(ext == ".zip" || ext == ".rar")
+      {
+
+      }
       CobaServer.SendFile(context, filename);
 
    //   if (File.Exists(filename))
