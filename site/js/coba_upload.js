@@ -188,6 +188,9 @@ var uploader = (function () {
             //alert('error send file ' + x.msg);
             $(file.row).removeClass("panel-default");
             $(file.row).addClass("panel-danger");
+            $("#upload-delete-" + file.index).removeClass("hidden");
+            $("#upload-delete-" + file.index).addClass("visible");
+
             $("#upload-error-" + file.index).html(x.msg);
             //dv.innerHTML = x.msg;
             delete xhr;
@@ -252,11 +255,19 @@ var uploader = (function () {
         alert(err);
       }
     }
+    function delete_file(filename,name,btn) {
+      if (!confirm("Удалить файл на сервере,")) return;
+      fm.delete_file(filename, function (data) {
+        $(btn).removeClass("visible");
+        $(btn).addClass("hidden");
 
+      });
+    }
     return {
       'upload':  upload_files,
       "show_selected_files": show_selected_files,
-      "select_for_upload": select_for_upload
+      "select_for_upload": select_for_upload,
+      "delete_file" : delete_file
     };
   }
   )();

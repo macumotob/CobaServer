@@ -279,6 +279,37 @@ namespace xsrv
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
       }
     }
+    public void DeleteFile(HttpListenerContext context)
+    {
+      try
+      {
+        _load_public_folders();
+
+        const string marker = "/file.delete?";
+        string url = context.Request.Url.ToString();
+
+        url = url.Substring(url.IndexOf(marker) + marker.Length);
+        //url = System.Web.HttpUtility.UrlDecode (url);
+        string file = System.Web.HttpUtility.ParseQueryString(url).Get("name");
+        file = _redirect(file);
+
+        if (System.IO.File.Exists(file))
+        {
+          System.IO.File.Delete(file);
+          this.SendJson(context, "{result:true,msg:'file removed :" + file + "'}");
+        }
+        else
+        {
+          this.SendJson(context, "{result:false,msg:'file not found :" + file + "'}");
+        }
+      }
+      catch (Exception ex)
+      {
+        this.SendJson(context, "{result:false,msg:'exception:" + ex.ToString() + "'}");
+//        Console.WriteLine("exception: " + ex.ToString());
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+      }
+    }
 
     public void CreateFolder(HttpListenerContext context)
     {

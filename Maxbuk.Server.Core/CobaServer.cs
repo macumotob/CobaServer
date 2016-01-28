@@ -262,9 +262,10 @@ namespace xsrv
       ////				client.Execute (context);
       //        return;
       //      }
+      CobaClient client = _createClient();
+
       if (context.Request.HttpMethod == "POST") {
 
-        CobaClient client = _createClient();
         if (filename.Equals("/note.save"))
         {
           client.SaveNote(context);
@@ -273,51 +274,49 @@ namespace xsrv
 				client.ExecutePost (context);
 				return;
 			}
+      switch (filename)
+      {
+        case "/file.delete":
+          client.DeleteFile(context);
+          return;
+      }
 		//	Console.WriteLine ("client : " + context.Request.RemoteEndPoint.ToString ());
 			if (filename.Equals ("/get.folder")) {
-				CobaClient client = _createClient ();
 				client.Execute (context, filename);
 				return;
 			}
 
 			if (filename.Equals ("/mkdir")) {
-				CobaClient client =  _createClient ();
 				client.CreateFolder (context);
 				return;
 			}
       if (filename.Equals("/file.create"))
       {
-        CobaClient client = _createClient();
         client.CreateFileInNoteFolder(context);
         return;
       }
 
       if (filename.Equals("/textview"))
       {
-        CobaClient client = _createClient();
         client.SendTextViewPage(context);
         return;
       }
       if (filename.Equals("/notes"))
       {
-        CobaClient client = _createClient();
         client.SendNotes(context);
         return;
       }
       if (filename.Equals("/notes.list"))
       {
-        CobaClient client = _createClient();
         client.SendNotesList(context);
         return;
       }
 
       if (filename.Equals ("/mouse")) {
-				CobaClient client = _createClient ();
 				client.ExecuteMouse (context);
 				return;
 			}
 			if (filename.Length >= 2 && filename[0] == '/' && filename[1] == '~') {
-				CobaClient client =  _createClient ();
 				client.Send(context, filename);
 				return;
 			}

@@ -470,8 +470,27 @@ create_new_file: function () {
     }
   });
 },
-delete_file : function(name){
-  alert(name);
+delete_file : function(name,onsuccess){
+  
+  load_async_json("file.delete?name=" + name, function (data) {
+    if (data.result) {
+      onsuccess(data);
+    }
+    else {
+      alert(data.msg);
+    }
+  });
+/*  $.ajax({
+    dataType: "json",
+    url: "file.delete",
+    data: "name=" + name,
+    success: function (x,y,z,q) {
+      alert('success');
+    }*//*,
+    error: function (x,y,z,q) {
+      alert('error');
+    }
+  });*/
 },
   // new notes on local disk, without using database
 save_note :function(name){

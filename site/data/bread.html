@@ -116,7 +116,7 @@
 <!--#fm-upload-progress-body-->
 {{*
    var sz =coba_format_bytes(item.size);
-   var nm = fm.join_path() + item.name;
+   var nm = encodeURIComponent(fm.join_path() + item.name);
 }}
   <div class="panel panel-default" id="upload-row-{{index}}">
     <div class="panel-heading">
@@ -128,7 +128,9 @@
     </div>
     <div class="row">
       <div class="col-xs-6" id="upload-error-{{index}}"></div>
-      <div class="col-xs-6" ><button class="btn btn-danger" data-method="fm.delete_file" data-args="{{nm}}">Удалить {{nm}}</button></div>
+      <div class="col-xs-6" >
+        <button class="btn btn-danger hidden" id="upload-delete-{{index}}"
+            onclick="uploader.delete_file('{{nm}}','{{item.name}}',this);">Удалить {{item.name}}</button></div>
     </div>
   </div>
   <!--#fm-upload-progress-footer-->
