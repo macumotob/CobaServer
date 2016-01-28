@@ -596,7 +596,7 @@ function fm_refresh() {
     var folder = (fm.stack.length > 0) ? fm.recreate_stack(fm.stack.length - 1) : "root";
     //folder = encodeURI(folder);
     //alert('refresh:' + folder);
-
+    
     init_document(folder);
    // fm.dropdown_hide("dropdown-right");
   } catch (err) {
@@ -723,12 +723,12 @@ function init_document(folder) {
 
   try {
 
-    //alert(folder);
     history.pushState(null, null, '/');
 
     fm.state.current = fm.state.navigator;
     folder = fm.set_folder(folder);
     //make_breadcrumbs();
+    $("#fm-current-folder").text(folder);
 
     fm.video.reset();
     fm.audio.reset();

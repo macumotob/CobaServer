@@ -496,6 +496,7 @@
 
   <!--#fm-i-body-->
   <!--#fm-i-footer-->
+
   <!--#fm-main-header-->
   <table class="table">
     <tr>
@@ -546,10 +547,64 @@
 
 
   <div id="td-path" class="container-fluid"></div>
+
   <!-- pre-scrollable -->
   <div id="fm-main-content" class="container-fluid"></div>
+<div class="container-fluid text-center bg-success">Ниже уже ничего нет</div>
+  <div style="width:100%;height:100px;background-color:white"></div>
   <!--#fm-main-body-->
   <!--#fm-main-footer-->
+  <div class="row-fluid navbar-inverse navbar-fixed-bottom" style="height:15%;opacity:0.8;">
+    <table style="width:100%;margin-top:10px;">
+      <tr><td colspan="6" id="fm-current-folder" style="color:white;text-align:center"></td></tr>
+      <tr>
+        <td onclick="init_document('root');" style="cursor:pointer;width:16%;text-align:center">
+          <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-home"></span></button>
+        </td>
+        <td class="fm-main-menu-td" onclick="init_document('..');">
+          <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-arrow-left"></span></button>
+        </td>
+
+        <td class="fm-main-menu-td" onclick="create_upload_form();">
+          <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-cloud-upload"></span></button>
+        </td>
+        <td class="fm-main-menu-td" onclick="create_folder_form();">
+          <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-folder-open"></span></button>
+        </td>
+        <td class="fm-main-menu-td" onclick="fm_refresh();">
+          <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-refresh"></span></button>
+        </td>
+
+        <td class="fm-main-menu-td">
+          <div class="dropdown" id="dropdown-left">
+            <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
+              <span class="glyphicon glyphicon-th-list"></span>
+              <!-- <span class="caret"></span>-->
+            </button>
+
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Навигация</li>
+              <li><a href="#" onclick="init_document('root');">Список дисков</a></li>
+              <li><a href="#" onclick="fm_refresh();">Обновить</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Личное</li>
+              <li><a href="#" data-method="fm.show_notes">Заметки</a></li>
+              <li><a href="#" data-method="fm.links.show">Ссылки</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Сайты</li>
+              <li><a href="#" data-method="fm.show_servers">Список серверов</a></li>
+              <li><a href="http://www.maxbuk.com" target="_blank">Сайт www.maxbuk.com</a></li>
+              <li class="divider"></li>
+              <li><a href="#" data-method="fm.show_notes_page">Notes</a></li>
+              <li><a href="#" data-method="make_popup">Path</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+  </div>
+
   <!--#fm-geo-header-->
   <div>
     <div id="geo" class="container-fluid"></div>
