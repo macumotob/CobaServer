@@ -19,7 +19,7 @@ namespace Maxbuk.Server.Admin
     public AdvancedWindow()
     {
       InitializeComponent();
-      _textInfo.Text = "See log files in folder : " + xsrv.CobaServer.Logger.Folder; 
+      _textInfo.Text = "See log files in folder : " + CobaServer.Logger.Folder; 
     }
 
     private void _buttonLog_Click(object sender, RoutedEventArgs e)

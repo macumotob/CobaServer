@@ -9,9 +9,9 @@ using System.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
 //using System.Net.WebSockets;
-using Maxbuk.Server.Core;
 
-namespace xsrv
+
+namespace Maxbuk.Server.Core
 {
 	public class CobaServer
 	{

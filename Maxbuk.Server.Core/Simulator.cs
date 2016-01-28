@@ -4,7 +4,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Drawing;
 
-namespace xsrv
+namespace Maxbuk.Server.Core
 {
 	public class Simulator
 	{

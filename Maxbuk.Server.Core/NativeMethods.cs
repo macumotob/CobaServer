@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace xsrv
+namespace Maxbuk.Server.Core
 {
 	public class NativeMethods
 	{

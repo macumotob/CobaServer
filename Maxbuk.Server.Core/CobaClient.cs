@@ -6,7 +6,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Web;
 
-namespace xsrv
+namespace Maxbuk.Server.Core
 {
 	public class FileFolderInfo
 	{
@@ -150,6 +150,11 @@ namespace xsrv
             SendJson(context, "{'result':true,'msg':'"+ new_folder_name +"'}");
           }
           return;
+        }
+        else if(ext == ".fb2")
+        {
+          string  text = Fb2Reader.Convert2Html(real_file);
+          CobaServer.SendText(context, text, "text/html");
         }
         else
         {
