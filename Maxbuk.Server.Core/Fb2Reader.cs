@@ -235,7 +235,16 @@ namespace Maxbuk.Server.Core
         }
         else
         {
-          sb.AppendFormat(format, tag.Name, s, tag.Attributes2Html());
+          if (tag.Name == "image")
+          {
+            string id = tag.Attributes[0].Value.Substring(1);
+            string base64 = this.Binaries[id].Data;
+            sb.AppendFormat(format, tag.Name, this.Binaries[id].ContentType, base64);
+          }
+          else
+          {
+            sb.AppendFormat(format, tag.Name, s, tag.Attributes2Html());
+          }
         }
         return;
       }

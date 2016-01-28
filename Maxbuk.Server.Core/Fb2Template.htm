@@ -69,7 +69,7 @@
  i          : <div class='fb2-{0}' {2}> I SIMPLE:{1}</div>
  text-author: <div class='fb2-{0}' {2}> text-author:{1}</div>
  keywords   : <div class='fb2-{0}' {2}> keywords   :{1}</div>
- subtitle   : <div class='fb2-{0}' {2}> subtitle:{1}</div>
+ subtitle   : <div class='fb2-{0}' {2}>{1}</div>
  book-title : <div class='fb2-{0}' {2}> book-title  {1}</div>
  lang       : <div class='fb2-{0}' {2}> Language {1}:</div>
 
@@ -87,7 +87,8 @@
  email      : <div class='fb2-{0}' {2}> emain {1}</div>
  genre      : <div class='fb2-{0}' {2}><div class='fb2-{0}-label'>Genre</div><div class='fb2-{0}-value'>{1}</div></div>
  date       : <div class='fb2-{0}' {2}>Date {1}</div>
- image      : <div class='fb2-{0}' {2}>**********{1}*************</div>
+ 
+ image      : <div class='fb2-div-{0}'><img class='fb2-{0}' src="data:{1};base64,{2}"></div>
 
  program-used : <div class='fb2-{0}' {2}> Program used:{1}</div>
  version      : <div class='fb2-{0}' {2}> Version: {1}:</div>
@@ -190,6 +191,19 @@
         font-size:x-large;
         font-style:oblique;
         text-align:center;
+      }
+      .fb2-div-image{
+        width:100%;
+      }
+      .fb2-image{
+        display: block;
+        margin-left: auto;
+        margin-right: auto
+      }
+      .fb2-subtitle{
+        width:100%;
+        text-align:center;
+        background-color: rgb(198,198,198);
       }
       .program-used
       {
