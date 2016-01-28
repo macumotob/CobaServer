@@ -4,10 +4,10 @@
 var uploader = (function () {
 
     var file_selector = false;
-    var select_button = false;
-    var upload_button = false;
+//    var select_button = false;
+//    var upload_button = false;
     //var control_progress = false;
-    var status = 0;
+//    var status = 0;
     var error_upload = [];
 
     function init() {
@@ -15,12 +15,12 @@ var uploader = (function () {
       if (!file_selector) {
         file_selector = document.getElementById("control_upload_files");
       }
-      if (!select_button) {
-        select_button = document.getElementById("select-button");
-      }
-      if (!upload_button) {
-        upload_button = document.getElementById("upload-button");
-      }
+      //if (!select_button) {
+      //  select_button = document.getElementById("select-button");
+      //}
+      //if (!upload_button) {
+      //  upload_button = document.getElementById("upload-button");
+      //}
       //if (!control_progress) {
       //  control_progress = document.getElementById("control_progress");
       //}
@@ -82,6 +82,7 @@ var uploader = (function () {
 
       //$("#control_progress tr").remove();
       //$("#control_progress").addClass("visible");
+
       $("#upload-files-count").text("Выбрано файлов " + file_selector.files.length);
       
       $("#select-button").removeClass("visible");
@@ -109,7 +110,7 @@ var uploader = (function () {
       if (error_upload.length > 0) {
        // alert(error_upload);
       }
-
+      $("#fm-current-upload").text("загрузка завершена");
       error_upload = [];
       file_selector.value = [];
     //  fm_refresh();
@@ -171,10 +172,11 @@ var uploader = (function () {
           var x = eval("x=" + client.responseText);
           if (x.result == true) {
             $("#upload-progress-" + file.index).html(x.offset + " %");
+            $("#fm-current-upload").text( file.name + " " + x.offset + " %");
             if (x.msg == 'close') {
               delete xhr;
-              $(file.row).removeClass("bg-info");
-              $(file.row).addClass("bg-primary");
+              $(file.row).removeClass("panel-default");
+              $(file.row).addClass("panel-success");
 
               upload_next_or_stop(file);
             }
@@ -184,8 +186,8 @@ var uploader = (function () {
           }
           else {
             //alert('error send file ' + x.msg);
-            $(file.row).removeClass("bg-info");
-            $(file.row).addClass("bg-danger");
+            $(file.row).removeClass("panel-default");
+            $(file.row).addClass("panel-danger");
             $("#upload-error-" + file.index).html(x.msg);
             //dv.innerHTML = x.msg;
             delete xhr;
@@ -220,7 +222,8 @@ var uploader = (function () {
       var poss = [];
      
 
-      $(file.row).addClass("bg-info");
+      $(file.row).removeClass("panel-default");
+      $(file.row).addClass("panel-primary");
 
       //var bytes_per_chunk = 1024 * 1024;
       var bytes_per_chunk = 1024 * 512;
@@ -242,7 +245,7 @@ var uploader = (function () {
         var i = 0;
         var file = COBA_UPLOAD_FILES[i].file;
         var td = COBA_UPLOAD_FILES[i].td;
-        console.log("upload file : " + file.name);
+        //console.log("upload file : " + file.name);
         upload_file(file, td);
       }
       catch (err) {

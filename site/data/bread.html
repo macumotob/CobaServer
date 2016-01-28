@@ -89,45 +89,50 @@
 </form>
 
 <!--#fm-upload-form-->
-<div class="panel panel-default"><p class="panel-heading text-center">Upload files to server</p></div>
+<div class="panel panel-default">
+  <p class="panel-heading text-center">Upload files to server</p>
+  <div class="row">
+    <div class="col-xs-2"></div>
+    <div class="col-xs-8">
+      <button class="btn btn-success visible" onclick="uploader.select_for_upload()" id="select-button">Выбрать файлы</button>
+      <button class="btn btn-success hidden" onclick="uploader.upload()" id="upload-button">Загрузить</button>
+      <span id="upload-files-count">Файлы на выбраны</span>
+    </div>
+    <div class="col-xs-2"></div>
+  </div>
+
+</div>
 
 <input type="file"
        onchange="uploader.show_selected_files();"
        id="control_upload_files" multiple style="visibility:hidden;position:absolute;top:-50px;left:-50px" />
-<div class="row">
-  <div class="col-xs-2"></div>
-  <div class="col-xs-8">
-     <button class="btn btn-success visible" onclick="uploader.select_for_upload()" id="select-button" >Выбрать файлы</button>
-     <button class="btn btn-success hidden" onclick="uploader.upload()" id="upload-button" >Загрузить</button>
-     <span id="upload-files-count">Файлы на выбраны</span>
-  </div>
-  <div class="col-xs-2"></div>
-</div>
+
 <div id="control_progress" class="container-fluid">
 
 </div>
-<table class="table container" id="control_progress2"><caption>Список выбранных файлов</caption>
-  <tbody></tbody>
-</table>
 
 <!--#fm-upload-progress-header-->
 
 <!--#fm-upload-progress-body-->
-{{* var sz =coba_format_bytes(item.size);}}
-<div class="row fm-upload-row" id="upload-row-{{index}}">
-  <div class="row">
-    <div class="col-xs-12"><b>{{item.name}}</b></div>
+{{*
+   var sz =coba_format_bytes(item.size);
+   var nm = fm.join_path() + item.name;
+}}
+  <div class="panel panel-default" id="upload-row-{{index}}">
+    <div class="panel-heading">
+      <b>{{item.name}}</b>
+    </div>
+    <div class="row">
+      <div class="col-xs-6">size <b>{{sz}}</b></div>
+      <div class="col-xs-6" id="upload-progress-{{index}}">0.000%</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6" id="upload-error-{{index}}"></div>
+      <div class="col-xs-6" ><button class="btn btn-danger" data-method="fm.delete_file" data-args="{{nm}}">Удалить {{nm}}</button></div>
+    </div>
   </div>
-  <div class="row">
-    <div class="col-xs-6">size <b>{{sz}}</b></div>
-    <div class="col-xs-6" id="upload-progress-{{index}}">0.000%</div>
-  </div>
-  <div class="row">
-     <div class="col-xs-12" id="upload-error-{{index}}"></div>
-  </div>
-</div>
-
   <!--#fm-upload-progress-footer-->
+
   <!--#fm-upload-complete-->
   <div class="container">
     <p class="text-primary"> Upload complete successfully</p>
@@ -496,61 +501,14 @@
 
   <!--#fm-i-body-->
   <!--#fm-i-footer-->
-
   <!--#fm-main-header-->
-  <table class="table">
-    <tr>
-      <td class="btn text-primary" onclick="init_document('root'); " style="cursor:pointer;">
-        <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-home"></span></button>
-      </td>
-      <td class="text-primary" onclick="init_document('..');">
-        <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-arrow-left"></span></button>
-      </td>
-
-      <td class="btn text-primary" onclick="create_upload_form();" style="cursor:pointer;">
-        <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-cloud-upload"></span></button>
-      </td>
-      <td class="btn text-primary" onclick="create_folder_form();" style="cursor:pointer;">
-        <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-folder-open"></span></button>
-      </td>
-      <td class="text-primary" onclick="fm_refresh();">
-        <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-refresh"></span></button>
-      </td>
-
-      <td>
-        <div class="dropdown" id="dropdown-left">
-          <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
-            <span class="glyphicon glyphicon-th-list"></span>
-            <!-- <span class="caret"></span>-->
-          </button>
-
-          <ul class="dropdown-menu">
-            <li class="dropdown-header">Навигация</li>
-            <li><a href="#" onclick="init_document('root');">Список дисков</a></li>
-            <li><a href="#" onclick="fm_refresh();">Обновить</a></li>
-            <li class="divider"></li>
-            <li class="dropdown-header">Личное</li>
-            <li><a href="#" data-method="fm.show_notes">Заметки</a></li>
-            <li><a href="#" data-method="fm.links.show">Ссылки</a></li>
-            <li class="divider"></li>
-            <li class="dropdown-header">Сайты</li>
-            <li><a href="#" data-method="fm.show_servers">Список серверов</a></li>
-            <li><a href="http://www.maxbuk.com" target="_blank">Сайт www.maxbuk.com</a></li>
-            <li class="divider"></li>
-            <li><a href="#" data-method="fm.show_notes_page">Notes</a></li>
-            <li><a href="#" data-method="make_popup">Path</a></li>
-          </ul>
-        </div>
-      </td>
-    </tr>
-  </table>
 
 
   <div id="td-path" class="container-fluid"></div>
 
   <!-- pre-scrollable -->
   <div id="fm-main-content" class="container-fluid"></div>
-<div class="container-fluid text-center bg-success">Ниже уже ничего нет</div>
+  <div class="container-fluid text-center bg-success">Ниже уже ничего нет</div>
   <div style="width:100%;height:100px;background-color:white"></div>
   <!--#fm-main-body-->
   <!--#fm-main-footer-->
@@ -583,12 +541,6 @@
             </button>
 
             <ul class="dropdown-menu">
-              <li class="dropdown-header">Навигация</li>
-              <li><a href="#" onclick="init_document('root');">Список дисков</a></li>
-              <li><a href="#" onclick="fm_refresh();">Обновить</a></li>
-              <li class="divider"></li>
-              <li class="dropdown-header">Личное</li>
-              <li><a href="#" data-method="fm.show_notes">Заметки</a></li>
               <li><a href="#" data-method="fm.links.show">Ссылки</a></li>
               <li class="divider"></li>
               <li class="dropdown-header">Сайты</li>
@@ -601,16 +553,8 @@
           </div>
         </td>
       </tr>
+      <tr><td colspan="6" id="fm-current-upload" style="color:white;text-align:center"></td></tr>
     </table>
 
   </div>
 
-  <!--#fm-geo-header-->
-  <div>
-    <div id="geo" class="container-fluid"></div>
-
-    <button data-method="fm.get_geo">GET GEO LOCATION</button>
-
-  </div>
-  <!--#fm-geo-body-->
-  <!--#fm-geo-footer-->

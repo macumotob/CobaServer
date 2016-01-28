@@ -470,7 +470,9 @@ create_new_file: function () {
     }
   });
 },
-
+delete_file : function(name){
+  alert(name);
+},
   // new notes on local disk, without using database
 save_note :function(name){
   var elem = id("notes");
@@ -778,7 +780,3 @@ function init_document(folder) {
     alert(err);
   }
 }
-
-
-
-
