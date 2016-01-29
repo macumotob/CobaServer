@@ -760,7 +760,7 @@ function init_document(folder) {
     fm.state.current = fm.state.navigator;
     folder = fm.set_folder(folder);
     //make_breadcrumbs();
-    $("#fm-current-folder").text(folder);
+    $("#fm-current-folder").text(folder + " ...");
 
     fm.video.reset();
     fm.audio.reset();
@@ -770,10 +770,12 @@ function init_document(folder) {
       if (data.length === 0) {
         return fm_set_main_content(generator.generate_one(decodeURIComponent(folder), "fm-empty-folder", null));
       }
-    //  data.sort(function (a, b) { return b.d - a.d; });
+    
+      $("#fm-current-folder").text(folder + " " + data.folders.length + "/" + data.files.length);
       
       img.reset(fm.join_path());
       var html = generator.generate_one(null, "fm-list-header");
+
       fm.foreach(data.folders, function (item, i) {
         html += generator.generate_one(item, "fm-list-folder-body", i);
       });

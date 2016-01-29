@@ -118,7 +118,22 @@ namespace Maxbuk.Server.Core
     }
     public int Depth;
     public bool IsEmpty;
-
+    public Fb2Tag Find(string name)
+    {
+      if(this.Name == name)
+      {
+        return this;
+      }
+      if (this.HasChildren)
+      {
+        foreach(var child in  this.Childs) 
+        {
+          Fb2Tag tag = child.Find(name);
+          if (tag != null) return tag;
+        }
+      }
+      return null;
+    }
     public override string ToString()
     {
       return string.Format("{2}.{3} {0} : {1} T:{4}", this.Name, this.Value,this.Depth,this.Status,this.Tail);
@@ -134,7 +149,22 @@ namespace Maxbuk.Server.Core
     public List<Fb2Tag> Attributes;
     public Fb2Tag Root;
     private StringBuilder sb = new StringBuilder();
+    static Dictionary<string, string> dicSimple = new Dictionary<string, string>();
+    static Dictionary<string, string[]> dicComplex = new Dictionary<string, string[]>();
 
+    public string Title
+    {
+      get
+      {
+        if(this.Root != null)
+        {
+          Fb2Tag tag = this.Root.Find("book-title");
+          if (tag != null) return tag.Value;
+
+        }
+        return "No Title";
+      }
+    }
     public string Convert2Html()
     {
       this.Root.Childs.ForEach(t =>
@@ -153,9 +183,6 @@ namespace Maxbuk.Server.Core
       sb.Append(close);
     }
 
-    static Dictionary<string, string> dicSimple = new Dictionary<string, string>();
-    static Dictionary<string, string[]> dicComplex = new Dictionary<string, string[]>();
-
     static internal void LoadDictionary(string templ)
     {
       string marker = "<!--CONTAINER";
@@ -163,8 +190,8 @@ namespace Maxbuk.Server.Core
       int start = templ.IndexOf(marker) + marker.Length;
       int end = templ.IndexOf("-->", start);
       string s = templ.Substring(start, end - start);
-      string [] items = s.Split('\n');
-      
+      string[] items = s.Split('\n');
+
       items.ForEach(item =>
         {
           if (!string.IsNullOrWhiteSpace(item))
@@ -173,7 +200,7 @@ namespace Maxbuk.Server.Core
             string name = data[0].Trim();
             dicComplex[name] = data[1].Split(',');
             dicComplex[name][0] = dicComplex[name][0].Trim();
-            dicComplex[name][1] = dicComplex[name][1].Replace("\r","").Trim();
+            dicComplex[name][1] = dicComplex[name][1].Replace("\r", "").Trim();
           }
           else
           {
@@ -181,7 +208,7 @@ namespace Maxbuk.Server.Core
         });
       marker = "<!--SIMPLE";
 
-      start = templ.IndexOf(marker , end+3) + marker.Length;
+      start = templ.IndexOf(marker, end + 3) + marker.Length;
       end = templ.IndexOf("-->", start);
       s = templ.Substring(start, end - start);
 
@@ -191,8 +218,8 @@ namespace Maxbuk.Server.Core
         if (!string.IsNullOrWhiteSpace(item))
         {
           int i = item.IndexOf(':');
-          string name = item.Substring(0,i).Trim();
-          dicSimple[name] = item.Substring(i+1).Replace("\r", "").Trim();
+          string name = item.Substring(0, i).Trim();
+          dicSimple[name] = item.Substring(i + 1).Replace("\r", "").Trim();
         }
         else
         {
@@ -204,54 +231,44 @@ namespace Maxbuk.Server.Core
     private void Tag2Html(Fb2Tag tag)
     {
       string name = tag.Name;
-      if(tag.Tail != null)
+      if (tag.Tail != null)
       {
       }
 
+      string s = tag.Value + tag.Tail;
       if (tag.HasChildren)
       {
-        if (dicComplex.ContainsKey (tag.Name))
-        {
-          //string s = (tag.Value + tag.Tail).Replace(" ","&nbsp;");
-          string s = tag.Value + tag.Tail;
-          string begin = string.Format(dicComplex[tag.Name][0], tag.Name, s, tag.Attributes2Html());
-          Tag2Html(tag, begin, dicComplex[tag.Name][1]);
-          return;
-        }
-        throw new Exception("todo complex tag");
+        string[] dic = dicComplex.ContainsKey(tag.Name) ? dicComplex[tag.Name] : dicComplex["waswas-complex"];
+        //string s = tag.Value + tag.Tail;
+        string begin = string.Format(dic[0], tag.Name, s, tag.Attributes2Html());
+        Tag2Html(tag, begin, dic[1]);
+        return;
       }
-      if (dicSimple.ContainsKey(tag.Name))
+      string format = dicSimple.ContainsKey(tag.Name) ? dicSimple[tag.Name] : dicSimple["waswas-simple"];
+      //string s = (tag.Value + tag.Tail).Replace(" ","&nbsp;");;
+      if (tag.Name == "p" && !string.IsNullOrEmpty(s))
       {
-        string format = dicSimple[tag.Name];
-        //string s = (tag.Value + tag.Tail).Replace(" ","&nbsp;");;
-        string s = tag.Value + tag.Tail;
-        if (tag.Name == "p" && !string.IsNullOrEmpty(s))
+        s = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + s;
+      }
+      if (tag.Name == "strong")
+      {
+        sb.AppendFormat(format, tag.Name, tag.Value, tag.Attributes2Html(), tag.Tail);
+      }
+      else
+      {
+        if (tag.Name == "image")
         {
-          s = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + s;
-        }
-        if (tag.Name == "strong")
-        {
-          sb.AppendFormat(format, tag.Name,tag.Value,tag.Attributes2Html(),tag.Tail);
+          string id = tag.Attributes[0].Value.Substring(1);
+          string base64 = this.Binaries[id].Data;
+          sb.AppendFormat(format, tag.Name, this.Binaries[id].ContentType, base64);
         }
         else
         {
-          if (tag.Name == "image")
-          {
-            string id = tag.Attributes[0].Value.Substring(1);
-            string base64 = this.Binaries[id].Data;
-            sb.AppendFormat(format, tag.Name, this.Binaries[id].ContentType, base64);
-          }
-          else
-          {
-            sb.AppendFormat(format, tag.Name, s, tag.Attributes2Html());
-          }
+          sb.AppendFormat(format, tag.Name, s, tag.Attributes2Html());
         }
-        return;
       }
-      throw new Exception("todo simple tag");
     }
-
-  }
+ }
 
   public class Fb2Reader
   {
@@ -333,6 +350,7 @@ namespace Maxbuk.Server.Core
       Fb2Book book = new Fb2Book();
       book.Root = ReadBook(file);
 
+      
       book.Attributes = book.Root.Attributes;
 
       int i = 0;
@@ -363,6 +381,7 @@ namespace Maxbuk.Server.Core
       string s = book.Convert2Html();
 
       templ = templ.Replace("##file_name##", file);
+      templ = templ.Replace("{{TITLE}}", book.Title);
       templ = templ.Replace("##body##", s);
       return templ;
     }
