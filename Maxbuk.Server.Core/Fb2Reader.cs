@@ -175,7 +175,7 @@ namespace Maxbuk.Server.Core
           if (tag != null && !string.IsNullOrEmpty(tag.Value)) return tag.Value.Replace("'", "\\'");
 
         }
-        return "NoFirstName";
+        return "";
       }
     }
     public string MidleName
@@ -377,11 +377,42 @@ namespace Maxbuk.Server.Core
       ReadChilds(root, ref list);
       return root;
     }
+    static public string RenameFile(string file)
+    {
+      try
+      {
+
+
+        Fb2Book book = new Fb2Book();
+        book.Root = ReadBook(file);
+        string folder = System.IO.Path.GetDirectoryName(file);
+        string new_folder = folder + "\\" + (book.LastName + " " + book.FirstName + " " + book.MidleName).Trim();
+        if (!System.IO.Directory.Exists(new_folder))
+        {
+          System.IO.Directory.CreateDirectory(new_folder);
+        }
+        string new_file = new_folder + "\\" + book.Title + ".fb2";
+        System.IO.File.Move(file, new_file);
+        return null;
+      }
+      catch(Exception ex)
+      {
+        return "\r\n" +  ex.ToString();
+      }
+    }
+    static public void RenameFilesInFolder(string folder)
+    {
+      string templ = Properties.Resources.Fb2Template;
+      Fb2Book.LoadDictionary(templ);
+      string[] files = System.IO.Directory.GetFiles(folder, "*.fb2");
+      foreach(var file in files)
+      {
+        string result = RenameFile(file);
+      }
+    }
     static public string Convert2Html(string file)
     {
       string templ= Properties.Resources.Fb2Template;
-
-     // string templ = System.IO.File.ReadAllText(templFile,Encoding.UTF8);
       Fb2Book.LoadDictionary(templ);
 
       Fb2Book book = new Fb2Book();
@@ -419,7 +450,7 @@ namespace Maxbuk.Server.Core
 
       templ = templ.Replace("{{FILENAME}}", file.Replace("'","\\'"));
       templ = templ.Replace("{{TITLE}}", book.Title);
-      templ = templ.Replace("{{FOLDER}}", book.LastName + "-" +  book.FirstName + "-" + book.MidleName  );
+      templ = templ.Replace("{{FOLDER}}", (book.LastName + " " +  book.FirstName + " " + book.MidleName).Trim()  );
       templ = templ.Replace("{{BODY}}", s);
       return templ;
     }

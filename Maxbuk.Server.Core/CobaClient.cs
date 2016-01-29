@@ -153,9 +153,16 @@ namespace Maxbuk.Server.Core
         }
         else if(ext == ".fb2")
         {
-          string  text = Fb2Reader.Convert2Html(real_file);
-          text = text.Replace("{{FULLFILENAME}}", file.Replace("'","\\'"));
-          CobaServer.SendText(context, text, "text/html");
+          if (File.Exists(real_file))
+          {
+            string text = Fb2Reader.Convert2Html(real_file);
+            text = text.Replace("{{FULLFILENAME}}", file.Replace("'", "\\'"));
+            CobaServer.SendText(context, text, "text/html");
+          }
+          else
+          {
+            CobaServer.SendText(context, "Файл не существует", "text/html");
+          }
         }
         else
         {
@@ -164,7 +171,7 @@ namespace Maxbuk.Server.Core
       }
       catch (Exception ex)
       {
-        SendJson(context, "{'result':true,'msg':'" + ex.ToString().Replace("\r\n"," ") + "'}");
+        SendJson(context, "{'result':false,'msg':'" + ex.ToString().Replace("\r\n"," ") + "'}");
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
       }
     }
@@ -316,6 +323,9 @@ namespace Maxbuk.Server.Core
         string dir = System.Web.HttpUtility.ParseQueryString(url).Get("loc");
         string original_file = _redirect(dir);
         dir = Path.GetDirectoryName(original_file);
+
+      //  Fb2Reader.RenameFilesInFolder(dir);
+
         string folder = System.Web.HttpUtility.ParseQueryString(url).Get("folder");
         string file = System.Web.HttpUtility.ParseQueryString(url).Get("file");
         string new_folder = dir + "\\" + folder;
