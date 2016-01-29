@@ -279,9 +279,12 @@ namespace Maxbuk.Server.Core
         case "/file.delete":
           client.DeleteFile(context);
           return;
+        case "/file.rename":
+          client.RenameFile(context);
+          return;
       }
-		//	Console.WriteLine ("client : " + context.Request.RemoteEndPoint.ToString ());
-			if (filename.Equals ("/get.folder")) {
+      //	Console.WriteLine ("client : " + context.Request.RemoteEndPoint.ToString ());
+      if (filename.Equals ("/get.folder")) {
 				client.Execute (context, filename);
 				return;
 			}

@@ -9,6 +9,11 @@
   <meta http-equiv="pragma" content="no-cache">
   <meta charset="utf-8" />
   <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/bootstrap-dialog.min.css" />
+
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap-dialog.min.js"></script>
 
   <!--
   <html>
@@ -294,6 +299,91 @@
       `1234567890-=\qwertyuiop[]asdfghjkl;'zxcvbnm,./~!@#$%^&*()_+|QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?
     </div>
     -->
-  ##body##
+  {{BODY}}
+
+  <div class="container-fluid text-center bg-success">Ниже уже ничего нет</div>
+  <div style="width:100%;height:100px;background-color:white"></div>
+  <div class="row-fluid navbar-inverse navbar-fixed-bottom" style="height:10%;opacity:0.8;">
+    <table style="color:white;width:100%">
+      <tr>
+        <td colspan="2" style="text-align:center;font-size:small">{{FILENAME}}</td>
+      </tr>
+      <tr>
+        <td onclick="fb2_create_rename_dialog();" style="cursor:pointer;width:16%;text-align:center">
+          <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span></button>
+        </td>
+        <td>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#dialog-rename-file"><span class="glyphicon glyphicon-pencil"></span></button>
+        </td>
+      </tr>
+     </table>
+  </div>
+  
+  
+
+  <!-- Modal Rename File on Server-->
+  <script type="text/javascript">
+
+    function fb2_create_rename_dialog() {
+      var loc = "{{FULLFILENAME}}";
+      var $textAndPic = $('<div></div>');
+      $textAndPic.append('Расположение : {{FULLFILENAME}}<br/>');
+      $textAndPic.append('Папка:<br/><input id="folder-name" type="text" style="width:100%" value="{{FOLDER}}"/><br/>');
+      $textAndPic.append('Новое имя:<br/><input id="file-name" type="text" style="width:100%" value="{{TITLE}}.fb2"/>');
+
+      BootstrapDialog.show({
+        title: 'Переименовать файл',
+        message: $textAndPic,
+        buttons: [{
+          label: 'Переименовать',
+          action: function (dialogRef) {
+            var folder = document.getElementById("folder-name").value;
+            var filename  = document.getElementById("file-name").value;
+            var url = "/file.rename?loc=" + loc + "&folder=" + folder + "&file=" + filename;
+            $.ajax({
+              url: url,
+              success: function (data) {
+                alert("success" + data);
+              }
+            }).fail(function (data) {
+              var x = eval('(' + data.responseText + ')');
+              if (x.result) {
+                alert("Файл переименовани");
+                window.close();
+              }
+              else {
+                alert("error :" + x.msg);
+              }
+            });
+            dialogRef.close();
+          }
+        }, {
+          label: 'Отмена',
+          action: function (dialogRef) {
+            dialogRef.close();
+          }
+        }]
+      });
+    }
+  </script>
+  <div id="dialog-rename-file" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
+        </div>
+        <div class="modal-body">
+          <p>Some text in the modal.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </body>
 </html>

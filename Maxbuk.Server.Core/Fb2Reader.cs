@@ -159,10 +159,47 @@ namespace Maxbuk.Server.Core
         if(this.Root != null)
         {
           Fb2Tag tag = this.Root.Find("book-title");
-          if (tag != null) return tag.Value;
+          if (tag != null && !string.IsNullOrEmpty(tag.Value)) return tag.Value.Replace("'","\\'");
 
         }
         return "No Title";
+      }
+    }
+    public string FirstName
+    {
+      get
+      {
+        if (this.Root != null)
+        {
+          Fb2Tag tag = this.Root.Find("first-name");
+          if (tag != null && !string.IsNullOrEmpty(tag.Value)) return tag.Value.Replace("'", "\\'");
+
+        }
+        return "NoFirstName";
+      }
+    }
+    public string MidleName
+    {
+      get
+      {
+        if (this.Root != null)
+        {
+          Fb2Tag tag = this.Root.Find("midle-name");
+          if (tag != null && !string.IsNullOrEmpty(tag.Value)) return tag.Value.Replace("'", "\\'");
+        }
+        return "";
+      }
+    }
+    public string LastName
+    {
+      get
+      {
+        if (this.Root != null)
+        {
+          Fb2Tag tag = this.Root.Find("last-name");
+          if (tag != null && !string.IsNullOrEmpty(tag.Value)) return tag.Value.Replace("'", "\\'");
+        }
+        return "NoLastName";
       }
     }
     public string Convert2Html()
@@ -380,9 +417,10 @@ namespace Maxbuk.Server.Core
 
       string s = book.Convert2Html();
 
-      templ = templ.Replace("##file_name##", file);
+      templ = templ.Replace("{{FILENAME}}", file.Replace("'","\\'"));
       templ = templ.Replace("{{TITLE}}", book.Title);
-      templ = templ.Replace("##body##", s);
+      templ = templ.Replace("{{FOLDER}}", book.LastName + "-" +  book.FirstName + "-" + book.MidleName  );
+      templ = templ.Replace("{{BODY}}", s);
       return templ;
     }
     static public List<Fb2Tag> Read(string file)

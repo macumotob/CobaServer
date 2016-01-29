@@ -154,6 +154,7 @@ namespace Maxbuk.Server.Core
         else if(ext == ".fb2")
         {
           string  text = Fb2Reader.Convert2Html(real_file);
+          text = text.Replace("{{FULLFILENAME}}", file.Replace("'","\\'"));
           CobaServer.SendText(context, text, "text/html");
         }
         else
@@ -301,6 +302,47 @@ namespace Maxbuk.Server.Core
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
       }
     }
+    public void RenameFile(HttpListenerContext context)
+    {
+      try
+      {
+        _load_public_folders();
+
+        const string marker = "/file.rename?";
+        string url = context.Request.Url.ToString();
+
+        url = url.Substring(url.IndexOf(marker) + marker.Length);
+        //url = System.Web.HttpUtility.UrlDecode (url);
+        string dir = System.Web.HttpUtility.ParseQueryString(url).Get("loc");
+        string original_file = _redirect(dir);
+        dir = Path.GetDirectoryName(original_file);
+        string folder = System.Web.HttpUtility.ParseQueryString(url).Get("folder");
+        string file = System.Web.HttpUtility.ParseQueryString(url).Get("file");
+        string new_folder = dir + "\\" + folder;
+        if (!Directory.Exists(new_folder))
+        {
+          Directory.CreateDirectory(new_folder);
+        }
+        string new_file = new_folder + "\\" + file;
+        if (File.Exists(new_file))
+        {
+          this.SendJson(context, "{result:false,msg:'file exists :" + file + "'}");
+        }
+        else
+        {
+          File.Move(original_file, new_folder + "\\" + file);
+          this.SendJson(context, "{result:true,msg:'file moved :" + file + "'}");
+        }
+      }
+      catch (Exception ex)
+      {
+        this.SendJson(context, "{result:false,msg:'exception:" + ex.ToString() + "'}");
+        //        Console.WriteLine("exception: " + ex.ToString());
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+      }
+    }
+
+
     public void DeleteFile(HttpListenerContext context)
     {
       try
