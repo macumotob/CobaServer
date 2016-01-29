@@ -327,20 +327,21 @@ namespace Maxbuk.Server.Core
       //  Fb2Reader.RenameFilesInFolder(dir);
 
         string folder = System.Web.HttpUtility.ParseQueryString(url).Get("folder");
-        string file = System.Web.HttpUtility.ParseQueryString(url).Get("file");
+        string file = System.Web.HttpUtility.ParseQueryString(url).Get("file").Trim();
         string new_folder = dir + "\\" + folder;
-        if (!Directory.Exists(new_folder))
+
+        if ( !string.IsNullOrEmpty(folder) &&  !Directory.Exists(new_folder))
         {
           Directory.CreateDirectory(new_folder);
         }
-        string new_file = new_folder + "\\" + file;
+        string new_file = (string.IsNullOrEmpty(folder) ? dir : new_folder) + "\\" + file;
         if (File.Exists(new_file))
         {
           this.SendJson(context, "{result:false,msg:'file exists :" + file + "'}");
         }
         else
         {
-          File.Move(original_file, new_folder + "\\" + file);
+          File.Move(original_file, new_file);
           this.SendJson(context, "{result:true,msg:'file moved :" + file + "'}");
         }
       }
