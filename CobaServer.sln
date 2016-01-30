@@ -49,6 +49,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "prorok", "prorok\", "{35807
 		SlnRelativePath = "prorok\"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kakadu", "kakadu\kakadu.csproj", "{2E7EF15C-1E90-4DD4-BCAE-9FB3193FBAD4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,10 @@ Global
 		{358073F5-CC51-4419-8E63-43F534575BE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{358073F5-CC51-4419-8E63-43F534575BE9}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{358073F5-CC51-4419-8E63-43F534575BE9}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{2E7EF15C-1E90-4DD4-BCAE-9FB3193FBAD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E7EF15C-1E90-4DD4-BCAE-9FB3193FBAD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E7EF15C-1E90-4DD4-BCAE-9FB3193FBAD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E7EF15C-1E90-4DD4-BCAE-9FB3193FBAD4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
