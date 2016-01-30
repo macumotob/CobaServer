@@ -13,26 +13,27 @@ namespace Maxbuk.Server.Core
 		}
 		public void Execute(HttpListenerContext context, string fileName){
 			//prepare input
-			string input = @"some stringy input";
+			string input = @"name=some stringy input&name2=oiuoiuo";
 
 			//NOTE: change path according to your own PHP.exe file, if you have the proper environment variables setup, then you can just call PHP.exe directly without the path
-			string call = @"E:\Develops\php5\php-cgi.exe";
+			string call = @"D:/apache/php5445mt/php.exe";
 
 			//To execute the PHP file.
-			string param1 = @"-f";
-			string phpFolder =@"E:\github\MyDrives\site\php\";
+			string php_options = @"-f";
+			string phpFolder = @"D:/github/CobaServer/prorok/";
 			//the PHP wrapper class file location. NOTE: remember to enclose in " (quotes) if there is a space in the directory structure. 
-			string param2 = phpFolder + fileName;
+			string php_file_name = phpFolder + fileName;
 
 			Process myProcess = new Process();
 
 			// Start a new instance of this program but specify the 'spawned' version. using the PHP.exe file location as the first argument.
 			ProcessStartInfo myProcessStartInfo = new ProcessStartInfo(call, "spawn");
 			myProcessStartInfo.UseShellExecute = false;
-			myProcessStartInfo.RedirectStandardOutput = true;
-
-			//Provide the other arguments.
-			myProcessStartInfo.Arguments = string.Format("{0} {1} {2}", param1, param2, input);
+      myProcessStartInfo.CreateNoWindow = true;
+      myProcessStartInfo.RedirectStandardOutput = true;
+      myProcessStartInfo.WorkingDirectory = @"D:/github/CobaServer/prorok/";
+      //Provide the other arguments.
+      myProcessStartInfo.Arguments = string.Format("{0} {1}", php_options,fileName);
 			myProcess.StartInfo = myProcessStartInfo;
 
 			//Execute the process
