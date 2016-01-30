@@ -215,6 +215,7 @@ namespace Maxbuk.Server.Core
 			//_listener.Prefixes.Add("http://192.168.1.5:" + _port.ToString() + "/");
 		//	_listener.Prefixes.Add("http://+:" + _port.ToString() + "/");
 			_listener.Prefixes.Add( string.Format("http://{0}:{1}/",_host,_port));
+      _listener.AuthenticationSchemes = AuthenticationSchemes.Basic;
 			_listener.Start();
 			_listener.IgnoreWriteExceptions = true;
       int thread_id = 0;
@@ -255,6 +256,10 @@ namespace Maxbuk.Server.Core
     }
 		private void Process(HttpListenerContext context)
 		{
+      HttpListenerBasicIdentity identity = (HttpListenerBasicIdentity)context.User.Identity;
+      string user_name = identity.Name;
+      string user_password = identity.Password;
+
       string filename = context.Request.Url.AbsolutePath;
       //      if (context.Request.IsWebSocketRequest) {
       //        SocketClient.CreateSocketThread (context);

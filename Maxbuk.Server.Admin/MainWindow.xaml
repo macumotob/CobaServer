@@ -119,8 +119,14 @@
         </Style>
       </ListBox.ItemContainerStyle>
     </ListView>
+      <Button x:Name="_buttonSite" Grid.Row="2" Grid.Column="0" Click="_buttonSite_Click" Margin="5 0">
+        <StackPanel Orientation="Horizontal">
+          <Image Source="appbar.lightning.png" />
+          <Label Content="Site"/>
+        </StackPanel>
+      </Button>
 
-    <Button x:Name="_buttonSave" Grid.Row="2" Grid.Column="2" Click="_buttonSave_Click" Margin="5 0">
+      <Button x:Name="_buttonSave" Grid.Row="2" Grid.Column="2" Click="_buttonSave_Click" Margin="5 0">
       <StackPanel Orientation="Horizontal">
         <Image Source="appbar.check.png" />
         <Label Content="Save"/>

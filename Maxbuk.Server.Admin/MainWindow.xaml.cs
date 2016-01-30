@@ -227,6 +227,10 @@ namespace Maxbuk.Server.Admin
     {
       _showAddFolderWindow();
     }
+    private void _buttonSite_Click(object sender, RoutedEventArgs e)
+    {
+      MaxbukServerAdmin.RunSite(MaxbukServerAdmin.ServerInfo.Host, MaxbukServerAdmin.ServerInfo.Port);
+    }
 
     private void _buttonSave_Click(object sender, RoutedEventArgs e)
     {

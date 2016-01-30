@@ -36,7 +36,7 @@ function id(name) {
 
 function load_async(file,onsuccess) {
   var xhr = new XMLHttpRequest();
-  xhr.open("get", file, true);
+  xhr.open("get", file, true,"waswas","pwd");
   xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
 
   xhr.onreadystatechange = function () {
