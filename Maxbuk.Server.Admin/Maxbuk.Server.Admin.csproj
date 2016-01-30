@@ -119,12 +119,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Maxbuk.Server.Core\Maxbuk.Server.Core.csproj">
-      <Project>{57e6cd4b-2dcf-4ae4-8669-fdb0797368f7}</Project>
-      <Name>Maxbuk.Server.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="appbar.delete.png" />
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +153,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="coba-app.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Maxbuk.Server.Core\Maxbuk.Server.Core.csproj">
+      <Project>{57e6cd4b-2dcf-4ae4-8669-fdb0797368f7}</Project>
+      <Name>Maxbuk.Server.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
