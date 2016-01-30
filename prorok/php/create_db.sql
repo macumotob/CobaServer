@@ -1,0 +1,12 @@
+﻿
+DROP TABLE IF EXISTS test
+;
+
+DROP TABLE IF EXISTS prorok_logins
+;
+
+CREATE TABLE prorok_logins (
+   id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+   username VARCHAR(255) NOT NULL,
+   password CHAR(32) NOT NULL )
+; 
