@@ -27,7 +27,8 @@ function fm_viewer(ident) {
   this.play = function (i) {
     var tr = id("tr" + this.index);
     if (tr) {
-      tr.className = "text-default";
+      //tr.className = "text-default";
+      tr.removeClass("success");
     }
     var elem = id(this.id);
     //elem.src = 'get.file?file=' + fm.join_path() + this.files[i].name;
@@ -36,7 +37,8 @@ function fm_viewer(ident) {
     this.index = i;
     tr = id("tr" + this.index);
     if (tr) {
-      tr.className = "text-primary";
+      //tr.className = "text-primary";
+      tr.className = "success";
     }
   };
   this.hl = function () {
@@ -55,11 +57,20 @@ function fm_viewer(ident) {
     });
   };
   this.next = function(){
-    var i = this.index + 1;
-    if (i >= this.files.length - 1) {
+    var i = this.index+1;
+    if (i > this.files.length) {
       i = 0;
     }
     this.play(i);
+  }
+  this.play_by_name = function (name) {
+    for(var i = 0; i < this.files.length;i++)  {
+      if (this.files[i].name === name) {
+        this.play(i);
+        return;
+      }
+    }
+    this.play(0);
   }
 }
 
@@ -564,7 +575,7 @@ generator.generate_one(fm.audio.files, "fm-audio-header", 0)
 + generator.generate(fm.audio.files, "fm-audio-body", 0)
 + generator.generate_one(fm.audio.files, "fm-audio-footer")
   );
- fm.audio.play(0);
+ fm.audio.play_by_name(filename);
 }
 
 function create_vidio_view(parent, filename) {
@@ -574,7 +585,7 @@ function create_vidio_view(parent, filename) {
     + generator.generate(fm.video.files, "fm-video-body", 0)
     + generator.generate_one(fm.video.files, "fm-video-footer")
   );
-  fm.video.play(0);
+  fm.video.play_by_name(filename);
 }
 function create_upload_form() {
 
@@ -605,19 +616,21 @@ function fm_get_file(file) {
   var command = "get.file?file=" + fm.join_path() + file;
 
   var type = fm.get_file_type(ext);
+  var fname = decodeURIComponent(file);
+
   switch (type) {
     case fm.file_type.document:
       return fm.open_file(file);
     case fm.file_type.video:
-      return create_vidio_view(elem, command);
+      return create_vidio_view(elem, fname);
     case fm.file_type.image:
-      return create_image_view(elem, file);
+      return create_image_view(elem, fname);
     case fm.file_type.audio:
-      return create_mp3_player(elem, command);
+      return create_mp3_player(elem, fname);
     case fm.file_type.html:
       return fm.open_file(file);
     default:
-      elem.innerHTML = "unsupported file extention " + ext;
+      return fm.open_file(file);
       break;
   }
   
