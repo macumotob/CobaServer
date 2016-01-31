@@ -31,7 +31,24 @@
   load_async("php/index.php?user-ip", function (data){
     id("user-ip").innerText = data;
     });
-});
+  });
+  
+  function pr_show_register_form(){
+    load_async("html/register.html?tm=" + new Date().getTime(), function (data){
+      //id("main-content").innerHTML = data;
+
+        BootstrapDialog.show({
+          title: 'Регистрация',
+          message: $(data)
+        });
+
+       //$("#main-content").html(data);
+      });
+  }
+window.addEventListener('click',function(){
+ 	fm_on_click();
+ });
+ 
 </script>
 </head>
 
@@ -49,12 +66,12 @@
         <li><a href="#">Page 3</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+        <li data-method="pr_show_register_form"><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
         <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
       </ul>
     </div>
   </nav> 
 
-  <div id="test"></div>
+  <div id="main-content"></div>
 </body>
 </html>

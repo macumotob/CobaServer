@@ -44,8 +44,14 @@ class mdb{
     //echo "ROWS:" . $stmt->num_rows ;
     return ($stmt->num_rows == 0 ? 0 : 1);//         authenticate_user()
   }
-  
-  public function foreachRow($sql,$rowfunction){
+  public function register_user($username,$password){
+   
+    $stmt = $this->cnn->prepare("INSERT INTO prorok_logins(username, password) VALUES(?,md5(?))");
+    $stmt->bind_param('ss', $username,$password);//$_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+    $stmt->execute();
+    echo "INSERT :" .$username . " " . $password;
+  }
+  public function each($sql,$rowfunction){
     
     $result = $this->cnn->query($sql);
     if ($result->num_rows > 0) {
