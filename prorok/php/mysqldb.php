@@ -18,10 +18,10 @@ class mdb{
 	$this->dbname =$base;
   
   $this->connect($host, $user, $pass, $base);
-   echo "<br/><p>MDB class instance created. <b>" ;
+//   echo "<br/><p>MDB class instance created. <b>" ;
  }
  function __destruct(){
-   echo "<br/><p>MDB class instance destroyed.</p>";
+  // echo "<br/><p>MDB class instance destroyed.</p>";
  }
  
  	private function connect($host, $user, $pass, $base){
