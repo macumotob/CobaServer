@@ -9,7 +9,7 @@ class mdb{
  public $user = "root";
  public $password = "root";
  private $cnn;
- private static $visitors = 0;
+ private $query;
  
  public function __construct($host, $user, $pass, $base){
 	$this->server = $host;
@@ -18,8 +18,7 @@ class mdb{
 	$this->dbname =$base;
   
   $this->connect($host, $user, $pass, $base);
-  self::$visitors++;
-  echo "<br/><p>MDB class instance created. <b>" . self::$visitors . "</b></p>";
+   echo "<br/><p>MDB class instance created. <b>" ;
  }
  function __destruct(){
    echo "<br/><p>MDB class instance destroyed.</p>";
@@ -33,57 +32,49 @@ class mdb{
       exit;
     }       
 		//   or $this->getError(mysqli_connect_error());
-    $this->_create_database();
-	} 
-  private function _authenticate_user() {
+    //$this->_create_database();
+	}
+  
+  
+  public function is_registered_user($username,$password){
+    $stmt = $this->cnn->prepare("SELECT username, password FROM prorok_logins  WHERE username=? AND password=md5(?)");
+    $stmt->bind_param('ss', $username,$password);//$_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+    $stmt->execute();
+    $stmt->store_result(); 
+    //echo "ROWS:" . $stmt->num_rows ;
+    return ($stmt->num_rows == 0 ? 0 : 1);//         authenticate_user()
+  }
+  
+  public function foreachRow($sql,$rowfunction){
+    
+    $result = $this->cnn->query($sql);
+    if ($result->num_rows > 0) {
+      while($row = $result->fetch_assoc()) {
+        //echo "id: " . $row["id"]. " - Name: " . $row["username"]. " " . $row["password"]. "<br>";
+        $rowfunction($row);
+      }
+    } 
+  }
+ 
+  public function query($sql){
+    $this->query = mysqli_query($this->cnn, $sql);
+  }
+  public function fetch_array(){
+		return mysql_fetch_assoc($this->query);
+	}
+  public function authenticate_user() {
     header('WWW-Authenticate: Basic realm="Secret Stash"');
     header("HTTP/1.0 401 Unauthorized");
     print('You must provide the proper credentials!');
     exit;     
   } 
   
-  private function _create_database(){
-    
-    $file = file_get_contents('./create_db.sql', true);
-    //echo $file;
-    $lines = explode(";", $file);
-    foreach($lines as $line){
-      echo $line;
-      if ( !$this->cnn->query($line)) {
-        echo "Table creation failed: (" . $this->cnn->errno . ") " . $this->cnn->error;
-      }
-    }
-    return;
-    if ( !$this->cnn->query("DROP TABLE IF EXISTS test") 
-      || !$this->cnn->query("CREATE TABLE test(id INT)")) {
-      echo "Table creation failed: (" . $this->cnn->errno . ") " . $this->cnn->error;
-      }
-    else{
-      echo "Table created";
-      /* Prepared statement, stage 1: prepare */
-      if (!($stmt = $this->cnn->prepare("INSERT INTO test(id) VALUES (?)"))) {
-         echo "Prepare failed: (" . $this->cnn->errno . ") " . $this->cnn->error;
-      }
-      else
-      {
-        $id = 1;
-        if (!$stmt->bind_param("i", $id)) {
-            echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-        }
-        for($i=1; $i<10;$i++)
-        if (!$stmt->execute()) {
-          echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
-        }
-      }
-    }
-  }
- 
   public function validate_user(){
     if(! isset($_SERVER['PHP_AUTH_USER'])) {
       $this->_authenticate_user();
     } 
     else {
-      $stmt = $this->cnn->prepare("SELECT username, pswd FROM logins WHERE username=? AND pswd=MD5(?)"); 
+      $stmt = $this->cnn->prepare("SELECT username, password FROM prorok_logins WHERE username=? AND password=MD5(?)"); 
       $stmt->bind_param('ss', $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);   
       $stmt->execute();
       $stmt->store_result();
@@ -100,9 +91,9 @@ class mdb{
 
 echo "<br/><h1>mysqldb included</h1><br/>";
 
-$db = new mdb("localhost:3306","root","root","test");
+$db = new mdb("localhost:3306","root","root","prorok");
 if ($db instanceof mdb) echo "Yes";
-$db->validate_user();
+//$db->validate_user();
 
 function prorok_read(){
 // Open the users.txt file

@@ -14,6 +14,25 @@
 $usedb = true;
 require_once("php/mysqldb.php");
 
+$user = $_SERVER['PHP_AUTH_USER'];
+$pwd  = $_SERVER['PHP_AUTH_PW'];
+
+if(!$db->is_registered_user($user,$pwd) ){
+  $db->authenticate_user();  
+}
+
+function show_row($row){
+  echo "id: " . $row["id"]. " - Name: " . $row["username"]. " " . $row["password"]. "<br>";
+}
+echo "<br/>";
+
+$db->foreachRow("select * from prorok_logins","show_row");
+
+echo "user registered :[" . $db->is_registered_user("waswas","1") ."]";
+
+
+exit();
+
 
 if (!isset($_SERVER['PHP_AUTH_USER']) || ! isset($_SERVER['PHP_AUTH_PW'])) {   
       header('WWW-Authenticate: Basic Realm="Authentication"'); 
