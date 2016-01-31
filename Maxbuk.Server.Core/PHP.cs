@@ -8,8 +8,8 @@ namespace Maxbuk.Server.Core
 {
 	public class PHP
 	{
-    public string php_bin_file = @"D:/apache/php5445mt/php.exe";
-    public string php_source_folder = @"D:/github/CobaServer/prorok/";
+    public string php_bin_file = "E:/Develops/php5/php.exe";// @"D:/apache/php5445mt/php.exe";
+    public string php_source_folder = @"E:/github/CobaServer/prorok/";
 
     public PHP ()
 		{
@@ -26,7 +26,7 @@ namespace Maxbuk.Server.Core
 			string php_options = @"-f";
 		
 			//the PHP wrapper class file location. NOTE: remember to enclose in " (quotes) if there is a space in the directory structure. 
-			string php_file_name = php_source_folder + fileName;
+			string php_file_name = php_source_folder + context.Request.RawUrl;
 
 			Process myProcess = new Process();
 
@@ -37,15 +37,21 @@ namespace Maxbuk.Server.Core
       myProcessStartInfo.RedirectStandardOutput = true;
       myProcessStartInfo.WorkingDirectory = php_source_folder;
       //Provide the other arguments.
-
-      foreach (var name in context.Request.QueryString.AllKeys)
-      {
-        string value = context.Request.QueryString[name];
-        myProcessStartInfo.EnvironmentVariables[name] = value;
-        
-      }
-
-      myProcessStartInfo.Arguments = string.Format("{0} {1}", php_options, fileName);
+      string url = context.Request.RawUrl;
+      //int i = 0;
+      //foreach (var name in context.Request.QueryString.AllKeys)
+      //{
+      //  string value = context.Request.QueryString[name];
+      //  //myProcessStartInfo.EnvironmentVariables[name] = value;
+      //  if(i > 0)
+      //  {
+      //    url += "&";
+      //  }
+      //  url += name + "=" + value;
+      //  i++;
+      //}
+      //if (url.Length > 0) url = "?" + url;
+      myProcessStartInfo.Arguments = string.Format("{0} {1}", php_options, php_file_name);
       myProcess.StartInfo = myProcessStartInfo;
 
 			//Execute the process
