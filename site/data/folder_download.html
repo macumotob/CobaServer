@@ -1,9 +1,70 @@
 ﻿<div>
-  <div>Диск : [<span id="drive"></span>]</div>
-  <div>Папка: [<span id="folder"></span>]</div>
+  <div>Диск : [<b><span id="drive"></span></b>]</div>
+  <div>Папка: [<b><span id="folder"></span></b>]</div>
   <br/>
-  Получение информации о папке ...
+   <span id="tree-point">Получение информации о папке...</span>
+  <div>
+    Число папок <b><span id="folders-count"></span></b>
+  </div>
+  <div>
+    Число файлов <b><span id="files-count"></span></b>
+  </div>
+  <div id="zip-result">Результат:</div>
+  <div id="progressDiv" class="progress">
+    <div class="progress-bar progress-bar-striped active"id="zip-progress"
+         role="progressbar"
+         aria-valuenow="50"
+         aria-valuemin="0"
+         aria-valuemax="100"
+         style="width: 100%"> Выполняется архивирование...
+    </div>
+  </div>
+  
 </div>
+<script type="text/javascript">
+
+  var timer = false;
+  
+  function zip_folder_show(name) {
+
+    $("#button-download-folder").addClass("disabled");
+    id("drive").innerText = fm.join_path();
+    id("folder").innerText = name;
+
+    load_async_json("get.folder?folder="
+      + encodeURIComponent(fm.join_path() + name) + "&tm=" + (new Date).getTime(), function (data) {
+        id("tree-point").innerHTML = "<b>Информация</b>";
+        id("folders-count").innerText = data.folders.length;
+        id("files-count").innerText = data.files.length;
+        if (data.folders.length + data.files.length > 0) {
+          //dialogRef.enableButtons(true);
+          $("#button-download-folder").removeClass("disabled");
+        }
+      });
+
+}
+  function zip_folder_zip(name) {
+    $("#button-download-folder").addClass("disabled");
+
+    var file = fm.join_path() + name + ".zip";
+    timer = window.setInterval(function () {
+      load_async_json("file.info?file=" + file, function (data) {
+        id("zip-progress").innerText = data.msg;
+      });
+    }, 1000);
+
+    load_async_json("folder.zip?folder="
+      + encodeURIComponent(fm.join_path() + name) + "&tm=" + (new Date).getTime(), function (data) {
+        zip_folder_result(data);
+     });
+  }
+  function zip_folder_result(data) {
+    clearInterval(timer);
+
+    id("zip-result").innerText = data.msg;
+    id("zip-progress").innerText = data.msg;
+  }
+</script>
 
 
 

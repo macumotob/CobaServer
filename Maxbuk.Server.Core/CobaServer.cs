@@ -221,6 +221,12 @@ namespace Maxbuk.Server.Core
     //  _listener.AuthenticationSchemes = AuthenticationSchemes.Basic;
 			_listener.Start();
 			_listener.IgnoreWriteExceptions = true;
+      Thread thread = new Thread(_server_thread_procedure);
+      thread.IsBackground = true;
+      thread.Name = "SERVER_THREAD";
+      thread.Start();
+
+      /*
       int thread_id = 0;
 			Task.Factory.StartNew(() =>
 				{
@@ -245,14 +251,40 @@ namespace Maxbuk.Server.Core
           CobaServer.Logger.Log("Server thread stopped.");
           _listener.Stop();
         },TaskCreationOptions.LongRunning);
-		}
-		public override string ToString(){
+        */
+    }
+    public override string ToString(){
 			return string.Format ("host {0} port: {1}\nFolder:{2}", _host, _port, _rootDirectory);
 		}
 		private CobaClient _createClient(){
 			return new CobaClient (_rootDirectory , MaxbukServerAdmin.DriversFileName);
 		}
 
+    private void _server_thread_procedure()
+    {
+      int thread_id = 0;
+      IsWorking = true;
+      CobaServer.Logger.Log("Server thread running.");
+      while (IsWorking)
+      {
+        HttpListenerContext context = _listener.GetContext();
+        if (!IsWorking) break;
+        string url = context.Request.Url.AbsolutePath;
+        if (url.Equals("/-stop_coba-server-"))
+        {
+          IsWorking = false;
+          CobaServer.SendText(context, "server stopped");
+          break;
+        }
+        Thread thread = new Thread(_client_thread_procedure);
+        thread.IsBackground = true;
+        thread.Name = "T" + (thread_id++).ToString();
+        thread.Start(context);
+      }
+      CobaServer.Logger.Log("Server thread stopped.");
+      _listener.Stop();
+
+    }
     private void _client_thread_procedure(object data)
     {
       Process((HttpListenerContext)data);
@@ -290,6 +322,13 @@ namespace Maxbuk.Server.Core
         case "/file.rename":
           client.RenameFile(context);
           return;
+        case "/file.info":
+          client.SendFileInfo(context);
+          return;
+        case "/folder.zip":
+          client.ZipFolder(context);
+          return;
+            
       }
       //	Console.WriteLine ("client : " + context.Request.RemoteEndPoint.ToString ());
       if (filename.Equals ("/get.folder")) {
@@ -355,48 +394,7 @@ namespace Maxbuk.Server.Core
 
 			filename = Path.Combine(_rootDirectory, filename);
       string ext = Path.GetExtension(filename).ToLower();
-      if(ext == ".zip" || ext == ".rar")
-      {
-
-      }
       CobaServer.SendFile(context, filename);
-
-   //   if (File.Exists(filename))
-			//{
-			//	//Console.WriteLine ("File :" + filename);
-			//	try
-			//	{
-			//		Stream input = new FileStream(filename, FileMode.Open ,
-			//			FileAccess.Read,    
-			//			FileShare.Read);
-
-			//		//Adding permanent http response headers
-			//		string mime;
-			//		context.Response.StatusCode = (int)HttpStatusCode.OK;
-			//		context.Response.ContentType = _mimeTypeMappings.TryGetValue(Path.GetExtension(filename), out mime) ? mime : "application/octet-stream";
-			//		context.Response.ContentLength64 = input.Length;
-			//		context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
-			//		context.Response.AddHeader("Last-Modified", System.IO.File.GetLastWriteTime(filename).ToString("r"));
-
-			//		byte[] buffer = new byte[1024 * 64];
-			//		int nbytes;
-			//		while ((nbytes = input.Read(buffer, 0, buffer.Length)) > 0)
-			//			context.Response.OutputStream.Write(buffer, 0, nbytes);
-			//		input.Close();
-			//		context.Response.OutputStream.Flush();
-
-			//	}
-			//	catch (Exception ex)
-			//	{
-			//		Console.WriteLine ("exception: " + ex.ToString ());
-			//		context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-			//	}
-
-			//}
-			//else
-			//{
-			//	context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-			//}
 
 			context.Response.OutputStream.Close();
 		}

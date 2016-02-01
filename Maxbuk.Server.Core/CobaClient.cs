@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Collections.Generic;
 using System.Web;
+using System.Threading;
 
 namespace Maxbuk.Server.Core
 {
@@ -309,6 +310,76 @@ namespace Maxbuk.Server.Core
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
       }
     }
+    public void ZipFolder(HttpListenerContext context)
+    {
+      _load_public_folders();
+
+      const string marker = "/folder.zip?";
+      string url = context.Request.Url.ToString();
+
+      url = url.Substring(url.IndexOf(marker) + marker.Length);
+      //url = System.Web.HttpUtility.UrlDecode (url);
+      string folder = System.Web.HttpUtility.ParseQueryString(url).Get("folder");
+      folder = _redirect(folder).Replace('/', Path.DirectorySeparatorChar);
+      string []names = folder.Split(Path.DirectorySeparatorChar);
+      string last_folder_name = "";
+      names.ForEach((s) =>
+      {
+        if (!string.IsNullOrEmpty(s)) last_folder_name = s;
+      });
+      string new_folder = folder.Replace(last_folder_name, "");
+      string zip_file = new_folder + last_folder_name + ".zip";
+      if (File.Exists(zip_file))
+      {
+        SendJson(context, "{'result':false,'msg':'Файл " + 
+          zip_file.Replace(Path.DirectorySeparatorChar + "","\\\\") + " уже есть на диске'}");
+      }
+      else
+      {
+        try
+        {
+
+          ZipFile.CreateFromDirectory(folder, zip_file);
+          FileInfo info = new FileInfo(zip_file);
+          SendJson(context, "{'result':true,'msg':'" 
+            + zip_file.Replace(Path.DirectorySeparatorChar + "", "\\\\") + "'}");
+
+        }
+        catch (Exception ex)
+        {
+          SendException(context,ex);
+        }
+      }
+
+    }
+    public void SendFileInfo(HttpListenerContext context)
+    {
+      try
+      {
+        _load_public_folders();
+
+        const string marker = "/file.info?";
+        string url = context.Request.Url.ToString();
+
+        url = url.Substring(url.IndexOf(marker) + marker.Length);
+        //url = System.Web.HttpUtility.UrlDecode (url);
+        string file = System.Web.HttpUtility.ParseQueryString(url).Get("file");
+        file = _redirect(file);
+        if (File.Exists(file))
+        {
+          FileInfo info = new FileInfo(file);
+          SendJson(context, "{'result':true,'msg':'Size" + info.Length.ToString() + " bytes'}");
+        }
+        else
+        {
+          SendJson(context, "{'result':false,'msg':'not found'}");
+        }
+      }
+      catch (Exception ex)
+      {
+        SendException(context, ex);
+      }
+    }
     public void RenameFile(HttpListenerContext context)
     {
       try
@@ -602,6 +673,26 @@ namespace Maxbuk.Server.Core
 			context.Response.OutputStream.Flush();
 			context.Response.OutputStream.Close();
 		}
+    private void SendException(HttpListenerContext context, Exception ex)
+    {
+      try
+      {
+        string text = ex.ToString().Replace("\r\n", "\\r\\n");
+        byte[] data = Encoding.UTF8.GetBytes(text);
+        context.Response.StatusCode = (int)HttpStatusCode.OK;
+        context.Response.ContentType = "application/json";
+        context.Response.ContentLength64 = data.Length;
+        context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
+        //context.Response.KeepAlive = true;
+        context.Response.OutputStream.Write(data, 0, data.Length);
+      }
+      catch (Exception e)
+      {
+        CobaServer.Logger.Log(ex, "exception send json{0}", "");
+      }
+      context.Response.OutputStream.Flush();
+      context.Response.OutputStream.Close();
+    }
 
     private void _load_public_folders()
 		{

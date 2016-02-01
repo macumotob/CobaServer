@@ -211,6 +211,9 @@ var fm = {
 , encode: function (s) {
   return encodeURIComponent(s);
 }
+  /*
+            DOWNLOAD  F O L D E R
+  */
 , download_folder: function (name) {
   if (name[0] === '~') {
     BootstrapDialog.show({
@@ -234,15 +237,23 @@ var fm = {
     title: "Скачать папку",
     message: $('<div></div>').load('data/folder_download.html'),
 
-    buttons: [{
-      label: 'Закрыть',
-      action: function (dialogRef) {
-        dialogRef.close();
+    buttons: [
+      {
+        id:'button-download-folder',
+        label: 'Скачать',
+        cssClass: 'btn-success',
+        action: function (dialogRef) {
+          zip_folder_zip(name);
+        }},
+      {
+        label: 'Закрыть',
+        action: function (dialogRef) {
+          dialogRef.close();
+        }
       }
-    }],
+     ],
     onshown: function (dialogRef) {
-      id("drive").innerText = fm.join_path();
-      id("folder").innerText = name;
+      zip_folder_show(name);
     },
   });
   
