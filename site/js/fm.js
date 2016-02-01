@@ -11,8 +11,6 @@
   this.className = newClassName;
 }
 
-
-
 function fm_viewer(ident) {
   this.id = ident;
   this.files = [];
@@ -213,6 +211,42 @@ var fm = {
 , encode: function (s) {
   return encodeURIComponent(s);
 }
+, download_folder: function (name) {
+  if (name[0] === '~') {
+    BootstrapDialog.show({
+      title : "Предупреждение",
+       message: $('<div></div>').load('data/error_download_drive.html'),
+       
+       buttons: [{
+         label: 'Закрыть',
+         action: function(dialogRef){
+           dialogRef.close();
+         }
+       }],
+      onshown: function (dialogRef) {
+        var dr = id("drive");
+        dr.innerText = name;
+      },
+    });
+    return;
+  }
+  BootstrapDialog.show({
+    title: "Скачать папку",
+    message: $('<div></div>').load('data/folder_download.html'),
+
+    buttons: [{
+      label: 'Закрыть',
+      action: function (dialogRef) {
+        dialogRef.close();
+      }
+    }],
+    onshown: function (dialogRef) {
+      id("drive").innerText = fm.join_path();
+      id("folder").innerText = name;
+    },
+  });
+  
+}
 ,pokupki : function(){
   fm_set_main_content(generator.gen(null, "geo", null));
 
@@ -304,7 +338,7 @@ var fm = {
     return;
   }
   else {
-    window.open(window.location.href + "/textview?file=" + url, '_blank', 'toolbar=yes, location=yes, status=yes, menubar=yes, scrollbars=yes');
+    window.open(window.location.href + "/textview?file=" + url, '_blank', 'toolbar=no, location=no, status=no, menubar=no, scrollbars=yes');
   }
 }
 , open_site: function (url) {
