@@ -1,0 +1,44 @@
+﻿
+<div>
+
+
+  <form id="reg-form">
+    <input type="text" name="act" value="register" hidden/>
+
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="Email" name="email" value="" />
+    </div>
+    <div class="form-group">
+      <input type="password" class="form-control" placeholder="Password" name="pwd" value=""/>
+    </div>
+    <div class="form-group">
+      <input type="password" class="form-control" placeholder="Confirm Password" name="pwd2" value=""/>
+    </div>
+    <div class="form-group">
+      <button class="btn btn-primary btn-lg btn-block">Sign In</button>
+    </div>
+  </form>
+</div>
+
+<script>
+ 
+ $("#reg-form").submit(function(event){    //don't forget to pass the event as an argument
+ 
+  event.preventDefault();
+  var inputs = document.getElementsByTagName('input');
+  var obj = {};
+  for (var i = 0; i < inputs.length; i++) {
+    console.log(inputs[i].name,inputs[i].value) ;
+    if(inputs[i].value.length == 0){
+      inputs[i].style.backgroundColor = "red";
+       return;
+    }
+    obj[inputs[i].name] = inputs[i].value;
+  }
+  console.log(obj);
+  $.post("php/index.php", obj, function(data){
+    $("#main-content").html(data); //data is everything you 'echo' on php side
+  });
+
+});
+</script>
