@@ -335,6 +335,8 @@ var fm = {
   //link.target = "_blank";
   //link.click();\
   var url = decodeURI(fm.join_path() + file);
+  url = unescape(decodeURIComponent(fm.join_path() + file));
+  //alert(url);
   var ext = get_file_ext(file);
   if (ext === "zip" || ext === "rar") {
     load_async_json("/textview?file=" + url, function (data) {

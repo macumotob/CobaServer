@@ -36,7 +36,7 @@
   <!--#fm-list-file-body-->
   <tr class="text-success">
     {{* var nm = fm.encode(item.name);}}
-    <td colspan="2" data-method="fm_get_file" data-args="{{nm}}">
+    <td colspan="2" data-method="fm_get_file" data-args="{{encodeURIComponent(item.name)}}">
       <p><b>{{item.name}}</b></p>
       <div class="row">
         <div class="col-xs-3">{{get_file_ext(item.name)}}</div>

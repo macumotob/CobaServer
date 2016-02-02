@@ -116,11 +116,20 @@ namespace Maxbuk.Server.Core
        // context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 			}
 		}
-
+    private HttpListenerContext _context;
+    private bool _is_mobile = false;
+    private void _parse_query_string(HttpListenerContext context)
+    {
+      _context = context;
+      string agent = _context.Request.UserAgent.ToString();
+      _is_mobile = agent.IndexOf("iphone",  StringComparison.InvariantCultureIgnoreCase) != -1;
+    }
     public void SendTextViewPage(HttpListenerContext context)
     {
       try
       {
+        _parse_query_string(context);
+
         _load_public_folders();
 
         const string marker = "/textview?";
@@ -526,14 +535,37 @@ namespace Maxbuk.Server.Core
 			//Console.WriteLine (start.ToString () + "-" + end.ToString () + "/" + filesize.ToString ());
 
 		}
-    private void _send_text_file(HttpListenerContext context, string fileName,string relativeName)
+    private void _send_text_file(HttpListenerContext context, string fileName, string relativeName)
     {
       if (File.Exists(fileName))
       {
-        string maket = _workingFolder + "text_view.html";
-        string s = System.IO.File.ReadAllText(maket,Encoding.UTF8);
-        string text = File.ReadAllText(fileName, Encoding.UTF8);
-        s= s.Replace("{{NAME}}", relativeName);
+        string maket = _workingFolder + (_is_mobile ? "text_view.mb.html" : "text_view.html");
+        string s = File.ReadAllText(maket, Encoding.UTF8);
+        string text = "";
+        if (_is_mobile)
+        {
+
+          int count = 200;
+          string line;
+
+          using (StreamReader file = new StreamReader(fileName, Encoding.UTF8))
+          {
+
+            while ((line = file.ReadLine()) != null && count > 0)
+            {
+              text += line + Environment.NewLine;
+              count--;
+            }
+            file.Close();
+          }
+        }
+        else
+        {
+          text = File.ReadAllText(fileName, Encoding.UTF8);
+        }
+
+
+        s = s.Replace("{{NAME}}", relativeName);
         s = s.Replace("{{TEXT}}", text);
         CobaServer.SendText(context, s, "text/html");
       }
