@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Web;
 //using System.Net.WebSockets;
 
 
@@ -391,11 +392,18 @@ namespace Maxbuk.Server.Core
 					}
 				}
 			}
-
-			filename = Path.Combine(_rootDirectory, filename);
-      string ext = Path.GetExtension(filename).ToLower();
-      CobaServer.SendFile(context, filename);
-
+      string absolute_file_name = HttpUtility.UrlDecode(url).Replace("http://" + _host + ":" + _port + "/", "");
+      if (absolute_file_name.Length > 2 && absolute_file_name[1] == ':' && absolute_file_name[2]=='/' &&  File.Exists(absolute_file_name))
+      {
+        string text = File.ReadAllText(absolute_file_name, Encoding.UTF8);
+        CobaServer.SendText(context, text, "text/plain");
+      }
+      else
+      {
+        filename = Path.Combine(_rootDirectory, filename);
+        string ext = Path.GetExtension(filename).ToLower();
+        CobaServer.SendFile(context, filename);
+      }
 			context.Response.OutputStream.Close();
 		}
     public static void SendText(HttpListenerContext context, string text, string content_type = "text/plain")

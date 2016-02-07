@@ -9,63 +9,106 @@
   <meta http-equiv="pragma" content="no-cache">
   <meta charset="utf-8" />
 
+  
   <!--
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <script src="https//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-
-  -->
   <link rel="stylesheet" href="css/bootstrap.min.css" />
   <script type="text/javascript" src="js/jquery.min.js"></script>
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    -->
+  <style>
+    #main-menu{
+      position:fixed;
+      top:50px;
+      width:100%;
+      background-color:black;
+      color:white;
+      font-size:20px;
+      z-index:1000;
+      display:none; 
+      margin-top:10px;
+      margin-bottom:10px;
+      padding-bottom:50px;
+      padding-top:10px;
+    }
+    .td-button{
+      border-radius:5px;
+      background-color:green;
+      color:white;
+      text-align:center;
+      margin: 5px 5px 5px 5px;
+    }
+  </style>
   <script type="text/javascript" src="js/loader.js"></script>
   <script type="text/javascript">
 
     var file_location = '{{NAME}}';
+    var tm;
+    var time = 1;
+    var font_sz=10;
     window.addEventListener('load', function () {
-      
-      $(document).bind('click', function (event) {
-        try
-        {
-          var menu = id("top-menu");
-          menu.style.display = (menu.style.display === "none" ? "block" : "none");
-        }
-        catch (e) {
-          alert(e);
-        }
+
+      $("#main-text").bind('click', function (event) {
+          id("main-menu").style.display = "block";
       });
+
+      tm = window.setInterval(function () {
+        id("main-timer").innerText = time + "sec";
+        time++;
+      }, 1000);
     });
+
+    function hide_menu() {
+      id("main-menu").style.display = "none";
+    }
+    function show_menu() {
+      id("main-menu").style.display = "block";
+    }
+
     function load_all_file() {
       load_async(file_location, function (data) {
         id("text-content").innerText = data;
+        hide_menu();
       });
+    }
+    function font_size(x) {
+      font_sz += (x === '+' ? 1 : -1);
+      id("text-content").style.fontSize = font_sz + "px";
+      id("font-size").innerText = font_sz + "px";
     }
   </script>
 	
 </head>
-<body data-spy="scroll" data-target=".navbar" data-offset="50" id="main-body">
-
-  <!-- The navbar - The <a> elements are used to jump to a section in the scrollable area -->
-  <nav class="navbar navbar-inverse navbar-fixed-top" id="top-menu">
-    
-    <ul class="nav navbar-nav">
-      <li><a href="#section1">{{NAME}}</a></li>
-      <li><a href="#" onclick="load_all_file();">Загрузить</a></li>
-    </ul>
-  </nav>
-
-  <!-- Section 1 -->
-  <div id="section1">
-    <h1>&nbsp;</h1>
-    <div class="row">
-      <div class="col-xs-12">
-        <pre style="font-size:small" id="text-content">{{TEXT}}</pre>
-      </div>
-    </div>
+<body style="margin:0;padding:0">
+  
+  <div id="main-menu">
+    <table style="width:100%">
+      <tr>
+        <td colspan="4">{{NAME}}</td>
+      </tr>
+      <tr>
+        <td>Font</td>
+        <td id="font-size">Font +</td>
+        <td class="td-button" onclick="font_size('+');">Font +</td>
+        <td class="td-button" onclick="font_size('-');">Font -</td>
+      </tr>
+      <tr>
+        <td id="main-timer">time </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="td-button" onclick="load_all_file();">Загрузить</td>
+        <td colspan="2" class="td-button" onclick="hide_menu();">Закрыть</td>
+      </tr>
+      <tr>
+        <td colspan="4" class="td-button" onclick="window.close();">Закончить чтение</td>
+      </tr>
+    </table>
   </div>
-  ...
 
   
+  <div id="main-text" onclick="show_menu();" style="width:100%;padding: 5px 5px 5px 5px;background-color:gray;">
+     <pre style="font-size:10px;width:95%;padding-left:5px;padding-right:5px;background-color:white;" id="text-content">{{TEXT}}</pre>
+  </div>
+    
   
 </body>
 </html>
