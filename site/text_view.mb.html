@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="HandheldFriendly" content="true">
+  <meta http-equiv="cache-control" content="no-cache">
+  <meta http-equiv="expires" content="0">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta charset="utf-8" />
+
+  
+  <!--
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    -->
+  <style>
+    #main-menu{
+      position:fixed;
+      top:50px;
+      width:100%;
+      background-color:black;
+      color:white;
+      font-size:20px;
+      z-index:1000;
+      display:none; 
+      margin-top:10px;
+      margin-bottom:10px;
+      padding-bottom:50px;
+      padding-top:10px;
+    }
+    .td-button{
+      border-radius:5px;
+      background-color:green;
+      color:white;
+      text-align:center;
+      margin: 5px 5px 5px 5px;
+    }
+  </style>
+  <script type="text/javascript" src="js/loader.js"></script>
+  <script type="text/javascript">
+
+    var file_location = '{{NAME}}';
+    var tm;
+    var time = 1;
+    var font_sz=10;
+    window.addEventListener('load', function () {
+
+      $("#main-text").bind('click', function (event) {
+          id("main-menu").style.display = "block";
+      });
+
+      tm = window.setInterval(function () {
+        id("main-timer").innerText = time + "sec";
+        time++;
+      }, 1000);
+    });
+
+    function hide_menu() {
+      id("main-menu").style.display = "none";
+    }
+    function show_menu() {
+      id("main-menu").style.display = "block";
+    }
+
+    function load_all_file() {
+      load_async(file_location, function (data) {
+        id("text-content").innerText = data;
+        hide_menu();
+      });
+    }
+    function font_size(x) {
+      font_sz += (x === '+' ? 1 : -1);
+      id("text-content").style.fontSize = font_sz + "px";
+      id("font-size").innerText = font_sz + "px";
+    }
+  </script>
+	
+</head>
+<body style="margin:0;padding:0">
+  
+  <div id="main-menu">
+    <table style="width:100%">
+      <tr>
+        <td colspan="4">{{NAME}}</td>
+      </tr>
+      <tr>
+        <td>Font</td>
+        <td id="font-size">Font +</td>
+        <td class="td-button" onclick="font_size('+');">Font +</td>
+        <td class="td-button" onclick="font_size('-');">Font -</td>
+      </tr>
+      <tr>
+        <td id="main-timer">time </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="td-button" onclick="load_all_file();">Загрузить</td>
+        <td colspan="2" class="td-button" onclick="hide_menu();">Закрыть</td>
+      </tr>
+      <tr>
+        <td colspan="4" class="td-button" onclick="window.close();">Закончить чтение</td>
+      </tr>
+    </table>
+  </div>
+
+  
+  <div id="main-text" onclick="show_menu();" style="width:100%;padding: 5px 5px 5px 5px;background-color:gray;">
+     <pre style="font-size:10px;width:95%;padding-left:5px;padding-right:5px;background-color:white;" id="text-content">{{TEXT}}</pre>
+  </div>
+    
+  
+</body>
+</html>
