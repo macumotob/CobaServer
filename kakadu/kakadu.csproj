@@ -58,6 +58,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="config\waswas.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="config\kakadu.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

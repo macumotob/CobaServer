@@ -22,8 +22,10 @@ namespace kakadu
     static int thread_id = 0;
     static void Main(string[] args)
     {
-
-      string fileName = AppDomain.CurrentDomain.BaseDirectory + "\\config\\kakadu.txt";
+      Console.WriteLine(Environment.MachineName);
+      
+      string fileName = string.Format("{0}\\config\\{1}.txt",
+        AppDomain.CurrentDomain.BaseDirectory,Environment.MachineName);
       if (!File.Exists(fileName))
       {
         Console.WriteLine("File " + fileName + " not found!");
