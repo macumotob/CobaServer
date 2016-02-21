@@ -146,7 +146,7 @@ namespace Maxbuk.Server.Core
     /// <param name="port">Port of the server.</param>
     public CobaServer(string path, string host, int port)
 		{
-			_host = host;
+			Host1 = host;
 			this.Initialize(path, port);
 
       if (!Directory.Exists(CobaServer.ApplicationDataFolder))
@@ -162,11 +162,11 @@ namespace Maxbuk.Server.Core
         Directory.CreateDirectory(CobaServer.LogFolder);
       }
     }
+    public CobaServer()
+    {
+    }
 
-    /// <summary>
-    /// Construct server with suitable port.
-    /// </summary>
-    /// <param name="path">Directory path to serve.</param>
+
     public CobaServer(string path)
 		{
 			//get an empty port
@@ -200,16 +200,43 @@ namespace Maxbuk.Server.Core
         }
       }
     }
+
+    public string Host
+    {
+      get
+      {
+        return Host1;
+      }
+
+      set
+      {
+        Host1 = value;
+      }
+    }
+
+    public string Host1
+    {
+      get
+      {
+        return _host;
+      }
+
+      set
+      {
+        _host = value;
+      }
+    }
+
     /*
-		public void Stop()
-		{
-      is_working = false;
-      Thread.Sleep(200);
-			_serverThread.Abort();
-			_listener.Stop();
-		}
-    */
-		private void Listen()
+public void Stop()
+{
+ is_working = false;
+ Thread.Sleep(200);
+ _serverThread.Abort();
+ _listener.Stop();
+}
+*/
+    private void Listen()
 		{
 
 
@@ -218,7 +245,7 @@ namespace Maxbuk.Server.Core
 			//_listener.Prefixes.Add("http://localhost:" + _port.ToString() + "/");
 			//_listener.Prefixes.Add("http://192.168.1.5:" + _port.ToString() + "/");
 		//	_listener.Prefixes.Add("http://+:" + _port.ToString() + "/");
-			_listener.Prefixes.Add( string.Format("http://{0}:{1}/",_host,_port));
+			_listener.Prefixes.Add( string.Format("http://{0}:{1}/",Host1,_port));
     //  _listener.AuthenticationSchemes = AuthenticationSchemes.Basic;
 			_listener.Start();
 			_listener.IgnoreWriteExceptions = true;
@@ -255,7 +282,7 @@ namespace Maxbuk.Server.Core
         */
     }
     public override string ToString(){
-			return string.Format ("host {0} port: {1}\nFolder:{2}", _host, _port, _rootDirectory);
+			return string.Format ("host {0} port: {1}\nFolder:{2}", Host1, _port, _rootDirectory);
 		}
 		private CobaClient _createClient(){
 			return new CobaClient (_rootDirectory , MaxbukServerAdmin.DriversFileName);
@@ -377,6 +404,8 @@ namespace Maxbuk.Server.Core
 
 			if (filename.IndexOf (".php") != -1) {
 				PHP php = new PHP ();
+        php.php_bin_file = PHP_BIN;
+        php.php_source_folder = _rootDirectory;
 				php.Execute (context, filename);
 				return;
 			}
@@ -385,14 +414,15 @@ namespace Maxbuk.Server.Core
 			{
 				foreach (string indexFile in _indexFiles)
 				{
-					if (File.Exists(Path.Combine(_rootDirectory, indexFile)))
+          string path = Path.Combine(_rootDirectory, indexFile);
+          if (File.Exists(path))
 					{
 						filename = indexFile;
 						break;
 					}
 				}
 			}
-      string absolute_file_name = HttpUtility.UrlDecode(url).Replace("http://" + _host + ":" + _port + "/", "");
+      string absolute_file_name = HttpUtility.UrlDecode(url).Replace("http://" + Host1 + ":" + _port + "/", "");
       if (absolute_file_name.Length > 2 && absolute_file_name[1] == ':' && absolute_file_name[2]=='/' &&  File.Exists(absolute_file_name))
       {
         string text = File.ReadAllText(absolute_file_name, Encoding.UTF8);
@@ -470,7 +500,7 @@ namespace Maxbuk.Server.Core
       try
       {
         client = new WebClient();
-        string query = string.Format("http://{0}:{1}/-stop_coba-server-", _host, _port);
+        string query = string.Format("http://{0}:{1}/-stop_coba-server-", Host1, _port);
         response = client.DownloadString(query);
       }
       catch (Exception ex)
