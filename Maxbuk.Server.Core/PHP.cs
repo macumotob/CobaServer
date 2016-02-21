@@ -15,44 +15,37 @@ namespace Maxbuk.Server.Core
 		{
        
 		}
+    private void _parse_argumants(string url, ProcessStartInfo info)
+    {
+      string s = url.Substring(url.IndexOf('?') + 1);
+      string [] ss = s.Split('&');
+      foreach(var tok in ss)
+      {
+        //info.EnvironmentVariables.Add();
+      }
+    }
 		public void Execute(HttpListenerContext context, string fileName){
 			//prepare input
 			string input = @"name=some stringy input&name2=oiuoiuo";
 
-			//NOTE: change path according to your own PHP.exe file, if you have the proper environment variables setup, then you can just call PHP.exe directly without the path
-			//string call = @"D:/apache/php5445mt/php.exe";
 
-			//To execute the PHP file.
 			string php_options = @"-f";
-		
-			//the PHP wrapper class file location. NOTE: remember to enclose in " (quotes) if there is a space in the directory structure. 
 			string php_file_name = php_source_folder + context.Request.RawUrl;
 
 			Process myProcess = new Process();
 
-			// Start a new instance of this program but specify the 'spawned' version. using the PHP.exe file location as the first argument.
-			ProcessStartInfo myProcessStartInfo = new ProcessStartInfo(php_bin_file, "spawn");
-			myProcessStartInfo.UseShellExecute = false;
-      myProcessStartInfo.CreateNoWindow = true;
-      myProcessStartInfo.RedirectStandardOutput = true;
-      myProcessStartInfo.WorkingDirectory = php_source_folder;
+			ProcessStartInfo info = new ProcessStartInfo(php_bin_file, "spawn");
+      info.UseShellExecute = false;
+      info.CreateNoWindow = true;
+      info.RedirectStandardOutput = true;
+      info.WorkingDirectory = php_source_folder;
       //Provide the other arguments.
       string url = context.Request.RawUrl;
-      //int i = 0;
-      //foreach (var name in context.Request.QueryString.AllKeys)
-      //{
-      //  string value = context.Request.QueryString[name];
-      //  //myProcessStartInfo.EnvironmentVariables[name] = value;
-      //  if(i > 0)
-      //  {
-      //    url += "&";
-      //  }
-      //  url += name + "=" + value;
-      //  i++;
-      //}
-      //if (url.Length > 0) url = "?" + url;
-      myProcessStartInfo.Arguments = string.Format("{0} {1}", php_options, php_file_name);
-      myProcess.StartInfo = myProcessStartInfo;
+      _parse_argumants(url, info);
+      
+
+      info.Arguments = string.Format("{0} {1}", php_options, php_file_name);
+      myProcess.StartInfo = info;
 
 			//Execute the process
 			myProcess.Start();
