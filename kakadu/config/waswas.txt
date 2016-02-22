@@ -1,0 +1,17 @@
+﻿#
+#
+#
+
+ server
+
+host 192.168.0.107
+port 3035
+root E:/Develops/web/maxbuk/
+php E:/Develops/php5/php.exe 
+
+ server
+
+host 192.168.0.107
+port 3037
+root E:/github/CobaServer/prorok/
+php E:/Develops/php5/php.exe 
