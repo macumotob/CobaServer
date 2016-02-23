@@ -338,6 +338,14 @@ var fm = {
   url = unescape(decodeURIComponent(fm.join_path() + file));
   //alert(url);
   var ext = get_file_ext(file);
+  if (ext === "doc") {
+    //alert(url);
+    var link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.click();
+    return;
+  }
   if (ext === "zip" || ext === "rar") {
     load_async_json("/textview?file=" + url, function (data) {
       

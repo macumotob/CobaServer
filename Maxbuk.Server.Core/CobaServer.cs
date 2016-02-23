@@ -104,7 +104,7 @@ namespace Maxbuk.Server.Core
       }
     }
 		private Thread _serverThread;
-		private string _rootDirectory;
+		public string RootDirectory;
 		private string _host;
 		private HttpListener _listener;
 		private int _port;
@@ -112,7 +112,9 @@ namespace Maxbuk.Server.Core
 		public int Port
 		{
 			get { return _port; }
-			private set { }
+			set {
+        _port = value;
+      }
 		}
     public string PHP_BIN;
     public string PHP_SOURSE;
@@ -146,7 +148,7 @@ namespace Maxbuk.Server.Core
     /// <param name="port">Port of the server.</param>
     public CobaServer(string path, string host, int port)
 		{
-			Host1 = host;
+			_host = host;
 			this.Initialize(path, port);
 
       if (!Directory.Exists(CobaServer.ApplicationDataFolder))
@@ -205,19 +207,6 @@ namespace Maxbuk.Server.Core
     {
       get
       {
-        return Host1;
-      }
-
-      set
-      {
-        Host1 = value;
-      }
-    }
-
-    public string Host1
-    {
-      get
-      {
         return _host;
       }
 
@@ -226,6 +215,7 @@ namespace Maxbuk.Server.Core
         _host = value;
       }
     }
+
 
     /*
 public void Stop()
@@ -238,54 +228,29 @@ public void Stop()
 */
     private void Listen()
 		{
-
-
-			_listener = new HttpListener();
-			//_listener.Prefixes.Add("http://*:" + _port.ToString() + "/");
-			//_listener.Prefixes.Add("http://localhost:" + _port.ToString() + "/");
-			//_listener.Prefixes.Add("http://192.168.1.5:" + _port.ToString() + "/");
-		//	_listener.Prefixes.Add("http://+:" + _port.ToString() + "/");
-			_listener.Prefixes.Add( string.Format("http://{0}:{1}/",Host1,_port));
-    //  _listener.AuthenticationSchemes = AuthenticationSchemes.Basic;
-			_listener.Start();
-			_listener.IgnoreWriteExceptions = true;
-      Thread thread = new Thread(_server_thread_procedure);
-      thread.IsBackground = true;
-      thread.Name = "SERVER_THREAD";
-      thread.Start();
-
-      /*
-      int thread_id = 0;
-			Task.Factory.StartNew(() =>
-				{
-          IsWorking = true;
-          CobaServer.Logger.Log("Server thread running.");
-          while (IsWorking)
-					{
-						HttpListenerContext context = _listener.GetContext();
-            if (!IsWorking) break;
-            string url = context.Request.Url.AbsolutePath;
-            if (url.Equals("/-stop_coba-server-"))
-            {
-              IsWorking = false;
-              CobaServer.SendText(context, "server stopped");
-              break;
-            }
-            Thread thread = new Thread(_client_thread_procedure);
-            thread.IsBackground = true;
-            thread.Name = "T" + (thread_id++).ToString();
-            thread.Start(context);
-          }
-          CobaServer.Logger.Log("Server thread stopped.");
-          _listener.Stop();
-        },TaskCreationOptions.LongRunning);
-        */
+      try
+      {
+        _listener = new HttpListener();
+        _listener.Prefixes.Add(string.Format("http://{0}:{1}/", _host, _port));
+        //  _listener.AuthenticationSchemes = AuthenticationSchemes.Basic;
+        _listener.Start();
+        _listener.IgnoreWriteExceptions = true;
+        Thread thread = new Thread(_server_thread_procedure);
+        thread.IsBackground = true;
+        thread.Name = "SERVER_THREAD";
+        thread.Start();
+      }
+      catch(Exception ex)
+      {
+        IsWorking = false;
+        _logger.Log(ex, "Listen function host {0} port {1}", _host, _port);
+      }
     }
     public override string ToString(){
-			return string.Format ("host {0} port: {1}\nFolder:{2}", Host1, _port, _rootDirectory);
+			return string.Format ("host {0} port: {1}\nFolder:{2}", _host, _port, RootDirectory);
 		}
 		private CobaClient _createClient(){
-			return new CobaClient (_rootDirectory , MaxbukServerAdmin.DriversFileName);
+			return new CobaClient (RootDirectory, MaxbukServerAdmin.DriversFileName);
 		}
 
     private void _server_thread_procedure()
@@ -317,7 +282,124 @@ public void Stop()
     {
       Process((HttpListenerContext)data);
     }
-		private void Process(HttpListenerContext context)
+    private List<FileFolderInfo> _disks = new List<FileFolderInfo>();
+    public void AddFolderInfo(string folderName,string path)
+    {
+      FileFolderInfo fi = new FileFolderInfo() { name = folderName, path = path };
+      _disks.Add(fi);
+    }
+    public void ParseFolderInfo(string s)
+    {
+      s = s.Trim();
+      if (s.Length == 0) return;
+      if (s[0] == '#') return;
+
+      string[] data = s.Split('=');
+      string name = data[0].Trim(); ;
+      string path = data[1].Trim(); 
+      FileFolderInfo fi = new FileFolderInfo() { name = name, path = path };
+      _disks.Add(fi);
+    }
+    private int _findPosition(string name, string folder)
+    {
+      if (folder == "~" + name)
+        return 0;
+
+      int i = folder.IndexOf("~" + name + "\\");
+      if (i != -1)
+        return i;
+      return folder.IndexOf("~" + name + "/");
+
+    }
+
+    private string _redirect(string folder)
+    {
+      for (int i = 0; i < _disks.Count; i++)
+      {
+        FileFolderInfo item = _disks[i];
+        int n = _findPosition(item.name, folder);
+        if (n != -1)
+        {
+          folder = item.path + folder.Substring(n + ("~" + item.name).Length);
+          return folder;
+        }
+      }
+      return folder;
+    }
+
+    private void SendFolderContent(HttpListenerContext context)
+    {
+      //	string mime;
+      try
+      {
+        
+        string x = context.Request.RawUrl.Substring("/get.folder?".Length);
+        string u = System.Web.HttpUtility.UrlDecode(x);
+        string folder = System.Web.HttpUtility.ParseQueryString(u).Get("folder");
+
+        string result = "{'folders':[";
+        if (folder == "root")
+        {
+          for (int i = 0; i < _disks.Count; i++)
+          {
+            FileFolderInfo item = _disks[i];
+            result += (i == 0 ? "" : ",") + "{\"name\": \"~" + item.name + "\",d:1}";
+          }
+          result += "],'files':[]}";
+        }
+        else
+        {
+          string dir = _redirect(folder + "/");
+
+          string[] dirs = System.IO.Directory.GetDirectories(dir);
+          for (int i = 0; i < dirs.Length; i++)
+          {
+            string item = dirs[i].Replace('\\', '/');
+            item = item.Substring(dir.Length);
+            result += (i == 0 ? "" : ",") + "{\"name\":\"" + item + "\",d:1,size:0}";
+          }
+          result += "], 'files' :[";
+          string[] files = System.IO.Directory.GetFiles(dir);
+
+          for (int i = 0; i < files.Length; i++)
+          {
+            string item = files[i].Replace('\\', '/');
+            long size = new System.IO.FileInfo(item).Length;
+            item = item.Substring(dir.Length);
+            result += (i == 0 ? "" : ",") + "{\"name\":\"" + item + "\",d:0,size:" + size.ToString() + "}";
+          }
+          result += "]}";
+        }
+        CobaServer.SendJson(context, result);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("exception : " + ex.ToString());
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+      }
+
+    }
+    public static void SendJson(HttpListenerContext context, string text)
+    {
+      try
+      {
+        byte[] data = Encoding.UTF8.GetBytes(text);
+        context.Response.StatusCode = (int)HttpStatusCode.OK;
+        context.Response.ContentType = "application/json";
+        context.Response.ContentLength64 = data.Length;
+        context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
+        //context.Response.KeepAlive = true;
+        context.Response.OutputStream.Write(data, 0, data.Length);
+      }
+      catch (Exception ex)
+      {
+        CobaServer.Logger.Log(ex, "exception send json{0}", text);
+      }
+      context.Response.OutputStream.Flush();
+      context.Response.OutputStream.Close();
+    }
+
+    private void Process(HttpListenerContext context)
 		{
       //HttpListenerBasicIdentity identity = (HttpListenerBasicIdentity)context.User.Identity;
      // string user_name = identity.Name;
@@ -331,7 +413,7 @@ public void Stop()
       //        return;
       //      }
       CobaClient client = _createClient();
-
+      client._disks = _disks;
       if (context.Request.HttpMethod == "POST") {
 
         if (filename.Equals("/note.save"))
@@ -342,6 +424,7 @@ public void Stop()
 				client.ExecutePost (context);
 				return;
 			}
+
       switch (filename)
       {
         case "/file.delete":
@@ -356,11 +439,14 @@ public void Stop()
         case "/folder.zip":
           client.ZipFolder(context);
           return;
-            
+        case "/textview":
+          client.SendTextViewPage(context);
+          return;
       }
       //	Console.WriteLine ("client : " + context.Request.RemoteEndPoint.ToString ());
       if (filename.Equals ("/get.folder")) {
-				client.Execute (context, filename);
+        //client.Execute (context, filename);
+        this.SendFolderContent(context);
 				return;
 			}
 
@@ -374,11 +460,6 @@ public void Stop()
         return;
       }
 
-      if (filename.Equals("/textview"))
-      {
-        client.SendTextViewPage(context);
-        return;
-      }
       if (filename.Equals("/notes"))
       {
         client.SendNotes(context);
@@ -405,7 +486,7 @@ public void Stop()
 			if (filename.IndexOf (".php") != -1) {
 				PHP php = new PHP ();
         php.php_bin_file = PHP_BIN;
-        php.php_source_folder = _rootDirectory;
+        php.php_source_folder = RootDirectory;
 				php.Execute (context, filename);
 				return;
 			}
@@ -414,7 +495,7 @@ public void Stop()
 			{
 				foreach (string indexFile in _indexFiles)
 				{
-          string path = Path.Combine(_rootDirectory, indexFile);
+          string path = Path.Combine(RootDirectory, indexFile);
           if (File.Exists(path))
 					{
 						filename = indexFile;
@@ -422,7 +503,7 @@ public void Stop()
 					}
 				}
 			}
-      string absolute_file_name = HttpUtility.UrlDecode(url).Replace("http://" + Host1 + ":" + _port + "/", "");
+      string absolute_file_name = HttpUtility.UrlDecode(url).Replace("http://" + _host + ":" + _port + "/", "");
       if (absolute_file_name.Length > 2 && absolute_file_name[1] == ':' && absolute_file_name[2]=='/' &&  File.Exists(absolute_file_name))
       {
         string text = File.ReadAllText(absolute_file_name, Encoding.UTF8);
@@ -430,7 +511,7 @@ public void Stop()
       }
       else
       {
-        filename = Path.Combine(_rootDirectory, filename);
+        filename = Path.Combine(RootDirectory, filename);
         string ext = Path.GetExtension(filename).ToLower();
         CobaServer.SendFile(context, filename);
       }
@@ -484,11 +565,16 @@ public void Stop()
     }
     private void Initialize(string path, int port)
 		{
-			_rootDirectory = path;
+      RootDirectory = path;
 			_port = port;
 			_serverThread = new Thread(this.Listen);
 			_serverThread.Start();
 		}
+    public void Start()
+    {
+      _serverThread = new Thread(this.Listen);
+      _serverThread.Start();
+    }
     public string Stop()
     {
       if (!IsWorking)
@@ -500,7 +586,7 @@ public void Stop()
       try
       {
         client = new WebClient();
-        string query = string.Format("http://{0}:{1}/-stop_coba-server-", Host1, _port);
+        string query = string.Format("http://{0}:{1}/-stop_coba-server-", _host, _port);
         response = client.DownloadString(query);
       }
       catch (Exception ex)

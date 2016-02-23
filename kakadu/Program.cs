@@ -31,18 +31,32 @@ namespace kakadu
         Console.WriteLine("File " + fileName + " not found!");
         return;
       }
-      List<server_info> servers = new List<server_info>();
-      server_info server=null;
+      //List<server_info> servers = new List<server_info>();
+
+      List<CobaServer> servers  = new List<CobaServer>();
+      CobaServer server = null;
       string[] lines = File.ReadAllLines(fileName, Encoding.UTF8);
-      foreach(var line in lines)
+      for(int n = 0; n < lines.Length;n++)
       {
-        var s = line.Trim();
+        var s = lines[n].Trim();
         if(s.Length >0 && s[0] != '#')
         {
           if(s == "server")
           {
-             server = new server_info();
+            server = new CobaServer();
             servers.Add(server);
+          }
+          else if(s == "folders")
+          {
+
+            n++;
+            while(n < lines.Length)
+            {
+              s = lines[n].Trim();
+              if (s == "end") break;
+              server.ParseFolderInfo(s);
+              n++;
+            }
           }
           else
           {
@@ -52,16 +66,16 @@ namespace kakadu
             switch (name)
             {
               case "host":
-                server.host = value;
+                server.Host = value;
                 break;
               case "port":
-                server.port = int.Parse(value);
+                server.Port = int.Parse(value);
                 break;
               case "root":
-                server.site = value;
+                server.RootDirectory = value;
                 break;
               case "php":
-                server.php = value;
+                server.PHP_BIN = value;
                 break;
             }
             Console.WriteLine(s);
@@ -72,22 +86,23 @@ namespace kakadu
       foreach(var srv in servers)
       {
         _run_server_in_thread(srv);
-        Thread.Sleep(1000);
+      
       }
       Console.ReadLine();
-      return;
-      _run_server(@"E:\github\CobaServer\prorok\", "192.168.0.107", 3060);
-      _run_server(@"E:\github\CobaServer\site\", "192.168.0.107", 3061);
-      Thread.Sleep(300);
-      Console.WriteLine("press enter to exit");
-      Console.ReadLine();
+      
     }
-    private static void _run_server_in_thread(object srvinfo)
+    private static void _run_server_in_thread(object srv)
     {
-      server_info info = (server_info)srvinfo;
-      Console.WriteLine("Server {0}:{1} site:{2}", info.host, info.port, info.site);
-      CobaServer server = new CobaServer(info.site, info.host, info.port);
-      server.PHP_BIN = info.php;
+      CobaServer server = (CobaServer)srv;
+      Console.WriteLine("Server {0}:{1} site:{2}", server.Host, server.Port, server.RootDirectory);
+      //CobaServer server = new CobaServer(info.site, info.host, info.port);
+      //server.PHP_BIN = info.php;
+      server.Start();
+      Thread.Sleep(1000);
+      if (!server.IsWorking)
+      {
+        Console.WriteLine(server.ToString () + "---------->ERROR see log file ");
+      }
     }
     private static void _run_server(string site,string host,int port)
     {
