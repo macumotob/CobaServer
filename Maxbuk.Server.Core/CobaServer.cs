@@ -14,6 +14,7 @@ using System.Web;
 
 namespace Maxbuk.Server.Core
 {
+  using SQLite;
 	public class CobaServer
 	{
 		private readonly string[] _indexFiles = { 
@@ -166,6 +167,7 @@ namespace Maxbuk.Server.Core
     }
     public CobaServer()
     {
+      
     }
 
 
@@ -398,7 +400,18 @@ public void Stop()
       context.Response.OutputStream.Flush();
       context.Response.OutputStream.Close();
     }
-
+    private Dictionary<string, string> _parse_query_string(string s)
+    {
+      Dictionary<string, string> dic = new Dictionary<string, string>();
+      string[] qparams = s.Split('&');
+      foreach(var qparam in qparams)
+      {
+        string[] data = qparam.Split('=');
+        dic[data[0].ToLower()] = data[1];
+      }
+      return dic;
+    }
+    
     private void Process(HttpListenerContext context)
 		{
       //HttpListenerBasicIdentity identity = (HttpListenerBasicIdentity)context.User.Identity;
@@ -442,6 +455,44 @@ public void Stop()
         case "/textview":
           client.SendTextViewPage(context);
           return;
+        case "/sqlite":
+          {
+            const string marker = "/sqlite?";
+            string cmd = context.Request.Url.ToString();
+            cmd = cmd.Substring(cmd.IndexOf(marker) + marker.Length);
+            Dictionary<string, string> p = _parse_query_string(cmd);
+            SQLiteManager.Instance.RootDirectory = this.RootDirectory;
+            SQLiteManager.Instance.Execute(p);
+            CobaServer.SendJson(context, "{result:true,msg:'SQL'}");
+          }
+          break;
+
+        case "/notes":
+          client.SendNotes(context);
+          return;
+
+        case "/notes.list":
+          client.SendNotesList(context);
+          return;
+        case "/notes.remove":
+          {
+            const string marker = "/notes.remove?";
+            string cmd = context.Request.Url.ToString();
+            cmd = cmd.Substring(cmd.IndexOf(marker) + marker.Length);
+            Dictionary<string, string> p = _parse_query_string(cmd);
+            string file = CobaServer.NotesFolder + p["file"];
+
+            if (System.IO.File.Exists(file))
+            {
+              System.IO.File.Delete(file);
+              CobaServer.SendJson(context, "{result:true,msg:'file removed :" + file + "'}");
+            }
+            else
+            {
+              CobaServer.SendJson(context, "{result:false,msg:'file not found :" + file + "'}");
+            }
+          }
+          return;
       }
       //	Console.WriteLine ("client : " + context.Request.RemoteEndPoint.ToString ());
       if (filename.Equals ("/get.folder")) {
@@ -460,16 +511,6 @@ public void Stop()
         return;
       }
 
-      if (filename.Equals("/notes"))
-      {
-        client.SendNotes(context);
-        return;
-      }
-      if (filename.Equals("/notes.list"))
-      {
-        client.SendNotesList(context);
-        return;
-      }
 
       if (filename.Equals ("/mouse")) {
 				client.ExecuteMouse (context);
@@ -547,7 +588,7 @@ public void Stop()
           context.Response.ContentLength64 = input.Length;
           context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
           context.Response.AddHeader("Last-Modified", System.IO.File.GetLastWriteTime(filename).ToString("r"));
-
+          context.Response.AddHeader("Access-Control-Allow-Origin","*");
           byte[] buffer = new byte[1024 * 64];
           int nbytes;
           while ((nbytes = input.Read(buffer, 0, buffer.Length)) > 0)

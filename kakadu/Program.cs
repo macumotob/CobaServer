@@ -11,17 +11,11 @@ namespace kakadu
 
   class Program
   {
-    class server_info
-    {
-      public string site;
-      public string host = "192.168.0.107";
-      public int port;
-      public string php;
-    }
-
-    static int thread_id = 0;
+    //static int thread_id = 0;
     static void Main(string[] args)
     {
+
+//      _encoding_folder();      return;
       Console.WriteLine(Environment.MachineName);
       
       string fileName = string.Format("{0}\\config\\{1}.txt",
@@ -78,7 +72,7 @@ namespace kakadu
                 server.PHP_BIN = value;
                 break;
             }
-            Console.WriteLine(s);
+          //  Console.WriteLine(s);
           }
           
         }
@@ -86,7 +80,6 @@ namespace kakadu
       foreach(var srv in servers)
       {
         _run_server_in_thread(srv);
-      
       }
       Console.ReadLine();
       
@@ -95,8 +88,6 @@ namespace kakadu
     {
       CobaServer server = (CobaServer)srv;
       Console.WriteLine("Server {0}:{1} site:{2}", server.Host, server.Port, server.RootDirectory);
-      //CobaServer server = new CobaServer(info.site, info.host, info.port);
-      //server.PHP_BIN = info.php;
       server.Start();
       Thread.Sleep(1000);
       if (!server.IsWorking)
@@ -104,14 +95,37 @@ namespace kakadu
         Console.WriteLine(server.ToString () + "---------->ERROR see log file ");
       }
     }
-    private static void _run_server(string site,string host,int port)
+    private static void _encoding_folder()
     {
-      Thread.Sleep(100);
-      Thread thread = new Thread(_run_server_in_thread);
-      thread.IsBackground = true;
-      thread.Name = "T" + (thread_id++).ToString();
-      thread.Start( new server_info() { port = port, site = site, host=host });
+      string folder = @"E:\Books\012\";
+      string[] files = Directory.GetFiles(folder, "*.txt");
+      foreach(var file in files)
+      {
+        _change_encoding(file);
+      }
+      
+    }
+    private static void _change_encoding( string file)
+    {
+      try {
+        string s = File.ReadAllText(file, Encoding.GetEncoding(1251));
+        File.WriteAllText(file, s, Encoding.UTF8);
+        string[] lines = File.ReadAllLines(file, Encoding.UTF8);
+        string folder = Path.GetDirectoryName(file) + "\\" + lines[0].Trim() + " " + lines[1].Trim() + "\\";
 
+        string newFile = lines[2].Replace("?", "").Replace("\"", "").Replace(":", " ") + ".txt";
+
+        if (!Directory.Exists(folder))
+        {
+          Directory.CreateDirectory(folder);
+        }
+        File.Move(file, folder + newFile);
+      }
+      catch(Exception ex)
+      {
+        Console.WriteLine("File :{0}",file);
+        Console.WriteLine(ex.ToString());
+      }
     }
   }
 }

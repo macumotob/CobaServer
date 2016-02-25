@@ -8,17 +8,12 @@
   <meta http-equiv="expires" content="0">
   <meta http-equiv="pragma" content="no-cache">
   <meta charset="utf-8" />
-
-  <!--
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <script src="https//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-
-  -->
+  
   <link rel="stylesheet" href="css/bootstrap.min.css" />
   <script type="text/javascript" src="js/jquery.min.js"></script>
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
-
+  <script type="text/javascript" src="js/bootstrap-dialog.min.js"></script>
+  <script type="text/javascript" src="js/loader.js"></script>
   <script type="text/javascript">
 
     function get_gelection_text() {
@@ -50,6 +45,57 @@
         }
       });
     }
+    function txt_rename() {
+      var file = '{{NAME}}';
+      fb2_create_rename_dialog();
+    }
+    function fb2_create_rename_dialog() {
+      var loc = "{{NAME}}";
+      var $textAndPic = $('<div></div>');
+      $textAndPic.append('Расположение : {{NAME}}<br/>');
+      $textAndPic.append('Папка:<br/><input id="folder-name" type="text" style="width:100%" value=""/><br/>');
+      $textAndPic.append('Новое имя:<br/><input id="file-name" type="text" style="width:100%" value=".txt"/>');
+
+      BootstrapDialog.show({
+        title: 'Переименовать файл',
+        message: $textAndPic,
+        buttons: [{
+          label: 'Переименовать',
+          action: function (dialogRef) {
+            var folder = document.getElementById("folder-name").value;
+            var filename = document.getElementById("file-name").value;
+            var url = "file.rename?loc=" + loc + "&folder=" + folder + "&file=" + filename;
+            //ajax
+            $.ajax({
+              url: url,
+              type: "GET",
+              success: function (data) {
+                alert("success" + data);
+              }
+            }).fail(function (data) {
+              var x = eval('(' + data.responseText + ')');
+              if (x.result) {
+                alert("Файл переименовани");
+                window.close();
+              }
+              else {
+                alert("error :" + x.msg);
+              }
+            });
+            dialogRef.close();
+          }
+        }, {
+          label: 'Отмена',
+          action: function (dialogRef) {
+            dialogRef.close();
+          }
+        }]
+      });
+    }
+    window.addEventListener('click', function () {
+      mb.onclick();
+    });
+
   </script>
 	
 </head>
@@ -60,6 +106,7 @@
     
     <ul class="nav navbar-nav">
       <li><a href="#section1">{{NAME}}</a></li>
+      <li data-method="txt_rename"><a href="#"><span class="glyphicon glyphicon-pencil"></span></a></li>
     </ul>
   </nav>
 

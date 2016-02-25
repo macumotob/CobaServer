@@ -1,30 +1,4 @@
-﻿<!--#fm-file-row111-->
-<div class="row">
-  <div class="col-xs-12 bg-success">
-    <p style="cursor:pointer"
-       data-method="fm_get_file" data-args="{{encodeURI(item.name)}}"><b>{{item.name}}</b></p>
-
-    <p style="font-size:xx-small;">
-      <div class="row">
-        <div class="col-xs-3">{{coba_format_bytes(item.size)}}</div>
-        <div class="col-xs-3 text-success text-center" data-method="fm_get_file" data-args="{{encodeURI(item.name)}}">view</div>
-        <div class="col-xs-3 text-primary text-center"
-             data-method="fm.download_file" data-args="{{encodeURI(item.name)}}">download</div>
-        <div class="col-xs-3 text-primary text-center"
-             data-method="fm_delete_file"
-             data-args="{{encodeURI(item.name)}}"><b>{{get_file_ext(item.name)}}</b></div>
-      </div>
-    </p>
-  </div>
-</div>
-<!--#fm-folder-row111-->
-<div class="row">
-  <div class="btn btn-primary col-xs-12 text-left"
-       data-method="init_document" data-args="{{encodeURIComponent(item.name)}}">
-    {{item.name}}
-  </div>
-</div>
-
+﻿
 <!--#fm-list-header-->
 <table id="fm-drive-content" class="table table-striped" style="cursor:pointer">
   <!--#fm-list-folder-body-->
@@ -41,12 +15,13 @@
       <div class="row">
         <div class="col-xs-3">{{get_file_ext(item.name)}}</div>
         <div class="col-xs-3">{{coba_format_bytes(item.size)}}</div>
-        <div class="col-xs-3 text-success text-center"
-             onclick='fm_get_file("{{nm}}");'>view</div>
-        <div class="col-xs-3 text-primary text-center" data-method="fm.download_file" data-args="{{nm}}">
+        <div class="col-xs-3 text-success text-center"  onclick='fm_get_file("{{nm}}");'>view</div>
+        <div class="col-xs-1 text-primary text-center" data-method="mb.file_delete" data-args="{{fm.join_path()+encodeURIComponent(item.name)}}">
+          <span class="glyphicon glyphicon-trash"></span>
+        </div>
+        <div class="col-xs-2 text-primary text-center" data-method="fm.download_file" data-args="{{nm}}">
           <span class="glyphicon glyphicon-cloud-download"></span>
         </div>
-
       </div>
     </td>
   </tr>
@@ -272,15 +247,9 @@
           <label for="comment">Comment:</label>
           <textarea class="form-control" rows="5" id="txt">{{item.txt}}</textarea>
         </div>
-        <button type="button" class="btn btn-danger"
-                data-method="fm.delete_note" data-args="{{item.id}}">
-          Delete
-        </button>
+        <button type="button" class="btn btn-danger" data-method="fm.delete_note" data-args="{{item.id}}">Delete</button>
         <button type="button" class="btn btn-default" data-method="fm.show_notes">Cancel</button>
-        <button type="button" class="btn btn-primary"
-                data-method="fm.update_note" data-args="{{item.id}}">
-          &nbsp; Save &nbsp;
-        </button>
+        <button type="button" class="btn btn-primary" data-method="fm.update_note" data-args="{{item.id}}">&nbsp; Save &nbsp;</button>
       </form>
     </div>
     <div class="panel-footer">

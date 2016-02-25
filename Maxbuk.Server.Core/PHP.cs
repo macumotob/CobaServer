@@ -120,10 +120,11 @@ namespace Maxbuk.Server.Core
       if (code == null)
       {
         code = string.Format("-c -f \"{0}\" ", php_file_name);
+        php_file_name = php_source_folder + php_file_name;
       }
       else
       {
-        php_file_name = php_source_folder + php_file_name;
+        //php_file_name = php_source_folder + php_file_name;
         code = String.Format("-r \"{0} require_once \\\"{1}\\\";\"", code, php_file_name);
       }
       //info.Arguments = string.Format("-c -f \"{0}\" ", php_file_name);

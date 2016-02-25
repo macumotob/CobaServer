@@ -36,6 +36,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\dlls\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
@@ -69,6 +72,7 @@
     </Compile>
     <Compile Include="Simulator.cs" />
     <Compile Include="SQLite.cs" />
+    <Compile Include="SQLiteManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Fb2Template.htm" />

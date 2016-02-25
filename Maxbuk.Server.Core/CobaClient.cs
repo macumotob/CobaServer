@@ -202,8 +202,9 @@ namespace Maxbuk.Server.Core
         CobaServer.SendJson(context, "{'result': false,'msg':'file name is null'}");
         return;
       }
-      string name = DateTime.Now.Day.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Year.ToString() + ".txt";
-      if (date == "0")
+      //string name = DateTime.Now.Day.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Year.ToString() + ".txt";
+      string name = DateTime.Now.ToString("d MMMM yyyy") + ".txt";
+      if (date == "Today")
       {
 
       }
@@ -213,15 +214,15 @@ namespace Maxbuk.Server.Core
       }
       string file = CobaServer.NotesFolder + name;
 
-      if (File.Exists(file))
-      {
+      //if (File.Exists(file))
+      //{
         File.WriteAllText(file, text, Encoding.UTF8);
-        CobaServer.SendJson(context, "{'result': true,'msg':'saved " + DateTime.Now.ToString() + "'}");
-      }
-      else
-      {
-        CobaServer.SendJson(context, "{'result': false,'msg':'file " + name + " not found'}");
-      }
+        CobaServer.SendJson(context, "{'result': true,'msg':'saved " + DateTime.Now.ToString() + "','file':'"+ name +"'}");
+      //}
+      //else
+      //{
+      //  CobaServer.SendJson(context, "{'result': false,'msg':'file " + name + " not found'}");
+      //}
     }
     public void SendNotesList(HttpListenerContext context)
     {
@@ -232,12 +233,17 @@ namespace Maxbuk.Server.Core
 
         url = url.Substring(url.IndexOf(marker) + marker.Length);
         //url = System.Web.HttpUtility.UrlDecode (url);
-
+        string current = DateTime.Now.ToString("d MMMM yyyy") + ".txt";
         string[] files = Directory.GetFiles(CobaServer.NotesFolder);
-        string result = "[";
+        string result = "['" +current +"'";
         for(int i = 0;i < files.Length; i++)
         {
-          result += (i == 0 ? "" : ",") + "'" + Path.GetFileName(files[i]) + "'";
+          string file = Path.GetFileName(files[i]);
+          if (file != current)
+          {
+            //result += (i == 0 ? "" : ",") + "'" + file + "'";
+            result += ",'" + Path.GetFileName(files[i]) + "'";
+          }
         }
         result += "]";
         CobaServer.SendJson(context, result);
@@ -437,7 +443,6 @@ namespace Maxbuk.Server.Core
     {
       try
       {
-        //_load_public_folders();
 
         const string marker = "/file.delete?";
         string url = context.Request.Url.ToString();

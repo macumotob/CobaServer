@@ -703,15 +703,6 @@ function fm_refresh() {
     alert('error refresh ' + err);
   }
 }
-function fm_prevent_events(e) {
-  if (typeof e.preventDefault === 'function') {
-    e.preventDefault();
-    e.stopPropagation();
-  } else {
-    e.returnValue = false;
-    e.cancelBubble = true;
-  }
-}
 function fm_set_main_content(html) {
   var elem = fm.get_main_content();
   elem.innerHTML = html;
@@ -778,46 +769,6 @@ function fm_delete_file(file) {
   confirm("delete " + file);
 }
 
-function fm_find_data_method(elem) {
-  var method = null;
-
-  while(!method){
-    method = elem.getAttribute("data-method");
-    if (method) {
-      return { elem:elem , method: method, args: elem.getAttribute("data-args") };
-    }
-    elem = elem.parentElement;
-    if (elem == null) return method;
-  }
-}
-function fm_on_click(e) {
-
-  e = e || window.event;
-  var target = e.target || e.srcElement;
-
-  var x = fm_find_data_method(target);
-  if (!x) {
-    return;
-  }
-  if (x.method) {
-    if (x.args) {
-      x.args = x.args.split(',');
-    }
-    x.method = x.method.split('.');
-    if (x.method.length === 1) {
-      window[x.method[0]].apply(this, x.args);
-    }
-    else if (x.method.length === 2) {
-      var obj = eval(x.method[0]);
-      window[x.method[0]][x.method[1]].apply(obj, x.args);
-    }
-    else {
-      var obj = eval(x.method[0] + "." + x.method[1]);
-      window[x.method[0]][x.method[1]][x.method[2]].apply(obj, x.args);
-    }
-    fm_prevent_events(e);
-  }
-}
 
 function init_document(folder) {
 
