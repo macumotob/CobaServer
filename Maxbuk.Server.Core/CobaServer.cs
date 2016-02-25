@@ -234,7 +234,13 @@ public void Stop()
       {
         _listener = new HttpListener();
         _listener.Prefixes.Add(string.Format("http://{0}:{1}/", _host, _port));
+        if (_port == 3100)
+        {
+          _listener.Prefixes.Add(string.Format("https://*:{0}/",8443));
+          ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+        }
         //  _listener.AuthenticationSchemes = AuthenticationSchemes.Basic;
+        
         _listener.Start();
         _listener.IgnoreWriteExceptions = true;
         Thread thread = new Thread(_server_thread_procedure);
