@@ -13,5 +13,5 @@ php E:/Develops/php5/php.exe
 
 host 192.168.0.107
 port 3037
-root E:/github/CobaServer/prorok/
+root E:/Develops/VoiceRecorder/
 php E:/Develops/php5/php.exe 
