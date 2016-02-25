@@ -19,6 +19,10 @@
   <link rel="stylesheet" href="css/bootstrap-dialog.min.css" />
 
   <style>
+    body, html{
+      padding:0;
+      margin:0;
+    }
     .carousel-inner > .item > img,
     .carousel-inner > .item > a > img {
       width: 80%;
@@ -146,7 +150,7 @@ function toggleFullScreen() {
  });
 
  window.addEventListener('click',function(){
- 	fm_on_click();
+ 	mb.onclick();
  });
  window.addEventListener('selectstart',function(){
  	return false;

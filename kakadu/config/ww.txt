@@ -1,0 +1,47 @@
+﻿#
+# основной сервер MyDrives
+#
+
+server
+
+host 192.168.0.46
+port 3035
+root D:/github/CobaServer/site/ 
+php D:/apache/php5445mt/php.exe 
+
+ folders
+   Проекты на D = D:/devs/
+   Загрузки на D = D:/downloads/
+   Тесты на D = D:/test/
+   Книги = E:/Books/
+   #Calibre = E:/calibre/
+   Музыка = F:/_music/
+   Аудио Книги =E:/Books/_Audio/
+ end
+
+#
+# Сервер общего назначения 
+#
+
+server
+
+host 192.168.0.46
+port 3000
+root D:/github/CobaServer/site/ 
+php D:/apache/php5445mt/php.exe 
+
+#
+#
+ server
+
+host 192.168.0.46
+port 3039
+root D:/github/fb2editor/ 
+php D:/apache/php5445mt/php.exe 
+
+ server
+
+host 192.168.0.46
+port 3036
+root D:/github/CobaServer/prorok/ 
+php D:/apache/php5445mt/php.exe 

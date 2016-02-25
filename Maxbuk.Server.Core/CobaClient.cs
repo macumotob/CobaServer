@@ -19,7 +19,7 @@ namespace Maxbuk.Server.Core
 
 	public class CobaClient
 	{
-		private List<FileFolderInfo> _disks;
+		public  List<FileFolderInfo> _disks;
 		private string _workingFolder;
     private string _drivers_info_filename;
 		public CobaClient (string workingFolder, string drivers_info_filename)
@@ -38,9 +38,9 @@ namespace Maxbuk.Server.Core
 			try
 			{
 				switch(command){
-				case "/get.folder":
-					this.SendFolderContent(context);
-					return;
+//				case "/get.folder":
+//					this.SendFolderContent(context);
+//					return;
 				case "/mkdir":
 					return;
 				default:
@@ -73,12 +73,12 @@ namespace Maxbuk.Server.Core
 				long filesize = long.Parse (sfilesize);
 				long size = long.Parse (ssize);
 
-				_load_public_folders ();
+				//_load_public_folders ();
 				name = _redirect (name);
 
         if (action == "open" && System.IO.File.Exists(name) )
         {
-          this.SendJson(context, "{result:false,msg:' FILE EXISTS !!!'}");
+          CobaServer.SendJson(context, "{result:false,msg:' FILE EXISTS !!!'}");
           return;
         }
         System.IO.Stream body = context.Request.InputStream;
@@ -109,10 +109,10 @@ namespace Maxbuk.Server.Core
 					action = "close";
 				}
         float precent = (float)( (start + total_readed) * 100.000 / filesize);
-        this.SendJson(context, "{result:true,msg:'" + action + "',offset:" + precent.ToString("N3") + "}");
+        CobaServer.SendJson(context, "{result:true,msg:'" + action + "',offset:" + precent.ToString("N3") + "}");
       } catch (Exception ex) {
-				
-        this.SendJson(context, "{result:false,msg:'" + ex.ToString().Replace("\r\n"," ").Replace('\'',' ') + "'}");
+
+        CobaServer.SendJson(context, "{result:false,msg:'" + ex.ToString().Replace("\r\n"," ").Replace('\'',' ') + "'}");
        // context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 			}
 		}
@@ -130,7 +130,7 @@ namespace Maxbuk.Server.Core
       {
         _parse_query_string(context);
 
-        _load_public_folders();
+        //_load_public_folders();
 
         const string marker = "/textview?";
         string url = context.Request.Url.ToString();
@@ -151,13 +151,13 @@ namespace Maxbuk.Server.Core
           string folder = Path.GetDirectoryName(real_file) + "\\" + new_folder_name ;
           if (Directory.Exists(folder))
           {
-            SendJson(context, "{'result':true,'msg':'"+ new_folder_name +"'}");
+            CobaServer.SendJson(context, "{'result':true,'msg':'"+ new_folder_name +"'}");
           }
           else
           {
             Directory.CreateDirectory(folder);
             ZipFile.ExtractToDirectory(real_file, folder);
-            SendJson(context, "{'result':true,'msg':'"+ new_folder_name +"'}");
+            CobaServer.SendJson(context, "{'result':true,'msg':'"+ new_folder_name +"'}");
           }
           return;
         }
@@ -181,7 +181,7 @@ namespace Maxbuk.Server.Core
       }
       catch (Exception ex)
       {
-        SendJson(context, "{'result':false,'msg':'" + ex.ToString().Replace("\r\n"," ") + "'}");
+        CobaServer.SendJson(context, "{'result':false,'msg':'" + ex.ToString().Replace("\r\n"," ") + "'}");
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
       }
     }
@@ -190,8 +190,7 @@ namespace Maxbuk.Server.Core
       string url = context.Request.Url.ToString();
       var request = context.Request;
       string text;
-      using (var reader = new StreamReader(request.InputStream,
-                                           request.ContentEncoding))
+      using (var reader = new StreamReader(request.InputStream, Encoding.UTF8))// request.ContentEncoding))
       {
         text = HttpUtility.UrlDecode(reader.ReadToEnd());
       }
@@ -200,11 +199,12 @@ namespace Maxbuk.Server.Core
       text = text.Substring(text.IndexOf("txt=") + 4);
       if(date == null)
       {
-        SendJson(context, "{'result': false,'msg':'file name is null'}");
+        CobaServer.SendJson(context, "{'result': false,'msg':'file name is null'}");
         return;
       }
-      string name = DateTime.Now.Day.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Year.ToString() + ".txt";
-      if (date == "0")
+      //string name = DateTime.Now.Day.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Year.ToString() + ".txt";
+      string name = DateTime.Now.ToString("d MMMM yyyy") + ".txt";
+      if (date == "Today")
       {
 
       }
@@ -214,15 +214,15 @@ namespace Maxbuk.Server.Core
       }
       string file = CobaServer.NotesFolder + name;
 
-      if (File.Exists(file))
-      {
+      //if (File.Exists(file))
+      //{
         File.WriteAllText(file, text, Encoding.UTF8);
-        SendJson(context, "{'result': true,'msg':'saved " + DateTime.Now.ToString() + "'}");
-      }
-      else
-      {
-        SendJson(context, "{'result': false,'msg':'file " + name + " not found'}");
-      }
+        CobaServer.SendJson(context, "{'result': true,'msg':'saved " + DateTime.Now.ToString() + "','file':'"+ name +"'}");
+      //}
+      //else
+      //{
+      //  CobaServer.SendJson(context, "{'result': false,'msg':'file " + name + " not found'}");
+      //}
     }
     public void SendNotesList(HttpListenerContext context)
     {
@@ -233,15 +233,20 @@ namespace Maxbuk.Server.Core
 
         url = url.Substring(url.IndexOf(marker) + marker.Length);
         //url = System.Web.HttpUtility.UrlDecode (url);
-
+        string current = DateTime.Now.ToString("d MMMM yyyy") + ".txt";
         string[] files = Directory.GetFiles(CobaServer.NotesFolder);
-        string result = "[";
+        string result = "['" +current +"'";
         for(int i = 0;i < files.Length; i++)
         {
-          result += (i == 0 ? "" : ",") + "'" + Path.GetFileName(files[i]) + "'";
+          string file = Path.GetFileName(files[i]);
+          if (file != current)
+          {
+            //result += (i == 0 ? "" : ",") + "'" + file + "'";
+            result += ",'" + Path.GetFileName(files[i]) + "'";
+          }
         }
         result += "]";
-        SendJson(context, result);
+        CobaServer.SendJson(context, result);
       }
       catch (Exception ex)
       {
@@ -296,32 +301,32 @@ namespace Maxbuk.Server.Core
         string file = System.Web.HttpUtility.ParseQueryString(url).Get("file");
         if (String.IsNullOrEmpty(file))
         {
-          this.SendJson(context, "{result:false,msg:'invalid file name'}");
+          CobaServer.SendJson(context, "{result:false,msg:'invalid file name'}");
           return;
         }
         string note_file = CobaServer.NotesFolder + file;
         if (File.Exists(note_file))
         {
-          this.SendJson(context, "{result:false,msg:'file exists'}");
+          CobaServer.SendJson(context, "{result:false,msg:'file exists'}");
         }
         else
         {
           File.CreateText(note_file).Close();
-         // string text = File.ReadAllText(note_file, Encoding.UTF8);
-          this.SendJson(context, "{result:true,msg:'created'}");
+          // string text = File.ReadAllText(note_file, Encoding.UTF8);
+          CobaServer.SendJson(context, "{result:true,msg:'created'}");
         }
 
       }
       catch (Exception ex)
       {
         string error = ex.ToString().Replace("\r\n", " ");
-        this.SendJson(context, "{result:false,msg:'"+ error +"'}");
+        CobaServer.SendJson(context, "{result:false,msg:'"+ error +"'}");
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
       }
     }
     public void ZipFolder(HttpListenerContext context)
     {
-      _load_public_folders();
+      //_load_public_folders();
 
       const string marker = "/folder.zip?";
       string url = context.Request.Url.ToString();
@@ -340,7 +345,7 @@ namespace Maxbuk.Server.Core
       string zip_file = new_folder + last_folder_name + ".zip";
       if (File.Exists(zip_file))
       {
-        SendJson(context, "{'result':false,'msg':'Файл " + 
+        CobaServer.SendJson(context, "{'result':false,'msg':'Файл " + 
           zip_file.Replace(Path.DirectorySeparatorChar + "","\\\\") + " уже есть на диске'}");
       }
       else
@@ -350,7 +355,7 @@ namespace Maxbuk.Server.Core
 
           ZipFile.CreateFromDirectory(folder, zip_file);
           FileInfo info = new FileInfo(zip_file);
-          SendJson(context, "{'result':true,'msg':'" 
+          CobaServer.SendJson(context, "{'result':true,'msg':'" 
             + zip_file.Replace(Path.DirectorySeparatorChar + "", "\\\\") + "'}");
 
         }
@@ -365,7 +370,7 @@ namespace Maxbuk.Server.Core
     {
       try
       {
-        _load_public_folders();
+        //_load_public_folders();
 
         const string marker = "/file.info?";
         string url = context.Request.Url.ToString();
@@ -377,11 +382,11 @@ namespace Maxbuk.Server.Core
         if (File.Exists(file))
         {
           FileInfo info = new FileInfo(file);
-          SendJson(context, "{'result':true,'msg':'Size" + info.Length.ToString() + " bytes'}");
+          CobaServer.SendJson(context, "{'result':true,'msg':'Size" + info.Length.ToString() + " bytes'}");
         }
         else
         {
-          SendJson(context, "{'result':false,'msg':'not found'}");
+          CobaServer.SendJson(context, "{'result':false,'msg':'not found'}");
         }
       }
       catch (Exception ex)
@@ -393,7 +398,7 @@ namespace Maxbuk.Server.Core
     {
       try
       {
-        _load_public_folders();
+        //_load_public_folders();
 
         const string marker = "/file.rename?";
         string url = context.Request.Url.ToString();
@@ -417,17 +422,17 @@ namespace Maxbuk.Server.Core
         string new_file = (string.IsNullOrEmpty(folder) ? dir : new_folder) + "\\" + file;
         if (File.Exists(new_file))
         {
-          this.SendJson(context, "{result:false,msg:'file exists :" + file + "'}");
+          CobaServer.SendJson(context, "{result:false,msg:'file exists :" + file + "'}");
         }
         else
         {
           File.Move(original_file, new_file);
-          this.SendJson(context, "{result:true,msg:'file moved :" + file + "'}");
+          CobaServer.SendJson(context, "{result:true,msg:'file moved :" + file + "'}");
         }
       }
       catch (Exception ex)
       {
-        this.SendJson(context, "{result:false,msg:'exception:" + ex.ToString() + "'}");
+        CobaServer.SendJson(context, "{result:false,msg:'exception:" + ex.ToString() + "'}");
         //        Console.WriteLine("exception: " + ex.ToString());
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
       }
@@ -438,7 +443,6 @@ namespace Maxbuk.Server.Core
     {
       try
       {
-        _load_public_folders();
 
         const string marker = "/file.delete?";
         string url = context.Request.Url.ToString();
@@ -451,16 +455,16 @@ namespace Maxbuk.Server.Core
         if (System.IO.File.Exists(file))
         {
           System.IO.File.Delete(file);
-          this.SendJson(context, "{result:true,msg:'file removed :" + file + "'}");
+          CobaServer.SendJson(context, "{result:true,msg:'file removed :" + file + "'}");
         }
         else
         {
-          this.SendJson(context, "{result:false,msg:'file not found :" + file + "'}");
+          CobaServer.SendJson(context, "{result:false,msg:'file not found :" + file + "'}");
         }
       }
       catch (Exception ex)
       {
-        this.SendJson(context, "{result:false,msg:'exception:" + ex.ToString() + "'}");
+        CobaServer.SendJson(context, "{result:false,msg:'exception:" + ex.ToString() + "'}");
 //        Console.WriteLine("exception: " + ex.ToString());
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
       }
@@ -470,7 +474,7 @@ namespace Maxbuk.Server.Core
     {
       try
       {
-        _load_public_folders();
+        //_load_public_folders();
 
         const string marker = "/mkdir?";
         string url = context.Request.Url.ToString();
@@ -484,7 +488,7 @@ namespace Maxbuk.Server.Core
 
         //Console.WriteLine ("Create folder : " + subfolder + " in " + folder);
         System.IO.Directory.CreateDirectory(folder + subfolder);
-        this.SendJson(context, "{result:true,msg:'" + subfolder + "'}");
+        CobaServer.SendJson(context, "{result:true,msg:'" + subfolder + "'}");
 
       }
       catch (Exception ex)
@@ -576,7 +580,7 @@ namespace Maxbuk.Server.Core
     }
 		public void Send(HttpListenerContext context, string url)
     {
-			_load_public_folders ();
+			//_load_public_folders ();
 			url = System.Web.HttpUtility.UrlDecode (url);
 			string filename = _redirect (url);
 
@@ -686,25 +690,6 @@ namespace Maxbuk.Server.Core
 			context.Response.OutputStream.Close ();
 			//Console.WriteLine ("client closed : " + context.Request.UserHostAddress.ToString ());
 		}
-		private void SendJson(HttpListenerContext context,string text)
-		{
-      try
-      {
-        byte[] data = Encoding.UTF8.GetBytes(text);
-        context.Response.StatusCode = (int)HttpStatusCode.OK;
-        context.Response.ContentType = "application/json";
-        context.Response.ContentLength64 = data.Length;
-        context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
-        //context.Response.KeepAlive = true;
-        context.Response.OutputStream.Write(data, 0, data.Length);
-      }
-      catch(Exception ex)
-      {
-        CobaServer.Logger.Log(ex, "exception send json{0}", text);
-      }
-			context.Response.OutputStream.Flush();
-			context.Response.OutputStream.Close();
-		}
     private void SendException(HttpListenerContext context, Exception ex)
     {
       try
@@ -726,13 +711,14 @@ namespace Maxbuk.Server.Core
       context.Response.OutputStream.Close();
     }
 
-    private void _load_public_folders()
-		{
-			//string filename = _workingFolder + @"data\folders.json";
-			string s = File.ReadAllText( _drivers_info_filename ,System.Text.Encoding.UTF8);
-			var ser = new System.Web.Script.Serialization.JavaScriptSerializer ();
-			_disks = ser.Deserialize<List<FileFolderInfo>> (s);
-		}
+  //  private void _load_public_folders()
+		//{
+		//	//string filename = _workingFolder + @"data\folders.json";
+		//	string s = File.ReadAllText( _drivers_info_filename ,System.Text.Encoding.UTF8);
+		//	var ser = new System.Web.Script.Serialization.JavaScriptSerializer ();
+		//	_disks = ser.Deserialize<List<FileFolderInfo>> (s);
+      
+		//}
 		private int _findPosition(string name,string folder){
 			if (folder == "~" + name)
 				return 0;
@@ -755,6 +741,7 @@ namespace Maxbuk.Server.Core
 			}
 			return folder;
 		}
+    /*
     private void SendFolderContent(HttpListenerContext context)
     {
       //	string mime;
@@ -798,7 +785,7 @@ namespace Maxbuk.Server.Core
           }
           result += "]}";
         }
-        this.SendJson(context, result);
+        CobaServer.SendJson(context, result);
       }
       catch (Exception ex)
       {
@@ -807,7 +794,7 @@ namespace Maxbuk.Server.Core
       }
 
     }
-
+    */
 		//--------------------------------------------------------------------
 		//  mouse
 		//--------------------------------------------------------------------
@@ -833,7 +820,7 @@ namespace Maxbuk.Server.Core
 
 				if(action == null){
 					Console.WriteLine("mouse action is null!");
-					SendJson(context,"{rsult:false,msg:'invalide mouse action'}");
+          CobaServer.SendJson(context,"{rsult:false,msg:'invalide mouse action'}");
 					return;
 				}
 					
@@ -845,34 +832,34 @@ namespace Maxbuk.Server.Core
 					{
 						Simulator.MouseCursorMove(x,y);
 						string s = NativeMethods.CaptureScreen(true,150,80);
-						this.SendJson (context, "{result:true, msg:'" + s + "'}");
+              CobaServer.SendJson (context, "{result:true, msg:'" + s + "'}");
 					}
 					else
 					{
-						this.SendJson (context, "{result:false}");
+              CobaServer.SendJson (context, "{result:false}");
 					}
 					return;
 				case "click":
 					Simulator.LeftClick();
-					this.SendJson (context, "{result:true}");
+            CobaServer.SendJson (context, "{result:true}");
 					return;
 				case "rclick":
 					Simulator.RightClick();
-					this.SendJson (context, "{result:true}");
+            CobaServer.SendJson (context, "{result:true}");
 					return;
 				case "scroll":
 					if(_parseMouseCoordinats(url,ref x,ref y))
 					{
 						Simulator.ScrollWheel(y);
-						this.SendJson (context, "{result:true}");
+              CobaServer.SendJson (context, "{result:true}");
 					}
 					else
 					{
-						this.SendJson (context, "{result:false}");
+              CobaServer.SendJson (context, "{result:false}");
 					}
 					return;
 				}
-				this.SendJson (context, "{result:false}");
+        CobaServer.SendJson (context, "{result:false}");
 
 			} catch (Exception ex) {
 				Console.WriteLine ("exception : " + ex.ToString ());

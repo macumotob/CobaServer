@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>Заметки</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="HandheldFriendly" content="true">
+  <meta http-equiv="cache-control" content="no-cache">
+  <meta http-equiv="expires" content="0">
+  <meta http-equiv="pragma" content="no-cache">
+	<meta charset="utf-8" />
+
+<style>
+    html {
+      padding:0;
+      margin:0;
+    }
+    body {
+      padding:0;
+      margin:0;
+      background-color:black;
+      color:#BBBBBB;
+      font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    }
+    .note-file {
+      width:100%;
+      margin:10px;
+      cursor:pointer;
+    }
+    .note-file:hover { 
+    background-color: yellow;
+    color: black;
+}
+
+    /*          */
+
+  div.container {
+    width: 100%;
+    margin: 0px;
+    line-height: 150%;
+  }
+  div.header {
+    color: white;
+    background-color: gray;
+    clear: left;
+    width: 100%;
+  }
+  div.footer {
+    color: white;
+    background-color: gray;
+    clear: left;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align:right;
+    font-family:Tahoma;
+    font-size:0.6em;
+  }
+  div.header table {
+    width: 100%;
+  }
+  h1.header {
+    padding: 0;
+    margin: 0;
+  }
+div.left
+{
+float:left;
+width:160px;
+margin:0;
+padding:1em;
+}
+div.content
+{
+margin-left:190px;
+border-left:1px solid gray;
+padding:1em;
+}
+
+#note  {
+  background-color:black;
+  color:#AAAAAA;
+  font-size:1.3em;
+}
+</style>
+
+<script type="text/javascript" src="http://134.249.167.212:3000/js/loader.js"></script>
+  <script type="text/javascript">
+    var notes = (function () {
+      var file_name;
+      var current_note;
+      var note_value;
+      var current_note_name;
+
+      function init() {
+        if (current_note_name) {
+          return;
+        }
+        current_note = id("current-note");
+        note_value = id("note");
+        current_note_name = id("current-note-name");
+      }
+      //
+      function get_list() {
+        init();
+        load_async_json("notes.list?tm=" + new Date().getTime(), function (data) {
+          var s = "";
+          
+          data.forEach(function (item) {
+            s += "<div class='note-file' data-method='notes.edit' data-args='" + item + "'>" + item + "</div>";
+          });
+          id("left-panel").innerHTML = s;
+
+          var file = data[0];
+          get(file);
+        });
+      }
+      //
+      function save(onsuccess) {
+        var txt = encodeURI(note_value.value);
+        post("note.save?", "date=" + file_name + "&txt=" + txt, function (data) {
+          id("note-save-result").innerText = "Файл: " + file_name + " " + data.msg;
+          if (onsuccess) onsuccess();
+        });
+      }
+      //
+      function get(file) {
+        load_async("/notes?date=" + file, function (data) {
+          current_note.innerHTML = file;
+          current_note_name.value = file;
+          file_name = file;
+          note_value.value = data;
+        });
+      }
+      function edit(file) {
+        save(function () { get(file); });
+      }
+      //
+      function drop() {
+        load_async_json("/notes.remove?file=" + file_name, function (data) {
+          get_list();
+        });
+      }
+      //
+      function create() {
+        file_name = current_note_name.value;
+        save();
+      }
+      return {
+        "list": get_list,
+        "edit": edit,
+        "create":create,
+        "save": save,
+        "drop": drop
+      };
+    })();
+
+    window.addEventListener('click', function () {
+      mb.onclick();
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+        e.preventDefault();
+        notes.save();
+      }
+    }, false);
+
+  </script>
+</head>
+<body onload="notes.list();">
+
+  <div class="container">
+
+  <div class="header">
+    
+    <table>
+      <tr>
+        <td>Файл</td>
+        <td><h1 id="current-note"></h1></td>
+        <td><input type="text" id="current-note-name" value="" /></td>
+        <td><button data-method="notes.create">Create</button></td>
+        <td><button data-method="notes.drop">Delete</button></td>
+      </tr>
+      <tr>
+        <td id="note-save-result" colspan="4">Status</td>
+      </tr>
+    </table>
+
+  
+  </div>
+  <div class="left" id="left-panel"></div>
+  <div class="content">
+    <textarea id="note" rows="20" style="width: 90%" value=""></textarea>
+  </div>
+  <div class="footer">Copyright 2016 by Vasyl.</div>
+  </div>
+
+</body>
+</html>
