@@ -211,10 +211,29 @@ var fm = {
 , encode: function (s) {
   return encodeURIComponent(s);
 }
+
+, downloadAll: function (files){  
+  if(files.length == 0) return;  
+  file = files.pop();
+  this.download_file(file.name);
+  /*
+  var href =  fm.join_path() + encodeURIComponent(file.name)
+  var theAnchor = $('<a />')  
+      .attr('href', file[1])  
+      .attr('download',file[0]);  
+  theAnchor[0].click();   
+  theAnchor.remove();  
+  */
+  this.downloadAll(files);  
+}  
   /*
             DOWNLOAD  F O L D E R
   */
 , download_folder: function (name) {
+  
+  this.downloadAll(this.audio.files);
+  return;
+
   if (name[0] === '~') {
     BootstrapDialog.show({
       title : "Предупреждение",

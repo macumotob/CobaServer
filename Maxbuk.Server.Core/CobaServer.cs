@@ -14,7 +14,7 @@ using System.Web;
 
 namespace Maxbuk.Server.Core
 {
-  using SQLite;
+  //using SQLite;
 	public class CobaServer
 	{
 		private readonly string[] _indexFiles = { 
@@ -109,8 +109,8 @@ namespace Maxbuk.Server.Core
 		private string _host;
 		private HttpListener _listener;
 		private int _port;
-
-		public int Port
+    public int HttpsPort = 0;
+    public int Port
 		{
 			get { return _port; }
 			set {
@@ -118,7 +118,7 @@ namespace Maxbuk.Server.Core
       }
 		}
     public string PHP_BIN;
-    public string PHP_SOURSE;
+    //public string PHP_SOURSE;
 
     public static string ApplicationDataFolder
     {
@@ -234,7 +234,13 @@ public void Stop()
       {
         _listener = new HttpListener();
         _listener.Prefixes.Add(string.Format("http://{0}:{1}/", _host, _port));
+        if (HttpsPort > 0)
+        {
+          _listener.Prefixes.Add(string.Format("https://*:{0}/",HttpsPort));
+          ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+        }
         //  _listener.AuthenticationSchemes = AuthenticationSchemes.Basic;
+        
         _listener.Start();
         _listener.IgnoreWriteExceptions = true;
         Thread thread = new Thread(_server_thread_procedure);
@@ -250,9 +256,6 @@ public void Stop()
     }
     public override string ToString(){
 			return string.Format ("host {0} port: {1}\nFolder:{2}", _host, _port, RootDirectory);
-		}
-		private CobaClient _createClient(){
-			return new CobaClient (RootDirectory, MaxbukServerAdmin.DriversFileName);
 		}
 
     private void _server_thread_procedure()
@@ -282,6 +285,7 @@ public void Stop()
     }
     private void _client_thread_procedure(object data)
     {
+      Thread.Sleep(1);
       Process((HttpListenerContext)data);
     }
     private List<FileFolderInfo> _disks = new List<FileFolderInfo>();
@@ -400,7 +404,7 @@ public void Stop()
       context.Response.OutputStream.Flush();
       context.Response.OutputStream.Close();
     }
-    private Dictionary<string, string> _parse_query_string(string s)
+    private static Dictionary<string, string> _parse_query_string(string s)
     {
       Dictionary<string, string> dic = new Dictionary<string, string>();
       string[] qparams = s.Split('&');
@@ -411,7 +415,13 @@ public void Stop()
       }
       return dic;
     }
-    
+    public static Dictionary<string, string> ParseQueryString(HttpListenerContext context, string command)
+    {
+      //const string marker = "/upload.php?";
+      string cmd = context.Request.Url.ToString();
+      cmd = cmd.Substring(cmd.IndexOf(command) + command.Length);
+      return _parse_query_string(cmd);
+    }
     private void Process(HttpListenerContext context)
 		{
       //HttpListenerBasicIdentity identity = (HttpListenerBasicIdentity)context.User.Identity;
@@ -425,7 +435,7 @@ public void Stop()
       ////				client.Execute (context);
       //        return;
       //      }
-      CobaClient client = _createClient();
+      CobaClient client = new CobaClient(RootDirectory); // _createClient();
       client._disks = _disks;
       if (context.Request.HttpMethod == "POST") {
 
@@ -434,7 +444,21 @@ public void Stop()
           client.SaveNote(context);
           return;
         }
-				client.ExecutePost (context);
+        if (filename.Equals("/upload.php"))
+        {
+       //   const string marker = "/upload.php?";
+       //   string cmd = context.Request.Url.ToString();
+        //  cmd = cmd.Substring(cmd.IndexOf(marker) + marker.Length);
+         // Dictionary<string, string> p = _parse_query_string(cmd);
+
+          Dictionary<string, string> p = CobaServer.ParseQueryString(context, filename + "?");
+          string fileName = CobaServer.NotesFolder + coba.Logger.GetDateTimeFileName("vr") + ".wav";
+          CobaClient.SaveWavFile(context.Request.ContentEncoding, CobaClient.GetBoundary(context.Request.ContentType), context.Request.InputStream, fileName);
+
+
+          return;
+        }
+        client.ExecutePost (context);
 				return;
 			}
 
@@ -457,29 +481,29 @@ public void Stop()
           return;
         case "/sqlite":
           {
-            const string marker = "/sqlite?";
-            string cmd = context.Request.Url.ToString();
-            cmd = cmd.Substring(cmd.IndexOf(marker) + marker.Length);
-            Dictionary<string, string> p = _parse_query_string(cmd);
+            Dictionary<string, string> p = CobaServer.ParseQueryString(context, filename + "?");
             SQLiteManager.Instance.RootDirectory = this.RootDirectory;
-            SQLiteManager.Instance.Execute(p);
-            CobaServer.SendJson(context, "{result:true,msg:'SQL'}");
+            string result = SQLiteManager.Instance.Execute(p);
+            CobaServer.SendJson(context, result == null? "{result:true,msg:'SQL'}": result);
           }
           break;
 
         case "/notes":
           client.SendNotes(context);
           return;
-
+        case "/notes.wav":
+          {
+            Dictionary<string, string> p = CobaServer.ParseQueryString(context, filename + "?");
+            string file= CobaServer.NotesFolder + p["file"];
+            CobaServer.SendFile(context, file);
+            return;
+          }
         case "/notes.list":
           client.SendNotesList(context);
           return;
         case "/notes.remove":
           {
-            const string marker = "/notes.remove?";
-            string cmd = context.Request.Url.ToString();
-            cmd = cmd.Substring(cmd.IndexOf(marker) + marker.Length);
-            Dictionary<string, string> p = _parse_query_string(cmd);
+            Dictionary<string, string> p = CobaServer.ParseQueryString(context, filename + "?");
             string file = CobaServer.NotesFolder + p["file"];
 
             if (System.IO.File.Exists(file))
@@ -493,30 +517,27 @@ public void Stop()
             }
           }
           return;
+        case "/get.folder":
+          {
+            //client.Execute (context, filename);
+            this.SendFolderContent(context);
+            return;
+          }
+        case "/mkdir":
+            client.CreateFolder(context);
+            return;
+        case "/file.create":
+            client.CreateFileInNoteFolder(context);
+            return;
+        case "/mouse":
+            client.ExecuteMouse(context);
+            return;
       }
       //	Console.WriteLine ("client : " + context.Request.RemoteEndPoint.ToString ());
-      if (filename.Equals ("/get.folder")) {
-        //client.Execute (context, filename);
-        this.SendFolderContent(context);
-				return;
-			}
-
-			if (filename.Equals ("/mkdir")) {
-				client.CreateFolder (context);
-				return;
-			}
-      if (filename.Equals("/file.create"))
-      {
-        client.CreateFileInNoteFolder(context);
-        return;
-      }
 
 
-      if (filename.Equals ("/mouse")) {
-				client.ExecuteMouse (context);
-				return;
-			}
-			if (filename.Length >= 2 && filename[0] == '/' && filename[1] == '~') {
+
+      if (filename.Length >= 2 && filename[0] == '/' && filename[1] == '~') {
 				client.Send(context, filename);
 				return;
 			}

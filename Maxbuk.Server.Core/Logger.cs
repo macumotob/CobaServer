@@ -72,6 +72,12 @@ namespace coba
       string s = string.Format("{3}_{0}_{1}_{2}", d.Day, d.Month, d.Year, prefix);
       return s;
     }
+    public static string GetDateTimeFileName(string prefix)
+    {
+      DateTime d = DateTime.Now;
+      string s = string.Format("{3}{0}_{1}_{2} {4}_{5}_{6}", d.Day, d.Month, d.Year, prefix,d.Hour,d.Minute,d.Second);
+      return s;
+    }
     private long _max_file_size = 1024 * 64;
 
     private string _make_file_name(int index)

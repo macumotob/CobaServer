@@ -50,8 +50,8 @@ namespace Maxbuk.Server.Admin
 
     private void _buttonUnregister_Click(object sender, RoutedEventArgs e)
     {
-      MaxbukJsonResult result = MaxbukServerAdmin.UnRegisterServer(MaxbukServerAdmin.ServerInfo.Name);
-      MessageBox.Show(result.data);
+      JsonResult result = MaxbukServerAdmin.UnRegisterServer(MaxbukServerAdmin.ServerInfo.Name);
+      MessageBox.Show(result.msg);
     }
   }
 }

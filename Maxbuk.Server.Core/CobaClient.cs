@@ -21,19 +21,19 @@ namespace Maxbuk.Server.Core
 	{
 		public  List<FileFolderInfo> _disks;
 		private string _workingFolder;
-    private string _drivers_info_filename;
-		public CobaClient (string workingFolder, string drivers_info_filename)
+    //private string _drivers_info_filename;
+		public CobaClient (string workingFolder)//, string drivers_info_filename)
 		{
-      _drivers_info_filename = drivers_info_filename;
+     // _drivers_info_filename = drivers_info_filename;
       _workingFolder = workingFolder;
 		}
-		private void _printRequestHeaders(HttpListenerContext context){
-			Console.WriteLine ("***");
-			foreach (var item in context.Request.Headers.AllKeys) {
-				Console.WriteLine (item.ToString () + ":" + context.Request.Headers [item]);
-			}
+		//private void _printRequestHeaders(HttpListenerContext context){
+		//	Console.WriteLine ("***");
+		//	foreach (var item in context.Request.Headers.AllKeys) {
+		//		Console.WriteLine (item.ToString () + ":" + context.Request.Headers [item]);
+		//	}
 
-		}
+		//}
 		public void Execute(HttpListenerContext context,string command){
 			try
 			{
@@ -55,6 +55,110 @@ namespace Maxbuk.Server.Core
 			}
 
 		}
+    //-----------------------------------------------
+    public static String GetBoundary(String ctype)
+    {
+      return "--" + ctype.Split(';')[1].Split('=')[1];
+    }
+
+    public static void SaveWavFile(Encoding enc, String boundary, Stream input ,string fileName)
+    {
+      Byte[] boundaryBytes = enc.GetBytes(boundary);
+      Int32 boundaryLen = boundaryBytes.Length;
+
+      using (FileStream output = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+      {
+        Byte[] buffer = new Byte[1024];
+        Int32 len = input.Read(buffer, 0, 1024);
+        Int32 startPos = -1;
+
+        // Find start boundary
+        while (true)
+        {
+          if (len == 0)
+          {
+            throw new Exception("Start Boundaray Not Found");
+          }
+
+          startPos = IndexOf(buffer, len, boundaryBytes);
+          if (startPos >= 0)
+          {
+            break;
+          }
+          else
+          {
+            Array.Copy(buffer, len - boundaryLen, buffer, 0, boundaryLen);
+            len = input.Read(buffer, boundaryLen, 1024 - boundaryLen);
+          }
+        }
+
+        // Skip four lines (Boundary, Content-Disposition, Content-Type, and a blank)
+        for (Int32 i = 0; i < 4; i++)
+        {
+          while (true)
+          {
+            if (len == 0)
+            {
+              throw new Exception("Preamble not Found.");
+            }
+
+            startPos = Array.IndexOf(buffer, enc.GetBytes("\n")[0], startPos);
+            if (startPos >= 0)
+            {
+              startPos++;
+              break;
+            }
+            else
+            {
+              len = input.Read(buffer, 0, 1024);
+            }
+          }
+        }
+
+        Array.Copy(buffer, startPos, buffer, 0, len - startPos);
+        len = len - startPos;
+
+        while (true)
+        {
+          Int32 endPos = IndexOf(buffer, len, boundaryBytes);
+          if (endPos >= 0)
+          {
+            if (endPos > 0) output.Write(buffer, 0, endPos);
+            break;
+          }
+          else if (len <= boundaryLen)
+          {
+            throw new Exception("End Boundaray Not Found");
+          }
+          else
+          {
+            output.Write(buffer, 0, len - boundaryLen);
+            Array.Copy(buffer, len - boundaryLen, buffer, 0, boundaryLen);
+            len = input.Read(buffer, boundaryLen, 1024 - boundaryLen) + boundaryLen;
+          }
+        }
+      }
+    }
+
+    private static Int32 IndexOf(Byte[] buffer, Int32 len, Byte[] boundaryBytes)
+    {
+      for (Int32 i = 0; i <= len - boundaryBytes.Length; i++)
+      {
+        Boolean match = true;
+        for (Int32 j = 0; j < boundaryBytes.Length && match; j++)
+        {
+          match = buffer[i + j] == boundaryBytes[j];
+        }
+
+        if (match)
+        {
+          return i;
+        }
+      }
+
+      return -1;
+    }
+    //-------------------------------------------
     public void ExecutePost(HttpListenerContext context){
 			//_printRequestHeaders (context);
 
@@ -259,12 +363,8 @@ namespace Maxbuk.Server.Core
     {
       try
       {
-        const string marker = "/notes?";
-        string url = context.Request.Url.ToString();
-
-        url = url.Substring(url.IndexOf(marker) + marker.Length);
-        //url = System.Web.HttpUtility.UrlDecode (url);
-        string date = System.Web.HttpUtility.ParseQueryString(url).Get("date");
+        Dictionary<string, string> p = CobaServer.ParseQueryString(context, "/notes?");
+        string date = p["date"];
         string name = DateTime.Now.Day.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Year.ToString() + ".txt";
         if(date == "0")
         {
@@ -284,7 +384,6 @@ namespace Maxbuk.Server.Core
       }
       catch (Exception ex)
       {
-        Console.WriteLine("exception: " + ex.ToString());
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
       }
     }
@@ -293,12 +392,15 @@ namespace Maxbuk.Server.Core
       try
       {
 
-        const string marker = "/file.create?";
-        string url = context.Request.Url.ToString();
+        //const string marker = "/file.create?";
+        //string url = context.Request.Url.ToString();
 
-        url = url.Substring(url.IndexOf(marker) + marker.Length);
+        //url = url.Substring(url.IndexOf(marker) + marker.Length);
         
-        string file = System.Web.HttpUtility.ParseQueryString(url).Get("file");
+        //string file = System.Web.HttpUtility.ParseQueryString(url).Get("file");
+
+        Dictionary<string, string> p = CobaServer.ParseQueryString(context, "/file.create?");
+        string file = p["file"];
         if (String.IsNullOrEmpty(file))
         {
           CobaServer.SendJson(context, "{result:false,msg:'invalid file name'}");
@@ -450,6 +552,8 @@ namespace Maxbuk.Server.Core
         url = url.Substring(url.IndexOf(marker) + marker.Length);
         //url = System.Web.HttpUtility.UrlDecode (url);
         string file = System.Web.HttpUtility.ParseQueryString(url).Get("name");
+
+        
         file = _redirect(file);
 
         if (System.IO.File.Exists(file))

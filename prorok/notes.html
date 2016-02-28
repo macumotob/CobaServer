@@ -85,6 +85,7 @@ padding:1em;
 </style>
 
 <script type="text/javascript" src="http://134.249.167.212:3000/js/loader.js"></script>
+
   <script type="text/javascript">
     var notes = (function () {
       var file_name;
@@ -133,7 +134,13 @@ padding:1em;
         });
       }
       function edit(file) {
-        save(function () { get(file); });
+        var ext = mb.get_file_ext(file);
+        if (ext === "txt") {
+          save(function () { get(file); });
+        }
+        else {
+          id("audio").src = "/notes.wav?file="+file;
+        }
       }
       //
       function drop() {
@@ -194,6 +201,9 @@ padding:1em;
   </div>
   <div class="footer">Copyright 2016 by Vasyl.</div>
   </div>
+
+  <audio controls autoplay id="audio"></audio>
+ 
 
 </body>
 </html>

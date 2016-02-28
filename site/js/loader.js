@@ -21,6 +21,14 @@ var mb = (function () {
       }
     });
   }
+  function get_file_ext(file) {
+    var ext = "";
+    for (var i = file.length - 1; i > -1; i--) {
+      if (file[i] === '.') break;
+      ext = file[i] + ext;
+    }
+    return ext.toLowerCase();
+  }
 
   function sqlite(sql) {
     alert(sql);
@@ -85,7 +93,12 @@ var mb = (function () {
     }
   }
 
-  return { "file_delete": file_delete, "onclick": fm_on_click,"sql":sqlite };
+  return {
+    "file_delete": file_delete,
+    "onclick": fm_on_click,
+    "sql": sqlite,
+    "get_file_ext": get_file_ext
+  };
 
 })();
 

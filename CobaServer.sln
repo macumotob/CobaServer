@@ -51,11 +51,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "prorok", "prorok\", "{35807
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kakadu", "kakadu\kakadu.csproj", "{2E7EF15C-1E90-4DD4-BCAE-9FB3193FBAD4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dlls", "dlls", "{4A47F9E8-D959-43A0-812E-B7F14B0FA34A}"
-	ProjectSection(SolutionItems) = preProject
-		dlls\System.Data.SQLite.dll = dlls\System.Data.SQLite.dll
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

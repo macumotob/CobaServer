@@ -11,7 +11,7 @@ namespace Maxbuk.Server.Core
 {
   using System.Net.Sockets;
   using System.Threading;
-  using xsrv;
+  //using xsrv;
 
   public class MaxbukServerAdmin
   {
@@ -37,24 +37,24 @@ namespace Maxbuk.Server.Core
         return AppDomain.CurrentDomain.BaseDirectory + "\\..\\Site\\";//index.html";
       }
     }
-    static private MaxbukJsonResult _getJsonResult(string response)
+    static private JsonResult _getJsonResult(string response)
     {
       response = response.Replace('\'', '\"');
-      MaxbukJsonResult result = null;
+      JsonResult result = null;
       byte[] data = Encoding.Unicode.GetBytes(response);
 
-      DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(MaxbukJsonResult));
+      DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(JsonResult));
 
       using (MemoryStream ms = new MemoryStream(data))
       {
-        result = (MaxbukJsonResult)ser.ReadObject(ms);
+        result = (JsonResult)ser.ReadObject(ms);
         ms.Close();
       }
       return result;
     }
-    static public MaxbukJsonResult RegisterServer(string name, string port)
+    static public JsonResult RegisterServer(string name, string port)
     {
-      MaxbukJsonResult result = null;
+      JsonResult result = null;
       using (WebClient client = new WebClient())
       {
         string response = client.DownloadString(string.Format("http://maxbuk.com/regsrv.php?name={0}&port={1}", name, port));
@@ -63,9 +63,9 @@ namespace Maxbuk.Server.Core
       }
       return result;
     }
-    static public MaxbukJsonResult UnRegisterServer(string name)
+    static public JsonResult UnRegisterServer(string name)
     {
-      MaxbukJsonResult result = null;
+      JsonResult result = null;
       using (WebClient client = new WebClient())
       {
         string response = client.DownloadString(string.Format("http://maxbuk.com/delsrv.php?name={0}", name));

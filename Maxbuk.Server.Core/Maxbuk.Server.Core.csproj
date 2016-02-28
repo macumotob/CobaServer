@@ -55,11 +55,10 @@
   <ItemGroup>
     <Compile Include="CobaClient.cs" />
     <Compile Include="CobaServer.cs" />
-    <Compile Include="Database.cs" />
     <Compile Include="Extender.cs" />
     <Compile Include="Fb2Reader.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="MaxbukJsonResult.cs" />
+    <Compile Include="JsonResult.cs" />
     <Compile Include="MaxbukServerAdmin.cs" />
     <Compile Include="MaxbukServerInfo.cs" />
     <Compile Include="NativeMethods.cs" />
@@ -71,7 +70,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Simulator.cs" />
-    <Compile Include="SQLite.cs" />
     <Compile Include="SQLiteManager.cs" />
   </ItemGroup>
   <ItemGroup>
