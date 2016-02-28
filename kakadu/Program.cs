@@ -65,6 +65,9 @@ namespace kakadu
               case "port":
                 server.Port = int.Parse(value);
                 break;
+              case "https_port":
+                server.HttpsPort = int.Parse(value);
+                break;
               case "root":
                 server.RootDirectory = value;
                 break;
@@ -87,7 +90,7 @@ namespace kakadu
     private static void _run_server_in_thread(object srv)
     {
       CobaServer server = (CobaServer)srv;
-      Console.WriteLine("Server {0}:{1} site:{2}", server.Host, server.Port, server.RootDirectory);
+      Console.WriteLine("Server {0}:{1} https:{3} site:{2}", server.Host, server.Port, server.RootDirectory,server.HttpsPort);
       server.Start();
       Thread.Sleep(1000);
       if (!server.IsWorking)

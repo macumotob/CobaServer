@@ -17,7 +17,7 @@ namespace Maxbuk.Server.Admin
 {
   using Maxbuk.Server.Core;
   using System.Threading;
-  using xsrv;
+  //using xsrv;
 
 
   public partial class MainWindow : Window
@@ -148,7 +148,7 @@ namespace Maxbuk.Server.Admin
     {
       this.Cursor = Cursors.Wait;
       _saveSettings();
-      MaxbukJsonResult result = MaxbukServerAdmin.RegisterServer(_name, _port.ToString());
+      JsonResult result = MaxbukServerAdmin.RegisterServer(_name, _port.ToString());
       if(result.IsOk)
       {
         //int index = _listIp.IndexOf(result.data);
@@ -157,12 +157,12 @@ namespace Maxbuk.Server.Admin
         //  _listIp.Add(result.data);
         //}
         _saveSettings();
-        string message = string.Format("Server IP : {0} registered!", result.data);
+        string message = string.Format("Server IP : {0} registered!", result.msg);
         _showMessage(message);
       }
       else
       {
-        _showMessage("Error : " + result.data);
+        _showMessage("Error : " + result.msg);
       }
       this.Cursor = Cursors.Arrow;
     }

@@ -1,13 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
-
+using System.Text;
 
 namespace Maxbuk.Server.Core
 {
+  public static class SqliteExtent
+  {
+    public static void each(this DataRowCollection dr, Action<DataRow, int> handler)
+    {
+      for(int i =0;i < dr.Count; i++)
+      {
+        handler(dr[i], i);
+      }
+    }
+    public static void each(this object [] dr, Action<object, int> handler)
+    {
+      for (int i = 0; i < dr.Length; i++)
+      {
+        handler(dr[i], i);
+      }
+    }
+    public static void each(this DataColumnCollection dc, Action<DataColumn, int> handler)
+    {
+      for (int i = 0; i < dc.Count; i++)
+      {
+        handler(dc[i], i);
+      }
+    }
+
+  }
   public class SQLiteManager
   {
     SQLiteConnection _sqliteCon;
@@ -261,8 +287,9 @@ CREATE TABLE ZANIMATIONSEQUENCE (
     public void CreateDb(string filePath, string commandText)
     {
       SQLiteConnection.CreateFile(filePath);
-
+      
       var connect = GetConnect(filePath);
+      
       using (connect)
       {
         try
@@ -488,6 +515,7 @@ CREATE TABLE ZANIMATIONSEQUENCE (
     public void OpenFile(string filesource)
     {
       if (_sqliteCon != null) _sqliteCon.Close();
+
       this.FileSource = filesource;
       SetConnection(this.FileSource);
       Open();
@@ -699,14 +727,14 @@ CREATE TABLE ZANIMATIONSEQUENCE (
       }
     }
 
-    public DataTable ExecuteGeTable(SQLiteConnection connect, string sql, Dictionary<string, object> prms)
+    public DataTable ExecuteGeTable(SQLiteConnection connect, string sql, Dictionary<string, object> prms= null)
     {
       DataTable tb = null;
       using (connect)
       {
         try
         {
-          connect.Open();
+          if(connect.State != ConnectionState.Open) connect.Open();
           tb = _sqlitereader.GeTable(sql, connect, prms);
         }
         catch (Exception)
@@ -736,11 +764,80 @@ CREATE TABLE ZANIMATIONSEQUENCE (
 
       }
     }
-    public void Execute(Dictionary<string, string> command)
+    private List<string> _table_to_json_format(DataTable tb)
     {
+      List<string> list = new List<string>();
+
+      string s = "";
+
+      tb.Columns.each((c, i) => {
+        s = string.Format("\"{0}\":", c.ColumnName.ToLower());
+        if (c.DataType.Name == "Int64")
+        {
+          list.Add(s + "{0}");
+        }
+        else
+        {
+          list.Add(s + "\"{0}\"");
+        }
+      });
+
+      //for (int i=0;i < tb.Columns.Count;i++)
+      //{
+      //  var c = tb.Columns[i];
+
+      //  s = string.Format("\"{0}\":", c.ColumnName.ToLower());
+      //  if (c.DataType.Name == "Int64")
+      //  {
+      //    list.Add(s + "{0}");
+      //  }
+      //  else {
+      //    list.Add(s + "\"{0}\"");
+      //  }
+      //}
+      return list;
+    }
+
+    private string _table_2_schema(DataTable tb)
+    {
+      
+
+      string s = "[";
+
+      tb.Columns.each((c, i) =>
+      {
+        s += i > 0 ? ",{" : "{";
+        s += "'name':'" + c.ColumnName + "'";
+        s += "}";
+      });
+      s += "]";
+      return s;
+    }
+    private string _table_2_json(DataTable tb)
+    {
+      List<string> formats = _table_to_json_format(tb);
+      string s = "[";
+      tb.Rows.each((row, i) =>
+      {
+        s += (i > 0) ? ",{" : "{";
+        row.ItemArray.each((data, j) =>
+        {
+          s += (j > 0) ? "," : "";
+          s += string.Format(formats[j], data.ToString().Replace("\r\n"," "));
+        });
+        s += "}";
+      });
+      s += "]";
+      return s;
+    }
+    public string Execute(Dictionary<string, string> command)
+    {
+      string s =null;
+
+      string dbname=null;
       if (command.ContainsKey("db"))
       {
-        string dbname = RootDirectory + command["db"];
+        dbname = RootDirectory + command["db"];
         if (System.IO.File.Exists(dbname))
         {
           this.OpenFile(dbname);
@@ -749,17 +846,37 @@ CREATE TABLE ZANIMATIONSEQUENCE (
         {
           this.NewFile(dbname);
         }
-        
       }
-      if (command.ContainsKey("exec"))
+      _sqliteCon = this.GetConnect(dbname);
+      
+
+      if (command.ContainsKey("exec_file"))
       {
-        string sql = command["exec"];
+        string file = RootDirectory + command["exec_file"];
+
+        string sql = File.ReadAllText(file, Encoding.UTF8);
         this.Execute(sql, null);
-
+        return "";
       }
-    }
+      if (command.ContainsKey("select"))
+      {
+        string sql = command["select"];
 
-  }
+        DataTable tb = this.ExecuteGeTable(_sqliteCon, sql);
+        return _table_2_json(tb);
+      }
+      if (command.ContainsKey("schema"))
+      {
+        string tbname = command["schema"];
+        DataTable tb = _sqliteCon.GetSchema("Tables");
+        //DataTable tb = this.ExecuteGeTable(_sqliteCon, "select * from '" + tbname +"'" );// _sqliteCon.GetSchema(sql);
+        //return _table_2_schema(tb);
+        return _table_2_json(tb);
+      }
+        //  JsonResult result = new JsonResult() { result = "true", msg = s };
+        return s;
+    }
+  } //end of class
 
   class SQLiteReader
   {
@@ -806,10 +923,12 @@ CREATE TABLE ZANIMATIONSEQUENCE (
     {
       DataTable tb = new DataTable();
       SQLiteDataAdapter da = new SQLiteDataAdapter(commandSQL, connection);
-
-      for (int i = 0; i < prms.Count; i++)
+      if (prms != null)
       {
-        da.SelectCommand.Parameters.AddWithValue(prms.Keys.ElementAt(i), prms.Values.ElementAt(i));
+        for (int i = 0; i < prms.Count; i++)
+        {
+          da.SelectCommand.Parameters.AddWithValue(prms.Keys.ElementAt(i), prms.Values.ElementAt(i));
+        }
       }
       da.Fill(tb);
       return tb;

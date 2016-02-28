@@ -15,7 +15,7 @@ namespace Maxbuk.Server.Admin
 {
   using Maxbuk.Server.Core;
   using System.Windows.Forms;
-  using xsrv;
+  //using xsrv;
 
   public partial class AddFolderWindow : Window
   {

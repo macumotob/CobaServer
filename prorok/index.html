@@ -17,7 +17,7 @@
 
 
   <script type="text/javascript" src="http://134.249.167.212:3000/js/loader.js"></script>
-
+  <script type="text/javascript" src="http://134.249.167.212:3000/js/sqlite.js"></script>
 <script type="text/javascript">
   
   $(function() {
@@ -54,9 +54,11 @@ window.addEventListener('click',function(){
       </div>
       <ul class="nav navbar-nav">
         <li class="active"><a href="">Home</a></li>
-        <li><a href="#" data-method="mb.sql" data-args="db=server.sqlite&exec=CREATE TABLE TEST (ID INTEGER PRIMARY KEY,NAME VARCHAR(255),Z_PLIST BLOB)">Test PHP</a></li>
+        <li><a href="#" data-method="mb.sql" data-args="exec_file=data/create_database_prorok.sql">Test SQLITE</a></li>
         <li><a id="user-ip" href="#" >IP</a></li>
         <li><a href="notes.html" target="_blank">Notes</a></li>
+        <li><a href="#" data-method="sqlite.select" data-args="select * from test">Get Test</a></li>
+        <li><a href="#" data-method="sqlite.schema" data-args="test">Get Test</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li data-method="pr_show_register_form"><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
