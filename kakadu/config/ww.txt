@@ -10,6 +10,7 @@ root D:/github/CobaServer/site/
 php D:/apache/php5445mt/php.exe 
 
  folders
+  CobaDevs = E:/CobaDevs/
    Проекты на D = D:/devs/
    Загрузки на D = D:/downloads/
    Тесты на D = D:/test/
