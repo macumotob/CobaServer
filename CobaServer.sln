@@ -25,6 +25,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "site", "site\", "{734144CF-
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "23587"
+		SlnRelativePath = "site\"
 	EndProjectSection
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "prorok", "prorok\", "{358073F5-CC51-4419-8E63-43F534575BE9}"
@@ -45,6 +46,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "prorok", "prorok\", "{35807
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "65312"
+		SlnRelativePath = "prorok\"
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kakadu", "kakadu\kakadu.csproj", "{2E7EF15C-1E90-4DD4-BCAE-9FB3193FBAD4}"

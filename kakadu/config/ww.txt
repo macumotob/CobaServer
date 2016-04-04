@@ -15,6 +15,7 @@ php D:/apache/php5445mt/php.exe
    Загрузки на D = D:/downloads/
    Тесты на D = D:/test/
    Книги = E:/Books/
+   Книги fb2 = E:/Books/fb2/
    #Calibre = E:/calibre/
    Музыка = F:/_music/
    Аудио Книги =E:/Books/_Audio/

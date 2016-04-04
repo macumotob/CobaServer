@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Prorok</title>
+  <title>Vasyl</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="HandheldFriendly" content="true">
   <meta http-equiv="cache-control" content="no-cache">
@@ -10,6 +10,8 @@
 
   <link rel="stylesheet" href="http://134.249.167.212:3000/css/bootstrap.min.css" />
   <link rel="stylesheet" href="http://134.249.167.212:3000/css/bootstrap-dialog.min.css" />
+  <link rel="stylesheet" href="http://134.249.167.212:3000/css/vasyl.css" />
+
 
   <script type="text/javascript" src="http://134.249.167.212:3000/js/jquery.min.js"></script>
   <script type="text/javascript" src="http://134.249.167.212:3000/js/bootstrap.min.js"></script>
@@ -18,8 +20,42 @@
 
   <script type="text/javascript" src="http://134.249.167.212:3000/js/loader.js"></script>
   <script type="text/javascript" src="http://134.249.167.212:3000/js/sqlite.js"></script>
-<script type="text/javascript">
-  
+  <script type="text/javascript">
+ var host ="http://192.168.0.46:14094/php/biblio.php";
+  function open_in_tab(url) {
+      if(url.length == 0){
+      return;
+      }
+      if(url.indexOf("http://") == -1){
+       url = "http://192.168.0.46:14094" + url;
+      }
+      var win = window.open(url, '_blank');
+      win.focus();
+  }
+  function fm_prevent_events(e) {
+    e = e || window.event;
+
+    if (typeof e.preventDefault === 'function') {
+      e.preventDefault();
+      e.stopPropagation();
+    } else {
+      e.returnValue = false;
+      e.cancelBubble = true;
+    }
+  }
+  function delete_book(rowid){
+   if(confirm("delete book with id:" + rowid)){
+     $.get(host + "?action=book-delete&rowid="+rowid,function(result){
+     refresh_books();
+     })
+   }
+   fm_prevent_events();
+  }
+  function refresh_books(){
+     $.get(host + "?action=books-list",function (result){
+     $("#middle-panel").html(result);
+   });
+ }
   $(function() {
   load_async("php/index.php?user-ip", function (data){
     id("user-ip").innerText = data;
@@ -37,11 +73,40 @@
         //$("#main-content").html(data);
       });
   }
-window.addEventListener('click',function(){
+
+ window.addEventListener('click', function () {
  	mb.onclick();
  });
  
+ var libraries =
+   [
+     { code: 1, href: "http://aldebaran.ru/", desc: "Books on Aldebaran" },
+     { code: 1, href: "http://192.168.0.46:14094", desc: "Sqlite admin (local .46:14094)" },
+     { code: 1, href: "http://192.168.0.46:14094/books/", desc: "BOOKS fb2" },
+     { code: 1, href: "http://192.168.0.46:14094/b/", desc: "All books (local .46:14094)" },
+     { code: 1, href: "http://192.168.0.46:14091", desc: "MyDrivers (.46:14091)" },
+     { code: 1, href: "http://192.168.0.46:14093/timer.html", desc: "My time" },
+     { code: 1, href: "http://192.168.0.46:14093/slider.html", desc: "SERG" }
+   ];
+ function populate_table(ident, data, code) {
+   //$(ident).epmty();
+   data.forEach(function (item) {
+     if (item.code == code) {
+       var s = '<tr><td data-method="open_in_tab" data-args="' + item.href + '">' + item.desc + '</td></tr>';
+       $(ident).append(s);
+     }
+   });
+ }
+ $(document).ready(function () {
+   populate_table("#table-books", libraries,1);
+   refresh_books();   
+ });
 </script>
+<style>
+table.table-hover tr:hover{
+  background-color:green;
+}
+</style>
 </head>
 
 <body>
@@ -49,7 +114,7 @@ window.addEventListener('click',function(){
   <nav class="navbar navbar-inverse">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a class="navbar-brand" href="#">Пророки</a>
+        <a class="navbar-brand" href="#">Vasyl</a>
       </div>
       <ul class="nav navbar-nav">
         <li class="active"><a href="">Home</a></li>
@@ -66,6 +131,44 @@ window.addEventListener('click',function(){
     </div>
   </nav> 
 
-  <div id="main-content"></div>
+  <div id="main-content" >
+    <div class="row">
+      <div class="col-xs-4" style="padding:20px;">
+        <p>День начинай с размышлений на бумаге...</p>
+        <p>Важно не только то что ты делаешь, но и то как ты это делаешь</p>
+      </div>
+      <div id="middle-panel" class="col-xs-4" style="height:600px;overflow:scroll;">
+
+      </div>
+        <div class="col-xs-4">
+          <table class="table table-hover" style="cursor:pointer">
+            <tr>
+              <td data-method="open_in_tab" data-args="http://192.168.0.46:14093">Maxbuk Chat (local .46:14093)</td>
+            </tr>
+            <tr>
+              <td data-method="open_in_tab" data-args="http://192.168.0.46:3036/notes.html">Notes (local .46:3036)</td>
+            </tr>
+            <tr>
+              <td data-method="open_in_tab" data-args="http://134.249.167.212:3035/">MyDrivers (remote 134.249.167.212:3035)</td>
+            </tr>
+            <tr>
+              <td data-method="open_in_tab" data-args="http://192.168.0.46:3038/">MyWebSQL admin (local .46:3038)</td>
+            </tr>
+            <tr>
+              <td data-method="open_in_tab" data-args="https://134.249.167.212:8443/index.html">Voice recorder(remote :8443)</td>
+            </tr>
+            <tr>
+              <td data-method="open_in_tab" data-args="http://www.maxbuk.com/">www.maxbuk.com</td>
+            </tr>
+            <tr>
+              <td data-method="open_in_tab" data-args="http://www.maxbuk.com/php/chat.php">Chat on maxbuk sqlite</td>
+            </tr>
+          </table>
+          <table id="table-books" class="table table-hover" style="cursor:pointer">
+            <caption style="text-align:center;color:cornflowerblue">Books and readings</caption>
+          </table>
+        </div>
+      </div>
+  </div>
 </body>
 </html>

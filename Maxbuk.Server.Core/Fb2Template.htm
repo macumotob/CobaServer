@@ -351,6 +351,44 @@
   <!-- Modal Rename File on Server-->
   <script type="text/javascript">
 
+
+    function fm_prevent_events(e) {
+      if (typeof e.preventDefault === 'function') {
+        e.preventDefault();
+        e.stopPropagation();
+      } else {
+        e.returnValue = false;
+        e.cancelBubble = true;
+      }
+    }
+
+
+    window.onmouseup = selectText;
+
+    function selectText(ev) {
+      
+      var word = document.getSelection().toString();
+      if (word && word.length > 0) {
+        $.get("http://www.maxbuk.com/php/tr.php?word=" + word, function (data) {
+          ////////////////////////////
+          BootstrapDialog.show({
+            title: 'Перевод',
+            message: data,
+            buttons: [
+             {
+              label: 'Ok',
+              action: function (dialogRef) {
+                dialogRef.close();
+                fm_prevent_events(window.event);
+              }
+            }]
+          });
+
+          //////////////////////////
+        });
+      }
+    }
+
     var night_mode = false;
     var font_size = 20;
 
