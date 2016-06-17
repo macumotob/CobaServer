@@ -4,14 +4,14 @@
 
  server
 
-host 192.168.0.103
+host 192.168.0.105
 port 4035
 root E:/Develops/web/maxbuk/
 php E:/Develops/php5/php.exe 
 
  server
 
-host 192.168.0.103
+host 192.168.0.105
 port 4036
 root E:/Develops/VoiceRecorder/
 php E:/Develops/php5/php.exe 
@@ -21,7 +21,7 @@ php E:/Develops/php5/php.exe
 #
 server
 
-host 192.168.0.103
+host 192.168.0.105
 port 3035
 root E:/github/CobaServer/site/
 php E:/Develops/php5/php.exe 
@@ -36,7 +36,7 @@ end
 #
  server
 
- host 192.168.0.103
+ host 192.168.0.105
 port 3000
 https_port 8000
 root E:/Develops/VoiceRecorder/
