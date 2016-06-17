@@ -20,6 +20,26 @@
 
   <script type="text/javascript" src="http://134.249.167.212:3000/js/loader.js"></script>
   <script type="text/javascript" src="http://134.249.167.212:3000/js/sqlite.js"></script>
+  <script type="text/javascript" src="http://134.249.167.212:3000/js/coba_popup.js"></script>
+  
+  <style>
+    select {
+      background-color:rgba(0, 0, 0, 1);
+      color:yellow;
+      
+    }
+    
+    input{
+      background-color:black;
+      color:yellow;
+      
+    }
+    .tb-book-edit-td{
+      text-align:right;
+      padding-right:15px;
+    }
+  </style>
+  
   <script type="text/javascript">
  var host ="http://192.168.0.46:14094/php/biblio.php";
   function open_in_tab(url) {
@@ -43,31 +63,139 @@
       e.cancelBubble = true;
     }
   }
+  /*
+                        BOOKS
+  */
+ var books = (function(){
+  offset = 0;
+  page = 7;
+  order = "lasttime";
+  order_dir = "desc";
+  status = "0";
+  function refresh(){
+     console.log(status);
+     var data ={ "action":"books-list", "offset":offset,"sort": order , "ascdesc" : order_dir, "status":status };
+     $.get( host ,data,function (result){
+     $("#middle-panel").html(result);
+   });
+  }
+  function first(){
+   offset=0;
+   refresh();
+  }
+  function next(){
+   offset+=page;
+   refresh();
+  }
+  function prev(){
+   offset-=page;
+   if(offset <0) offset=0;
+   refresh();
+  }
+  function sort(name,src){
+   offset = 0;
+   order_dir = order_dir == "asc" ? "desc" : "asc"
+   if(order != name) {
+    order_dir = "asc";
+   }
+   order  = name;
+   refresh();
+  }
   function delete_book(rowid){
    if(confirm("delete book with id:" + rowid)){
      $.get(host + "?action=book-delete&rowid="+rowid,function(result){
-     refresh_books();
+     //refresh_books();
+     refresh();
      })
    }
    fm_prevent_events();
   }
-  function refresh_books(){
-     $.get(host + "?action=books-list",function (result){
+  var dv_edit = null;
+  
+  function save(pp){
+    var items = $("[data-bind]");
+    var data = {};
+    data["action"] ="book-update-info";
+    data["table"] ="books";
+    for(var i = 0 ; i <items.length;i++) {
+      var item = items[i];
+      //var name ="\"" + $(item).attr('data-bind') +"\"";
+      var name = $(item).attr('data-bind');
+      var v = (item.value ? item.value : item.innerText);
+      data[name] = v ;
+   }
+   $.get(host ,data,function(result){
+     try{
+       var x = JSON.parse(result);
+       if(x && x.result == 1) {
+        pp.visible= false;
+        refresh();
+       }
+     }
+     catch(e){
+       alert(result + "\n" + e);
+     }
+
+   });
+
+  }
+  function edit(rowid){
+  
+    if(!dv_edit){
+      var dv = $("<div id='dv-book-edit'></div>");
+      $(document.body).append(dv);
+    
+      dv_edit = new fb2popup("#dv-book-edit",
+        { "caption":"Edit book info",
+          "buttons":[
+          {
+           "caption":"close",
+           "action" : function(pp){
+            pp.visible= false;
+            }
+          },
+          {
+           "caption":"save",
+           "action" : function(pp){
+            save(pp);
+           }
+          }
+
+        ]
+        });
+      }
+    $.get(host + "?action=book-edit&rowid="+rowid,function(result){
+      dv_edit.content = result;
+      dv_edit.visible=true;
+     });
+    fm_prevent_events();
+  }
+   function filter(st){
+     offset = 0;
+     status = st;
+     refresh();
+   } 
+   
+  return {"refresh" :refresh,"first":first, "next":next,
+    "prev":prev,
+    "sort":sort,
+    "delete_book":delete_book,
+    "edit": edit,
+    "filter":filter};
+ })();
+/* 
+ function refresh_books(){
+     $.get(host + "?action=books-list&offset=0",function (result){
      $("#middle-panel").html(result);
    });
  }
-  $(function() {
-  load_async("php/index.php?user-ip", function (data){
-    id("user-ip").innerText = data;
-    });
-  });
-  
+*/ 
   function pr_show_register_form(){
     load_async("html/register.html?tm=" + new Date().getTime(), function (data){
       //id("main-content").innerHTML = data;
 
         BootstrapDialog.show({
-          title: 'Регистрация',
+          title: 'Registration',
           message: $(data)
         });
         //$("#main-content").html(data);
@@ -98,10 +226,21 @@
    });
  }
  $(document).ready(function () {
-   populate_table("#table-books", libraries,1);
-   refresh_books();   
+  load_async("php/index.php?user-ip", function (data){
+    id("user-ip").innerText = data;
+    });
+  populate_table("#table-books", libraries,1);
+  
+  $.get(host + "?action=status-list",function(result){
+  // alert(result);
+   $("#td-status").html(result);
+    books.refresh();   
+  });
+  
+  
  });
 </script>
+
 <style>
 table.table-hover tr:hover{
   background-color:green;
@@ -118,11 +257,8 @@ table.table-hover tr:hover{
       </div>
       <ul class="nav navbar-nav">
         <li class="active"><a href="">Home</a></li>
-        <li><a href="#" data-method="mb.sql" data-args="exec_file=data/create_database_prorok.sql">Test SQLITE</a></li>
         <li><a id="user-ip" href="#" >IP</a></li>
         <li><a href="notes.html" target="_blank">Notes</a></li>
-        <li><a href="#" data-method="sqlite.select" data-args="select * from test">Get Test</a></li>
-        <li><a href="#" data-method="sqlite.schema" data-args="test">Get Test</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li data-method="pr_show_register_form"><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
@@ -137,10 +273,26 @@ table.table-hover tr:hover{
         <p>День начинай с размышлений на бумаге...</p>
         <p>Важно не только то что ты делаешь, но и то как ты это делаешь</p>
       </div>
-      <div id="middle-panel" class="col-xs-4" style="height:600px;overflow:scroll;">
-
+      
+      <div class="col-xs-4">
+        <table style="width:100%">
+        <tr>
+        <td> Status filter</td>
+        <!--<td>
+        <select id="sel-status" onchange="books.filter(this.value);" >
+           <option value='0'>None</option>
+           <option value='1'>Reading</option>
+           <option value='2'>Readed</option>
+           <option value='3'>Not Interested</option>
+        </select>
+        </td>-->
+        <td id="td-status">Status<td>
+        </tr>
+        </table>
+         <div id="middle-panel" style="height:600px;overflow:scroll;"></div>
       </div>
-        <div class="col-xs-4">
+      
+        <div class="col-xs-4" >
           <table class="table table-hover" style="cursor:pointer">
             <tr>
               <td data-method="open_in_tab" data-args="http://192.168.0.46:14093">Maxbuk Chat (local .46:14093)</td>

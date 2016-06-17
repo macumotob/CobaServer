@@ -583,12 +583,14 @@ create_new_file: function () {
 },
 delete_file : function(name,onsuccess){
   var url = decodeURIComponent(fm.join_path() + name);
-  alert(url);
-  return;
+  if(!confirm("DELETE FILE " + url))  return;
 
-  load_async_json("file.delete?name=" + name, function (data) {
+  load_async_json("file.delete?name=" + url, function (data) {
     if (data.result) {
-      onsuccess(data);
+      if (onsuccess) onsuccess(data);
+      else {
+        alert(data.msg);
+      }
     }
     else {
       alert(data.msg);
