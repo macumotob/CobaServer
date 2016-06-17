@@ -120,6 +120,7 @@ namespace Maxbuk.Server.Core
     public bool IsEmpty;
     public Fb2Tag Find(string name)
     {
+      
       if(this.Name == name)
       {
         return this;
