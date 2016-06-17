@@ -76,6 +76,7 @@ var mb = (function () {
     if (x.method) {
       if (x.args) {
         x.args = x.args.split(',');
+        x.args.push(target);
       }
       x.method = x.method.split('.');
       if (x.method.length === 1) {

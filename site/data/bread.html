@@ -164,13 +164,14 @@
   </div>
   <div class="pre-scrollable">
     <table class="table">
-      <!--#fm-audio-body-->
+ <!--#fm-audio-body-->
       <tr id="tr{{index}}" data-method="fm.audio.play" data-args="{{index}}">
         <td>{{(index+1)}}</td>
         <td>{{item.name}}</td>
         <td class="text-right">{{coba_format_bytes(item.size)}}</td>
+        <td data-method="fm.delete_file" data-args="{{item.name}}"><span style="cursor:pointer;" class="glyphicon glyphicon-trash"></span></td>
       </tr>
-      <!--#fm-audio-footer-->
+ <!--#fm-audio-footer-->
     </table>
   </div>
 

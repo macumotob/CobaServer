@@ -357,6 +357,21 @@ var fm = {
   url = unescape(decodeURIComponent(fm.join_path() + file));
   //alert(url);
   var ext = get_file_ext(file);
+  if (ext === "fb2") {
+    //http://192.168.0.46:14094/books/1/American%20Gods.fb2
+    var urls = [
+      { url: "~Книги/", target: "http://192.168.0.46:14094/b/" },
+      { url: "~Книги fb2/", target: "http://192.168.0.46:14094/b/fb2/" }
+    ];
+    for (var i = 0 ; i < urls.length; i++) {
+      var x = urls[i];
+      if (url.indexOf(x.url) != -1) {
+        url = url.replace(x.url, x.target);
+      }
+    }
+    $("<a href='" + url + "' target='_blank'></a>")[0].click();
+    return;
+  }
   if (ext === "doc") {
     //alert(url);
     var link = document.createElement("a");
@@ -567,10 +582,15 @@ create_new_file: function () {
   });
 },
 delete_file : function(name,onsuccess){
-  
-  load_async_json("file.delete?name=" + name, function (data) {
+  var url = decodeURIComponent(fm.join_path() + name);
+  if(!confirm("DELETE FILE " + url))  return;
+
+  load_async_json("file.delete?name=" + url, function (data) {
     if (data.result) {
-      onsuccess(data);
+      if (onsuccess) onsuccess(data);
+      else {
+        alert(data.msg);
+      }
     }
     else {
       alert(data.msg);
@@ -687,6 +707,7 @@ function fm_get_file(file) {
 
   var elem = fm.get_main_content();
   var ext = get_file_ext(file);
+
   var command = "get.file?file=" + fm.join_path() + file;
 
   var type = fm.get_file_type(ext);

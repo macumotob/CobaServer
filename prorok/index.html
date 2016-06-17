@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Prorok</title>
+  <title>Vasyl</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="HandheldFriendly" content="true">
   <meta http-equiv="cache-control" content="no-cache">
@@ -10,6 +10,8 @@
 
   <link rel="stylesheet" href="http://134.249.167.212:3000/css/bootstrap.min.css" />
   <link rel="stylesheet" href="http://134.249.167.212:3000/css/bootstrap-dialog.min.css" />
+  <link rel="stylesheet" href="http://134.249.167.212:3000/css/vasyl.css" />
+
 
   <script type="text/javascript" src="http://134.249.167.212:3000/js/jquery.min.js"></script>
   <script type="text/javascript" src="http://134.249.167.212:3000/js/bootstrap.min.js"></script>
@@ -18,31 +20,232 @@
 
   <script type="text/javascript" src="http://134.249.167.212:3000/js/loader.js"></script>
   <script type="text/javascript" src="http://134.249.167.212:3000/js/sqlite.js"></script>
-<script type="text/javascript">
+  <script type="text/javascript" src="http://134.249.167.212:3000/js/coba_popup.js"></script>
   
-  $(function() {
-  load_async("php/index.php?user-ip", function (data){
-    id("user-ip").innerText = data;
-    });
-  });
+  <style>
+    select {
+      background-color:rgba(0, 0, 0, 1);
+      color:yellow;
+      
+    }
+    
+    input{
+      background-color:black;
+      color:yellow;
+      
+    }
+    .tb-book-edit-td{
+      text-align:right;
+      padding-right:15px;
+    }
+  </style>
   
+  <script type="text/javascript">
+ var host ="http://192.168.0.46:14094/php/biblio.php";
+  function open_in_tab(url) {
+      if(url.length == 0){
+      return;
+      }
+      if(url.indexOf("http://") == -1){
+       url = "http://192.168.0.46:14094" + url;
+      }
+      var win = window.open(url, '_blank');
+      win.focus();
+  }
+  function fm_prevent_events(e) {
+    e = e || window.event;
+
+    if (typeof e.preventDefault === 'function') {
+      e.preventDefault();
+      e.stopPropagation();
+    } else {
+      e.returnValue = false;
+      e.cancelBubble = true;
+    }
+  }
+  /*
+                        BOOKS
+  */
+ var books = (function(){
+  offset = 0;
+  page = 7;
+  order = "lasttime";
+  order_dir = "desc";
+  status = "0";
+  function refresh(){
+     console.log(status);
+     var data ={ "action":"books-list", "offset":offset,"sort": order , "ascdesc" : order_dir, "status":status };
+     $.get( host ,data,function (result){
+     $("#middle-panel").html(result);
+   });
+  }
+  function first(){
+   offset=0;
+   refresh();
+  }
+  function next(){
+   offset+=page;
+   refresh();
+  }
+  function prev(){
+   offset-=page;
+   if(offset <0) offset=0;
+   refresh();
+  }
+  function sort(name,src){
+   offset = 0;
+   order_dir = order_dir == "asc" ? "desc" : "asc"
+   if(order != name) {
+    order_dir = "asc";
+   }
+   order  = name;
+   refresh();
+  }
+  function delete_book(rowid){
+   if(confirm("delete book with id:" + rowid)){
+     $.get(host + "?action=book-delete&rowid="+rowid,function(result){
+     //refresh_books();
+     refresh();
+     })
+   }
+   fm_prevent_events();
+  }
+  var dv_edit = null;
+  
+  function save(pp){
+    var items = $("[data-bind]");
+    var data = {};
+    data["action"] ="book-update-info";
+    data["table"] ="books";
+    for(var i = 0 ; i <items.length;i++) {
+      var item = items[i];
+      //var name ="\"" + $(item).attr('data-bind') +"\"";
+      var name = $(item).attr('data-bind');
+      var v = (item.value ? item.value : item.innerText);
+      data[name] = v ;
+   }
+   $.get(host ,data,function(result){
+     try{
+       var x = JSON.parse(result);
+       if(x && x.result == 1) {
+        pp.visible= false;
+        refresh();
+       }
+     }
+     catch(e){
+       alert(result + "\n" + e);
+     }
+
+   });
+
+  }
+  function edit(rowid){
+  
+    if(!dv_edit){
+      var dv = $("<div id='dv-book-edit'></div>");
+      $(document.body).append(dv);
+    
+      dv_edit = new fb2popup("#dv-book-edit",
+        { "caption":"Edit book info",
+          "buttons":[
+          {
+           "caption":"close",
+           "action" : function(pp){
+            pp.visible= false;
+            }
+          },
+          {
+           "caption":"save",
+           "action" : function(pp){
+            save(pp);
+           }
+          }
+
+        ]
+        });
+      }
+    $.get(host + "?action=book-edit&rowid="+rowid,function(result){
+      dv_edit.content = result;
+      dv_edit.visible=true;
+     });
+    fm_prevent_events();
+  }
+   function filter(st){
+     offset = 0;
+     status = st;
+     refresh();
+   } 
+   
+  return {"refresh" :refresh,"first":first, "next":next,
+    "prev":prev,
+    "sort":sort,
+    "delete_book":delete_book,
+    "edit": edit,
+    "filter":filter};
+ })();
+/* 
+ function refresh_books(){
+     $.get(host + "?action=books-list&offset=0",function (result){
+     $("#middle-panel").html(result);
+   });
+ }
+*/ 
   function pr_show_register_form(){
     load_async("html/register.html?tm=" + new Date().getTime(), function (data){
       //id("main-content").innerHTML = data;
 
         BootstrapDialog.show({
-          title: 'Регистрация',
+          title: 'Registration',
           message: $(data)
         });
-
-       //$("#main-content").html(data);
+        //$("#main-content").html(data);
       });
   }
-window.addEventListener('click',function(){
+
+ window.addEventListener('click', function () {
  	mb.onclick();
  });
  
+ var libraries =
+   [
+     { code: 1, href: "http://aldebaran.ru/", desc: "Books on Aldebaran" },
+     { code: 1, href: "http://192.168.0.46:14094", desc: "Sqlite admin (local .46:14094)" },
+     { code: 1, href: "http://192.168.0.46:14094/books/", desc: "BOOKS fb2" },
+     { code: 1, href: "http://192.168.0.46:14094/b/", desc: "All books (local .46:14094)" },
+     { code: 1, href: "http://192.168.0.46:14091", desc: "MyDrivers (.46:14091)" },
+     { code: 1, href: "http://192.168.0.46:14093/timer.html", desc: "My time" },
+     { code: 1, href: "http://192.168.0.46:14093/slider.html", desc: "SERG" }
+   ];
+ function populate_table(ident, data, code) {
+   //$(ident).epmty();
+   data.forEach(function (item) {
+     if (item.code == code) {
+       var s = '<tr><td data-method="open_in_tab" data-args="' + item.href + '">' + item.desc + '</td></tr>';
+       $(ident).append(s);
+     }
+   });
+ }
+ $(document).ready(function () {
+  load_async("php/index.php?user-ip", function (data){
+    id("user-ip").innerText = data;
+    });
+  populate_table("#table-books", libraries,1);
+  
+  $.get(host + "?action=status-list",function(result){
+  // alert(result);
+   $("#td-status").html(result);
+    books.refresh();   
+  });
+  
+  
+ });
 </script>
+
+<style>
+table.table-hover tr:hover{
+  background-color:green;
+}
+</style>
 </head>
 
 <body>
@@ -50,15 +253,12 @@ window.addEventListener('click',function(){
   <nav class="navbar navbar-inverse">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a class="navbar-brand" href="#">Пророки</a>
+        <a class="navbar-brand" href="#">Vasyl</a>
       </div>
       <ul class="nav navbar-nav">
         <li class="active"><a href="">Home</a></li>
-        <li><a href="#" data-method="mb.sql" data-args="exec_file=data/create_database_prorok.sql">Test SQLITE</a></li>
         <li><a id="user-ip" href="#" >IP</a></li>
         <li><a href="notes.html" target="_blank">Notes</a></li>
-        <li><a href="#" data-method="sqlite.select" data-args="select * from test">Get Test</a></li>
-        <li><a href="#" data-method="sqlite.schema" data-args="test">Get Test</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li data-method="pr_show_register_form"><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
@@ -67,6 +267,60 @@ window.addEventListener('click',function(){
     </div>
   </nav> 
 
-  <div id="main-content"></div>
+  <div id="main-content" >
+    <div class="row">
+      <div class="col-xs-4" style="padding:20px;">
+        <p>День начинай с размышлений на бумаге...</p>
+        <p>Важно не только то что ты делаешь, но и то как ты это делаешь</p>
+      </div>
+      
+      <div class="col-xs-4">
+        <table style="width:100%">
+        <tr>
+        <td> Status filter</td>
+        <!--<td>
+        <select id="sel-status" onchange="books.filter(this.value);" >
+           <option value='0'>None</option>
+           <option value='1'>Reading</option>
+           <option value='2'>Readed</option>
+           <option value='3'>Not Interested</option>
+        </select>
+        </td>-->
+        <td id="td-status">Status<td>
+        </tr>
+        </table>
+         <div id="middle-panel" style="height:600px;overflow:scroll;"></div>
+      </div>
+      
+        <div class="col-xs-4" >
+          <table class="table table-hover" style="cursor:pointer">
+            <tr>
+              <td data-method="open_in_tab" data-args="http://192.168.0.46:14093">Maxbuk Chat (local .46:14093)</td>
+            </tr>
+            <tr>
+              <td data-method="open_in_tab" data-args="http://192.168.0.46:3036/notes.html">Notes (local .46:3036)</td>
+            </tr>
+            <tr>
+              <td data-method="open_in_tab" data-args="http://134.249.167.212:3035/">MyDrivers (remote 134.249.167.212:3035)</td>
+            </tr>
+            <tr>
+              <td data-method="open_in_tab" data-args="http://192.168.0.46:3038/">MyWebSQL admin (local .46:3038)</td>
+            </tr>
+            <tr>
+              <td data-method="open_in_tab" data-args="https://134.249.167.212:8443/index.html">Voice recorder(remote :8443)</td>
+            </tr>
+            <tr>
+              <td data-method="open_in_tab" data-args="http://www.maxbuk.com/">www.maxbuk.com</td>
+            </tr>
+            <tr>
+              <td data-method="open_in_tab" data-args="http://www.maxbuk.com/php/chat.php">Chat on maxbuk sqlite</td>
+            </tr>
+          </table>
+          <table id="table-books" class="table table-hover" style="cursor:pointer">
+            <caption style="text-align:center;color:cornflowerblue">Books and readings</caption>
+          </table>
+        </div>
+      </div>
+  </div>
 </body>
 </html>

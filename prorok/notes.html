@@ -9,27 +9,46 @@
   <meta http-equiv="pragma" content="no-cache">
 	<meta charset="utf-8" />
 
+  <link rel="stylesheet" href="http://134.249.167.212:3000/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="http://134.249.167.212:3000/css/bootstrap-dialog.min.css" />
+
+  <link rel="stylesheet" href="http://134.249.167.212:3000/css/vasyl.css" />
 <style>
-    html {
-      padding:0;
-      margin:0;
-    }
-    body {
-      padding:0;
-      margin:0;
-      background-color:black;
-      color:#BBBBBB;
-      font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-    }
-    .note-file {
-      width:100%;
-      margin:10px;
-      cursor:pointer;
-    }
-    .note-file:hover { 
+
+#left-panel{
+ left:0%;
+ top:0%;
+ width:30%;
+ height:90%;
+ position:absolute;
+
+ border : 1px solid green;
+}
+#right-panel{
+ left:30%;
+ top:0%;
+ width:70%;
+ height:90%;
+ position:absolute;
+ border : 1px solid blue;
+}
+#bottom-panel{
+ left:0%;
+ bottom:0%;
+ width:100%;
+ height:10%;
+ position:absolute;
+}
+ .note-file {
+    width:95%;
+    margin:10px;
+    cursor:pointer;
+    color:#78CC4F;
+  }
+  .note-file:hover { 
     background-color: yellow;
     color: black;
-}
+  }
 
     /*          */
 
@@ -63,24 +82,13 @@
     padding: 0;
     margin: 0;
   }
-div.left
-{
-float:left;
-width:160px;
-margin:0;
-padding:1em;
-}
-div.content
-{
-margin-left:190px;
-border-left:1px solid gray;
-padding:1em;
-}
 
 #note  {
-  background-color:black;
-  color:#AAAAAA;
   font-size:1.3em;
+  width:100%;
+  color:#669C4C;
+  height:100%;
+  background-color:black;  
 }
 </style>
 
@@ -108,7 +116,8 @@ padding:1em;
           var s = "";
           
           data.forEach(function (item) {
-            s += "<div class='note-file' data-method='notes.edit' data-args='" + item + "'>" + item + "</div>";
+            s += "<div class='note-file' data-method='notes.edit' data-args='" + item + "'>" + item
+              + "<span class='glyphicon glyphicon-trash pull-right' data-method='notes.drop' data-args='" + item + "'></span></div>";
           });
           id("left-panel").innerHTML = s;
 
@@ -128,7 +137,7 @@ padding:1em;
       function get(file) {
         load_async("/notes?date=" + file, function (data) {
           current_note.innerHTML = file;
-          current_note_name.value = file;
+          //current_note_name.value = file;
           file_name = file;
           note_value.value = data;
         });
@@ -139,19 +148,26 @@ padding:1em;
           save(function () { get(file); });
         }
         else {
+          current_note.innerHTML = file;
           id("audio").src = "/notes.wav?file="+file;
         }
       }
       //
-      function drop() {
-        load_async_json("/notes.remove?file=" + file_name, function (data) {
-          get_list();
-        });
+      function drop(file) {
+        if(confirm("Do you real want drop file " + file)){
+          load_async_json("/notes.remove?file=" + file_name, function (data) {
+            get_list();
+          });
+        }
       }
       //
       function create() {
-        file_name = current_note_name.value;
-        save();
+        save(function () {
+          file_name = current_note_name.value;
+          post("note.save?", "date=" + file_name + "&txt=new file", function (data) {
+            id("note-save-result").innerText = "Файл: " + file_name + " " + data.msg;
+          });
+        });
       }
       return {
         "list": get_list,
@@ -175,35 +191,34 @@ padding:1em;
   </script>
 </head>
 <body onload="notes.list();">
+  <div id="left-panel" class="coba-scrolable"></div>  
+  <div id="right-panel">
+    <div id="current-note" style="font-size:2em;text-align:center;color:yellow;padding:20px;width:100%;">File not selected</div>
+    <!--<div  style="width:100%;">
+      <audio controls autoplay id="audio"></audio>
+    </div>-->
+    <div  style="width:100%;position:relative;height:75%;">
+      <textarea id="note"  value=""></textarea>
+    </div>
+  </div>
 
-  <div class="container">
-
-  <div class="header">
-    
-    <table>
+  <div id="bottom-panel">    
+    <table style="width:100%">
       <tr>
-        <td>Файл</td>
-        <td><h1 id="current-note"></h1></td>
+        <td>New file name</td>
         <td><input type="text" id="current-note-name" value="" /></td>
-        <td><button data-method="notes.create">Create</button></td>
-        <td><button data-method="notes.drop">Delete</button></td>
-      </tr>
-      <tr>
+        <td data-method="notes.create"><span class="glyphicon glyphicon-plus"></span></td>
+        <td id="btn-login-form"><li><a class="chat-li"><span class="glyphicon glyphicon-user"></span></a></li></td>
+        <td id="btn-search-contact"><li><a class="chat-li"><span class="glyphicon glyphicon-search"></span></a></li></td>
+
         <td id="note-save-result" colspan="4">Status</td>
       </tr>
+      <tr>
+      <td colspan="5"><audio controls autoplay id="audio"></audio></td>
+      </tr>
     </table>
-
-  
-  </div>
-  <div class="left" id="left-panel"></div>
-  <div class="content">
-    <textarea id="note" rows="20" style="width: 90%" value=""></textarea>
-  </div>
-  <div class="footer">Copyright 2016 by Vasyl.</div>
   </div>
 
-  <audio controls autoplay id="audio"></audio>
- 
 
 </body>
 </html>

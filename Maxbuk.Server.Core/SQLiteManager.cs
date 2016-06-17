@@ -749,7 +749,7 @@ CREATE TABLE ZANIMATIONSEQUENCE (
       return tb;
     }
     //ww
-    private void Execute(string sql, Dictionary<string, object> prms)
+    public void Execute(string sql, Dictionary<string, object> prms=null)
     {
       try
       {
@@ -876,6 +876,88 @@ CREATE TABLE ZANIMATIONSEQUENCE (
         //  JsonResult result = new JsonResult() { result = "true", msg = s };
         return s;
     }
+
+    //---------------------------------------------------------
+    static private bool IsNextNewWord(ref string[] lines, int i)
+    {
+      if (i >= lines.Length)
+      {
+        return true;
+      }
+      string s = lines[i];
+      if (s.Length == 0)
+      {
+        return true;
+      }
+      return (s[0] == ' ' || s[0] == '\t');
+    }
+
+    private void _onword(string word)
+    {
+
+      _command.Parameters["word"].Value = word.Trim();
+      _command.ExecuteNonQuery();
+   //   Dictionary<string, object> p = new Dictionary<string, object>();
+  //    p["word"] = word;
+  //    SQLiteManager.Instance.Execute("insert into words(word) values(@word)", p);
+    }
+    public void ReadMullerDictionary(string file)
+    {
+
+      PrepareCommand("insert into words(word) values(@word)");
+
+      string[] lines = System.IO.File.ReadAllLines(file, Encoding.GetEncoding(1251));
+      string text = "";
+      int i = 10;
+      const int BeginningOfNames = 119345;
+      while (i < lines.Length && i < BeginningOfNames)
+      {
+
+        string s = lines[i];
+        if (s.Length == 0)
+        {
+          i++;
+          continue;
+        }
+        text = "";
+        if (s[0] == ' ' || s[0] == '\t')
+        {
+          text = s;
+          if (IsNextNewWord(ref lines, i + 1))
+          {
+
+            _onword(text);
+            i++;
+          }
+          else
+          {
+            while (!IsNextNewWord(ref lines, i + 1))
+            {
+              i++;
+              text += " " + lines[i];
+            }
+            _onword(text);
+            i++;
+          }
+        }
+        else
+        {
+
+        }
+      }
+      // parse names
+    }
+
+
+    SQLiteCommand _command;
+    public SQLiteCommand PrepareCommand(string sql)
+    {
+      _command = new SQLiteCommand(sql, _sqliteCon);
+      _command.Parameters.AddWithValue("word", "");
+      return _command;
+
+    }
+
   } //end of class
 
   class SQLiteReader

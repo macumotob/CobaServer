@@ -14,7 +14,8 @@ namespace kakadu
     //static int thread_id = 0;
     static void Main(string[] args)
     {
-
+   //   CreateDictionary();
+   //   return;
 //      _encoding_folder();      return;
       Console.WriteLine(Environment.MachineName);
       
@@ -86,6 +87,16 @@ namespace kakadu
       }
       Console.ReadLine();
       
+    }
+
+
+    private static void CreateDictionary()
+    {
+      string file = @"D:\github\TRead\TextReader\aemuller.txt";
+      string sqlitedb = AppDomain.CurrentDomain.BaseDirectory + "\\enru.sqlite";
+      SQLiteManager.Instance.NewFile(sqlitedb);
+      SQLiteManager.Instance.Execute("create table words (id INTEGER PRIMARY KEY, word TEXT)");
+      SQLiteManager.Instance.ReadMullerDictionary(file);
     }
     private static void _run_server_in_thread(object srv)
     {
