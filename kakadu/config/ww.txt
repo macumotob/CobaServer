@@ -10,6 +10,7 @@ root D:/github/CobaServer/site/
 php D:/apache/php5445mt/php.exe 
 
  folders
+ Ivan = E:/Ivan/
   CobaDevs = E:/CobaDevs/
    Проекты на D = D:/devs/
    Загрузки на D = D:/downloads/
@@ -20,6 +21,7 @@ php D:/apache/php5445mt/php.exe
    Музыка = F:/_music/
    Аудио Книги =E:/Books/_Audio/
    Github = D:/github/
+  My Paint = E:/WWBamboo/ 
  end
 
 #
