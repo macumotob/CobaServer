@@ -9,9 +9,9 @@
   </tr>
   <!--#fm-list-file-body-->
   <tr class="text-success">
-    {{* var nm = fm.encode(item.name);}}
+    {{* var nm = fm.encode(item.name);var ext = get_file_ext(item.name);}}
     <td colspan="2" data-method="fm_get_file" data-args="{{encodeURIComponent(item.name)}}">
-      <p><b>{{item.name}}</b></p>
+      <p id="file-id-{{item.name}}" is-img="{{ext}}"><b>{{item.name}}</b></p>
       <div class="row">
         <div class="col-xs-3">{{get_file_ext(item.name)}}</div>
         <div class="col-xs-3">{{coba_format_bytes(item.size)}}</div>
