@@ -9,14 +9,14 @@
   </tr>
   <!--#fm-list-file-body-->
   <tr class="text-success">
-    {{* var nm = fm.encode(item.name);var ext = get_file_ext(item.name);}}
+    {{* var nm = fm.encode(item.name);var ext = get_file_ext(item.name); var pth = fm.join_path()+encodeURIComponent(item.name);}}
     <td colspan="2" data-method="fm_get_file" data-args="{{encodeURIComponent(item.name)}}">
-      <p id="file-id-{{item.name}}" is-img="{{ext}}"><b>{{item.name}}</b></p>
+      <p id="file-id-{{item.name}}" fm-ext="{{ext}}" fm-path="{{pth}}"><b>{{item.name}}</b></p>
       <div class="row">
-        <div class="col-xs-3">{{get_file_ext(item.name)}}</div>
+        <div class="col-xs-3">{{ext}}</div>
         <div class="col-xs-3">{{coba_format_bytes(item.size)}}</div>
         <div class="col-xs-3 text-success text-center"  onclick='fm_get_file("{{nm}}");'>view</div>
-        <div class="col-xs-1 text-primary text-center" data-method="mb.file_delete" data-args="{{fm.join_path()+encodeURIComponent(item.name)}}">
+        <div class="col-xs-1 text-primary text-center" data-method="mb.file_delete" data-args="{{pth}}">
           <span class="glyphicon glyphicon-trash"></span>
         </div>
         <div class="col-xs-2 text-primary text-center" data-method="fm.download_file" data-args="{{nm}}">
