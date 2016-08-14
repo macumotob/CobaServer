@@ -242,7 +242,7 @@ public void Stop()
         //  _listener.AuthenticationSchemes = AuthenticationSchemes.Basic;
 
         _listener.Start();
-        _listener.IgnoreWriteExceptions = true;
+        //_listener.IgnoreWriteExceptions = true;
 
         Thread thread = new Thread(_server_thread_procedure);
         thread.IsBackground = true;

@@ -695,9 +695,8 @@ namespace Maxbuk.Server.Core
 				var range = context.Request.Headers ["Range"];					
 
 				try {
-					using (FileStream fs = new FileStream (filename,FileMode.Open,
-						FileAccess.Read, FileShare.Read)) {
-
+					using (FileStream fs = new FileStream (filename,FileMode.Open,	FileAccess.Read , FileShare.Read)) {
+            
 						if (range != null && range.Length > 0) {
 							string[] positions = range.Replace ("bytes=", "").Split ('-');
 							start = long.Parse (positions [0]);
@@ -775,15 +774,19 @@ namespace Maxbuk.Server.Core
 									chunksize -= read;
 									//i++;
 								}
-							} catch (Exception ex) {
-                if(ex is HttpListenerException && ((HttpListenerException)ex).ErrorCode == 995)
-                {
-
-                }
-                else
-								Console.WriteLine ("exception :\r\n" + ex.ToString ());
 							}
-							bw.Close ();
+              catch(HttpListenerException ex)
+              {
+                if (!(ex.ErrorCode == 995 || ex.ErrorCode == 64))
+                {
+                  Console.WriteLine("exception :\r\n" + ex.ToString());
+                }
+              }
+              catch (Exception ex)
+              {
+                 Console.WriteLine("exception :\r\n" + ex.ToString());
+              }
+              bw.Close ();
 							response.OutputStream.Flush ();
 							response.OutputStream.Close ();
 						}

@@ -3,7 +3,7 @@
   var i;
   var classes = this.className.split(" ");
   for (i = 0; i < classes.length; i++) {
-    console.log(classes[i]);
+  //  console.log(classes[i]);
     if (classes[i] !== remove) {
       newClassName += classes[i] + " ";
     }
@@ -909,7 +909,7 @@ function init_document(folder) {
       fm.get_main_content().innerHTML = html;
 
       if (!fm.is_mobile()) {
-         // fm_append_images();
+          fm_append_images();
       }
     
    });
