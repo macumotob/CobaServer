@@ -6,6 +6,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Web;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Maxbuk.Server.Core
 {
@@ -760,6 +761,7 @@ namespace Maxbuk.Server.Core
 						}
 						byte[] buffer = new byte[128 * 1024];
 						int read;
+            //Debug.Print("Time out : {0}",context.Response.OutputStream.WriteTimeout);
 						using (BinaryWriter bw = new BinaryWriter (response.OutputStream)) {
 							try {
 								//int i = 0;
@@ -774,6 +776,11 @@ namespace Maxbuk.Server.Core
 									//i++;
 								}
 							} catch (Exception ex) {
+                if(ex is HttpListenerException && ((HttpListenerException)ex).ErrorCode == 995)
+                {
+
+                }
+                else
 								Console.WriteLine ("exception :\r\n" + ex.ToString ());
 							}
 							bw.Close ();
@@ -784,6 +791,7 @@ namespace Maxbuk.Server.Core
 					}
 				} catch (Exception ex) {
 					//Console.WriteLine ("exception: " + ex.ToString ());
+          
 					context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 				}
 

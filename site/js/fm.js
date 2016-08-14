@@ -296,10 +296,33 @@ var fm = {
   x.innerHTML = "Latitude: " + position.coords.latitude + 
   "<br>Longitude: " + position.coords.longitude; 
 }
+  ,is_video(ext){
+    return  ("mp4;mov;3gp;ogg;avi;mkv;vob;m4v;".indexOf(ext + ';') >= 0);
+  }
+  , is_picture(ext) {
+    return ("jpg;png;jpeg;bmp;".indexOf(ext + ';') >= 0);
+  }
+  , is_mobile() {
+    
+      if (navigator.userAgent.match(/Android/i)
+      || navigator.userAgent.match(/webOS/i)
+      || navigator.userAgent.match(/iPhone/i)
+      || navigator.userAgent.match(/iPad/i)
+      || navigator.userAgent.match(/iPod/i)
+      || navigator.userAgent.match(/BlackBerry/i)
+      || navigator.userAgent.match(/Windows Phone/i)
+      ) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    
+  }
 , get_file_type: function (ext) {
   if ("pdf;doc;mobi;fb2;txt;epub;rtf;doc;zip;rar;muse;tex;".indexOf(ext + ';') >= 0) return this.file_type.document;
-  if ("mp4;mov;3gp;ogg;avi;mkv;vob;".indexOf(ext + ';') >= 0) return this.file_type.video;
-  if ("jpg;png;jpeg;bmp;".indexOf(ext + ';') >= 0) return this.file_type.image;
+  if (this.is_video(ext) ) return this.file_type.video;
+  if (this.is_picture(ext)) return this.file_type.image;
   if ("mp3;3gpp;".indexOf(ext + ';') >= 0) return this.file_type.audio;
   if ("html;".indexOf(ext + ';') >= 0) return this.file_type.html;
   return this.file_type.unknown;
@@ -809,7 +832,26 @@ function fm_delete_file(file) {
   confirm("delete " + file);
 }
 
+function fm_append_images() {
 
+  var x = document.getElementsByTagName("p");
+
+  for (var i = 0; i < x.length; i++) {
+    var item = x[i];
+    var ext = $(item).attr("fm-ext");
+    if (fm.is_picture(ext)) {
+      var url = $(item).attr("fm-path")
+      $(item).append("<img src='" + url + "' width='100' height='100' async/>");
+    }
+    else if ( fm.is_video(ext)  ) {
+      var url = $(item).attr("fm-path")
+      $(item).append("<video src='" + url + "' width='100' height='100' preload='metadata'/>");
+    }
+    //   break;
+  }
+
+
+}
 function init_document(folder) {
 
   try {
@@ -865,6 +907,11 @@ function init_document(folder) {
 
       html += generator.generate_one(null, "fm-list-footer");
       fm.get_main_content().innerHTML = html;
+
+      if (!fm.is_mobile()) {
+         // fm_append_images();
+      }
+    
    });
   }
   catch (err) {

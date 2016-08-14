@@ -19,13 +19,13 @@ namespace kakadu
 //      _encoding_folder();      return;
       Console.WriteLine(Environment.MachineName);
       
-      string fileName = string.Format("{0}\\config\\{1}.txt",
-        AppDomain.CurrentDomain.BaseDirectory,Environment.MachineName);
+      string fileName = string.Format("{0}\\config\\{1}.txt",  AppDomain.CurrentDomain.BaseDirectory,Environment.MachineName);
       if (!File.Exists(fileName))
       {
         Console.WriteLine("File " + fileName + " not found!");
         return;
       }
+      Console.WriteLine("Log file location :" + CobaServer.LogFolder + "\r\n");
       //List<server_info> servers = new List<server_info>();
 
       List<CobaServer> servers  = new List<CobaServer>();
@@ -103,7 +103,7 @@ namespace kakadu
       CobaServer server = (CobaServer)srv;
       Console.WriteLine("Server {0}:{1} https:{3} site:{2}", server.Host, server.Port, server.RootDirectory,server.HttpsPort);
       server.Start();
-      Thread.Sleep(1000);
+      Thread.Sleep(2000);
       if (!server.IsWorking)
       {
         Console.WriteLine(server.ToString () + "---------->ERROR see log file ");
