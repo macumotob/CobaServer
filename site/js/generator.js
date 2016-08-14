@@ -1,4 +1,5 @@
 ﻿// ----------- GENERATOR ---------------- 
+
 var generator = {
   makets: null
 , BEGIN: "<!--#"
@@ -30,25 +31,27 @@ var generator = {
 }
 , load: function (onsuccess) {
   var self = this;
-
-  load_async("/data/bread.html?tm=" + new Date().getTime(), function (text) {
-
-    self.makets = [];
-    var arr = text.split(self.BEGIN);
-    for (var i = 0, count = arr.length; i < count; i++) {
-      var item = arr[i];
-      var n = item.indexOf(self.END);
-      if (n !== -1) {
-        var name = item.substr(0, n);
-        var body = item.substr(n + self.END.length);
-        self.makets[name] = { bode: body, p: self.parse(body) };
+  var url = "/data/bread.html?tm=" + new Date().getTime();
+  //load_async("/data/bread.html?tm=" + new Date().getTime(), function (text) {
+  $.get(url,function(text){
+    try{
+      self.makets = [];
+      var arr = text.split(self.BEGIN);
+      for (var i = 0, count = arr.length; i < count; i++) {
+        var item = arr[i];
+        var n = item.indexOf(self.END);
+        if (n !== -1) {
+          var name = item.substr(0, n);
+          var body = item.substr(n + self.END.length);
+          self.makets[name] = { bode: body, p: self.parse(body) };
+        }
       }
+      if (onsuccess) onsuccess();
     }
-    //// debug
-    //for (var item in self.makets) {
-    //  console.log(self.makets[item]);
-    //}
-    if (onsuccess) onsuccess();
+    catch (e) {
+      alert("generator load error:" + e);
+      if (onsuccess) onsuccess();
+    }
   });
 }
 , generate_one: function (item, maket_name, index) {

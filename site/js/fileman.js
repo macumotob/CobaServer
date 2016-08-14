@@ -1,5 +1,4 @@
-﻿
-alert("FM BEGIN ...");
+﻿//confirm("FM BEGIN ...");
 
 HTMLElement.prototype.removeClass = function (remove) {
   var newClassName = "";
@@ -185,6 +184,7 @@ var img = {
 
  }
 };
+
 //         -----------------------------------
 //                 fm
 //-----------------------------------------------
@@ -219,19 +219,19 @@ var fm = {
   if(files.length == 0) return;  
   file = files.pop();
   this.download_file(file.name);
-  /*
-  var href =  fm.join_path() + encodeURIComponent(file.name)
-  var theAnchor = $('<a />')  
-      .attr('href', file[1])  
-      .attr('download',file[0]);  
-  theAnchor[0].click();   
-  theAnchor.remove();  
-  */
+
+  //var href =  fm.join_path() + encodeURIComponent(file.name)
+  //var theAnchor = $('<a />')  
+  //    .attr('href', file[1])  
+  //    .attr('download',file[0]);  
+  //theAnchor[0].click();   
+  //theAnchor.remove();  
+
   this.downloadAll(files);  
 }  
-  /*
-            DOWNLOAD  F O L D E R
-  */
+
+  //          DOWNLOAD  F O L D E R
+  
 , download_folder: function (name) {
   
   this.downloadAll(this.audio.files);
@@ -280,32 +280,37 @@ var fm = {
   });
   
 }
-,pokupki : function(){
-  fm_set_main_content(generator.gen(null, "geo", null));
 
- //setInterval(function () { fm.get_geo();}, 500);
+//,pokupki : function(){
+//  fm_set_main_content(generator.gen(null, "geo", null));
 
-  this.get_geo();
-}
-,get_geo : function() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(this.show_geo_position);
-  } else {
-    x.innerHTML = "Geolocation is not supported by this browser.";
-  }
-}
-,show_geo_position : function(position) {
-  var x = document.getElementById("geo");
-  x.innerHTML = "Latitude: " + position.coords.latitude + 
-  "<br>Longitude: " + position.coords.longitude; 
-}
-  ,is_video(ext){
+// //setInterval(function () { fm.get_geo();}, 500);
+
+//  this.get_geo();
+//}
+//,get_geo : function() {
+//  if (navigator.geolocation) {
+//    navigator.geolocation.getCurrentPosition(this.show_geo_position);
+//  } else {
+//    x.innerHTML = "Geolocation is not supported by this browser.";
+//  }
+//}
+  
+//,show_geo_position : function(position) {
+//  var x = document.getElementById("geo");
+//  x.innerHTML = "Latitude: " + position.coords.latitude + 
+//  "<br>Longitude: " + position.coords.longitude; 
+//}
+  
+  ,is_video :function (ext){
     return  ("mp4;mov;3gp;ogg;avi;mkv;vob;m4v;".indexOf(ext + ';') >= 0);
   }
-  , is_picture(ext) {
+  
+  , is_picture :function(ext) {
     return ("jpg;png;jpeg;bmp;".indexOf(ext + ';') >= 0);
   }
-  , is_mobile() {
+  
+  , is_mobile:function () {
     
       if (navigator.userAgent.match(/Android/i)
       || navigator.userAgent.match(/webOS/i)
@@ -322,6 +327,7 @@ var fm = {
       }
     
   }
+  
 , get_file_type: function (ext) {
   if ("pdf;doc;mobi;fb2;txt;epub;rtf;doc;zip;rar;muse;tex;".indexOf(ext + ';') >= 0) return this.file_type.document;
   if (this.is_video(ext) ) return this.file_type.video;
@@ -330,7 +336,8 @@ var fm = {
   if ("html;".indexOf(ext + ';') >= 0) return this.file_type.html;
   return this.file_type.unknown;
 }
-, errors: {
+  
+, errors : {
   create_folder: "specify the folder in which you want to create a subfolder",
   upload_select_folder: "specify the folder to which you want to upload files"
 },
@@ -501,99 +508,99 @@ var fm = {
 , reset_notes: function () {
   this.offset = 0;
   this.last_notes = false;
-}/*
-, show_notes_offset: function (delta) {
+}
+//, show_notes_offset: function (delta) {
 
   
-  this.offset += parseInt(delta);
-  if (this.offset < 0) this.offset = 0;
-  this.show_notes();
-}
-, show_notes: function () {
-  var count = 10;
+//  this.offset += parseInt(delta);
+//  if (this.offset < 0) this.offset = 0;
+//  this.show_notes();
+//}
+//, show_notes: function () {
+//  var count = 10;
 
   
-  var self = this;
-  var url = "/notes.get?offset=" + this.offset + "&count=" + count + "&tm="+ new Date().getTime();
-  load_async_json(url, function (data) {
+//  var self = this;
+//  var url = "/notes.get?offset=" + this.offset + "&count=" + count + "&tm="+ new Date().getTime();
+//  load_async_json(url, function (data) {
 
-    if (data.result) {
-      var info = id("notes-info");
-      if (data.msg.length == 0) {
-        if (info) {
-          self.last_notes = true;
-          info.innerHTML = "last records";
-        }
-        return;// self.show_add_note();
-      }
-      fm_set_main_content(generator.gen(data.msg, "notes"));
-      self.last_notes = false;
-      if (info) {
-        info.innerHTML = "records:" + self.offset;
-      }
-      self.dropdown_hide("dropdown-left");
-    } else {
-      fm_set_main_content(generator.generate_one(data.msg, "fm-mysql-error"));
-      $("myModal").modal();
-    }
+//    if (data.result) {
+//      var info = id("notes-info");
+//      if (data.msg.length == 0) {
+//        if (info) {
+//          self.last_notes = true;
+//          info.innerHTML = "last records";
+//        }
+//        return;// self.show_add_note();
+//      }
+//      fm_set_main_content(generator.gen(data.msg, "notes"));
+//      self.last_notes = false;
+//      if (info) {
+//        info.innerHTML = "records:" + self.offset;
+//      }
+//      self.dropdown_hide("dropdown-left");
+//    } else {
+//      fm_set_main_content(generator.generate_one(data.msg, "fm-mysql-error"));
+//      $("myModal").modal();
+//    }
 
-  });
-}
-, delete_note: function (ident) {
-  var self = this;
-  load_async_json("/notes.delete?id=" + ident, function (data) {
-    if (data.result) {
-      self.show_notes();
-    }
-    else {
-      alert(data.msg);
-    }
+//  });
+//}
+//, delete_note: function (ident) {
+//  var self = this;
+//  load_async_json("/notes.delete?id=" + ident, function (data) {
+//    if (data.result) {
+//      self.show_notes();
+//    }
+//    else {
+//      alert(data.msg);
+//    }
     
-  });
-}
-, save_new_note: function (txt) {
-    var elem = id("txt");
-    if (elem.value.length == 0) {
-      elem.value = "Введите текст...";
-      return;
-    }
-    var self = this;
-    post("note.add?", "txt=" + encodeURI(elem.value), function (data) {
-      if (data.result) {
-        self.show_notes();
-      }
-      else {
-        elem.value = data.msg + "\n\n" +elem.value;
-      }
-    });
-}
-, show_add_note: function () {
-  fm_set_main_content(generator.gen(null, "add-note"));
-}
-, show_edit_note: function (ident) {
-  var self = this;
-  load_async_json("/notes.note?tm="+ new Date().getTime() + "&id=" + ident, function (data) {
-    if (data.result) {
-      fm_set_main_content(generator.gen(data.msg[0], "edit-note"));
-    }
-    else {
-      alert(data.msg);
-    }
-  });
-}
-, update_note: function (ident) {
-  var elem = id("txt");
-  var self = this;
-  post("note.update?", "id=" + ident + "&txt=" + encodeURI(elem.value), function (data) {
-    if (data.result) {
-      self.show_notes();
-    }
-    else {
-      elem.value = data.msg + "\n\n" + elem.value;
-    }
-  });
-}*/,
-create_new_file: function () {
+//  });
+//}
+//, save_new_note: function (txt) {
+//    var elem = id("txt");
+//    if (elem.value.length == 0) {
+//      elem.value = "Введите текст...";
+//      return;
+//    }
+//    var self = this;
+//    post("note.add?", "txt=" + encodeURI(elem.value), function (data) {
+//      if (data.result) {
+//        self.show_notes();
+//      }
+//      else {
+//        elem.value = data.msg + "\n\n" +elem.value;
+//      }
+//    });
+//}
+//, show_add_note: function () {
+//  fm_set_main_content(generator.gen(null, "add-note"));
+//}
+//, show_edit_note: function (ident) {
+//  var self = this;
+//  load_async_json("/notes.note?tm="+ new Date().getTime() + "&id=" + ident, function (data) {
+//    if (data.result) {
+//      fm_set_main_content(generator.gen(data.msg[0], "edit-note"));
+//    }
+//    else {
+//      alert(data.msg);
+//    }
+//  });
+//}
+//, update_note: function (ident) {
+//  var elem = id("txt");
+//  var self = this;
+//  post("note.update?", "id=" + ident + "&txt=" + encodeURI(elem.value), function (data) {
+//    if (data.result) {
+//      self.show_notes();
+//    }
+//    else {
+//      elem.value = data.msg + "\n\n" + elem.value;
+//    }
+//  });
+//},
+,create_new_file: function () {
   
   //id("current-note").innerText = name == "0" ? "Today" : name;
   var name = id("new-file-name").value;
@@ -622,17 +629,18 @@ delete_file : function(name,onsuccess){
       alert(data.msg);
     }
   });
-/*  $.ajax({
-    dataType: "json",
-    url: "file.delete",
-    data: "name=" + name,
-    success: function (x,y,z,q) {
-      alert('success');
-    }*//*,
-    error: function (x,y,z,q) {
-      alert('error');
-    }
-  });*/
+ 
+//$.ajax({
+//    dataType: "json",
+//    url: "file.delete",
+//    data: "name=" + name,
+//    success: function (x,y,z,q) {
+//      alert('success');
+//    }*//*,
+//    error: function (x,y,z,q) {
+//      alert('error');
+//    }
+//  });
 },
   // new notes on local disk, without using database
 save_note :function(name){
@@ -658,6 +666,7 @@ show_notes_page: function (name) {
       id("notes").value = data;
     });
   });
+  
 }
 };
 
@@ -807,17 +816,6 @@ function make_popup() {
   elem.innerHTML = html;
  // fm.dropdown_hide("dropdown-right");
 }
-/*
-function make_breadcrumbs() {
-
-  var html = generator.generate_one(fm.stack, "fm-bread-header")
-   + generator.generate(fm.stack, "fm-bread-body")
-   + generator.generate_one(fm.stack, "fm-bread-footer");
-
-  id("td-path").innerHTML = html;
-
-}
-*/
 function fm_delete_file(file) {
   confirm("delete " + file);
 }
@@ -844,7 +842,7 @@ function fm_append_images() {
 }
 function init_document(folder) {
 
-  alert("init begin " + folder);
+  
   try {
 
     history.pushState(null, null, '/');
@@ -902,11 +900,13 @@ function init_document(folder) {
       if (!fm.is_mobile()) {
           fm_append_images();
       }
-      alert("init end");
+      
    });
   }
   catch (err) {
     alert(err);
   }
 }
-alert("FM END");
+
+
+//alert("FM END");

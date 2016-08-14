@@ -244,22 +244,23 @@ public void Stop()
         _listener.Start();
         //_listener.IgnoreWriteExceptions = true;
 
-        Thread thread = new Thread(_server_thread_procedure);
-        thread.IsBackground = true;
-        thread.Name = "SERVER_THREAD";
-        thread.Start();
-
-        thread = new Thread(_server_process_client_query);
-        thread.IsBackground = true;
-        thread.Name = "SERVER_THREAD 2";
-        thread.Start();
-
+        _create_background_thread(_server_thread_procedure, "SERVER_THREAD");
+        _create_background_thread(_server_process_client_query, "SERVER_THREAD 2");
       }
       catch (Exception ex)
       {
         IsWorking = false;
         _logger.Log(ex, "Listen function host {0} port {1}", _host, _port);
       }
+    }
+
+    private static Thread _create_background_thread(ThreadStart proc, string threadName)
+    {
+      Thread thread = new Thread(proc);
+      thread.IsBackground = true;
+      thread.Name = threadName;
+      thread.Start();
+      return thread;
     }
     public override string ToString()
     {
@@ -297,7 +298,7 @@ public void Stop()
       _listener.Stop();
     }
 
-    List<HttpListenerContext> _queries = new List<HttpListenerContext>();
+   volatile List<HttpListenerContext> _queries = new List<HttpListenerContext>();
     private void _server_process_client_query()
     {
       while (IsWorking)
@@ -612,11 +613,13 @@ public void Stop()
       else
       {
         if (filename == "index") filename = "index.html";
+      //  Console.WriteLine(filename);
         filename = Path.Combine(RootDirectory, filename);
         string ext = Path.GetExtension(filename).ToLower();
         CobaServer.SendFile(context, filename);
       }
-			context.Response.OutputStream.Close();
+      context.Response.OutputStream.Flush();
+      context.Response.OutputStream.Close();
 		}
     public static void SendText(HttpListenerContext context, string text, string content_type = "text/plain")
     {

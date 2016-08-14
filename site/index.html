@@ -72,32 +72,21 @@ img1:active {
     -webkit-transform: scale(2);
 }*/
   </style>
+  
 
-
-  <script type="text/javascript" src="js/loader.js"></script>
   <script type="text/javascript" src="js/jquery.min.js"></script>
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <script type="text/javascript" src="js/bootstrap-dialog.min.js"></script>
+
+  <script type="text/javascript" src="js/loader.js"></script>
   <script type="text/javascript" src="js/table.js"></script>
+  
+  <script type="text/javascript" src="js/fileman.js"></script>
   <script type="text/javascript" src="js/generator.js"></script>
-  <script type="text/javascript" src="js/fm.js" charset="utf-8"></script>
   <script type="text/javascript" src="js/coba_upload.js"></script>
 
 
 <script type="text/javascript">
-
-  function fm_load_document(){
-    //load_async_script("js/generator.js", function () {
-    
-    generator.load(function () {
-      //       load_async_script("js/fm.js", function () 
-      fm_restore_main();
-      init_document("root");
-   //         load_async_script("js/coba_upload.js", function () { });
-         });
-   // })
-  //});
-  }
 
 
   function fm_can_goback() {
@@ -111,44 +100,44 @@ img1:active {
     event.preventDefault();
     init_document("..");
   });
-
+  
+  
   //
-/*
-function toggleFullScreen() {
-  if (!document.fullscreenElement &&    // alternative standard method
-      !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen();
-    } else if (document.documentElement.msRequestFullscreen) {
-      document.documentElement.msRequestFullscreen();
-    } else if (document.documentElement.mozRequestFullScreen) {
-      document.documentElement.mozRequestFullScreen();
-    } else if (document.documentElement.webkitRequestFullscreen) {
-      document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-    }
-  } else {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if (document.msExitFullscreen) {
-      document.msExitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
-    }
-  }
-}*/
   ////////////////////////-
-  function fm_restore_main(){
-  var d =  document.getElementById("dd");
-  generator.gen([],"main", "dd");
-  fm_refresh();
+  function fm_refresh() {
+    try {
+      fm.state.current = fm.state.navigator;
+      var folder = (fm.stack.length > 0) ? fm.recreate_stack(fm.stack.length - 1) : "root";
+      //folder = encodeURI(folder);
+      //alert('refresh:' + folder);
+
+      init_document(folder);
+      // fm.dropdown_hide("dropdown-right");
+    } catch (err) {
+      alert('error refresh ' + err);
+    }
   }
 
- window.addEventListener('load', function(){
-   fm_load_document();
- });
+  function fm_restore_main() {
+    generator.gen([], "main", "dd");
+    fm_refresh();
 
+  }
+/*
+  window.addEventListener('load', function () {
+    try{
+      //      fm_load_document();
+      alert(fm);
+      generator.load(function () {
+        fm_restore_main();
+      });
+
+    }
+    catch (e) {
+      alert(e);
+    }
+ });
+ */
  window.addEventListener('click',function(){
  	mb.onclick();
  });
@@ -159,11 +148,16 @@ function toggleFullScreen() {
 // alert('version 2.0');
  
 
+ function on_page_loaded() {
+   generator.load(function () {
+     fm_restore_main();
+   });
+ }
 </script>
 
 </head>
 
-<body>
+<body onload="on_page_loaded();">
 <div id="dd">
   
     <!--   <nav class="navbar navbar-fixed-top">                      -->
@@ -222,6 +216,5 @@ function toggleFullScreen() {
     <div id="fm-main-content" class="container-fluid"></div>
     
 </div>
-
 </body>
 </html>
