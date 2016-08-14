@@ -236,31 +236,40 @@ public void Stop()
         _listener.Prefixes.Add(string.Format("http://{0}:{1}/", _host, _port));
         if (HttpsPort > 0)
         {
-          _listener.Prefixes.Add(string.Format("https://*:{0}/",HttpsPort));
+          _listener.Prefixes.Add(string.Format("https:/:{0}/", HttpsPort));
           ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
         }
         //  _listener.AuthenticationSchemes = AuthenticationSchemes.Basic;
-        
+
         _listener.Start();
         _listener.IgnoreWriteExceptions = true;
+
         Thread thread = new Thread(_server_thread_procedure);
         thread.IsBackground = true;
         thread.Name = "SERVER_THREAD";
         thread.Start();
+
+        thread = new Thread(_server_process_client_query);
+        thread.IsBackground = true;
+        thread.Name = "SERVER_THREAD 2";
+        thread.Start();
+
       }
-      catch(Exception ex)
+      catch (Exception ex)
       {
         IsWorking = false;
         _logger.Log(ex, "Listen function host {0} port {1}", _host, _port);
       }
     }
-    public override string ToString(){
-			return string.Format ("host {0} port: {1}\nFolder:{2}", _host, _port, RootDirectory);
-		}
+    public override string ToString()
+    {
+      return string.Format("host {0} port: {1}\nFolder:{2}", _host, _port, RootDirectory);
+    }
+    int _client_thread_id = 0;
 
     private void _server_thread_procedure()
     {
-      int thread_id = 0;
+
       IsWorking = true;
       CobaServer.Logger.Log("Server thread running.");
       while (IsWorking)
@@ -274,18 +283,47 @@ public void Stop()
           CobaServer.SendText(context, "server stopped");
           break;
         }
-        Thread thread = new Thread(_client_thread_procedure);
-        thread.IsBackground = true;
-        thread.Name = "T" + (thread_id++).ToString();
-        thread.Start(context);
+        if(_queries.Count == 0)
+        {
+          _run_client_thread(context);
+        }
+        else
+        {
+          _queries.Add(context);
+        }
+        //_run_client_thread(context);
       }
       CobaServer.Logger.Log("Server thread stopped.");
       _listener.Stop();
+    }
 
+    List<HttpListenerContext> _queries = new List<HttpListenerContext>();
+    private void _server_process_client_query()
+    {
+      while (IsWorking)
+      {
+        while (_queries.Count > 0)
+        {
+          HttpListenerContext data = _queries[0];
+          _queries.RemoveAt(0);
+          _run_client_thread(data);
+          Debug.Print("Queries: {0}", _queries.Count);
+          Thread.Sleep(10);
+        }
+        Thread.Sleep(100);
+      }
+    }
+
+    private void _run_client_thread(object context)
+    {
+      Thread thread = new Thread(_client_thread_procedure);
+      thread.IsBackground = true;
+      thread.Name = "T" + (_client_thread_id++).ToString();
+      thread.Start(context);
     }
     private void _client_thread_procedure(object data)
     {
-      Thread.Sleep(1);
+      Thread.Sleep(100);
       Process((HttpListenerContext)data);
     }
     private List<FileFolderInfo> _disks = new List<FileFolderInfo>();
@@ -573,6 +611,7 @@ public void Stop()
       }
       else
       {
+        if (filename == "index") filename = "index.html";
         filename = Path.Combine(RootDirectory, filename);
         string ext = Path.GetExtension(filename).ToLower();
         CobaServer.SendFile(context, filename);
