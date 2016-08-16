@@ -139,9 +139,11 @@
 -->
   <!--#fm-video-header-->
   {{* fm.video.sort();}}
-  <div id="rot" style="position:absolute;top:0;left:0;">
-    <video id="video" height="240" preload="none" src="" controls="controls" onended="fm.video.next();"
-            style="margin:0 auto;"></video>
+  <div id="rot" style="position:relative;top:0;left:0;">
+    <video id="video"  preload="none" src="" controls="controls" onended="fm.video.next();" 
+           style="width: 640px; height: 360px; left: 200px; top: 0px; transform: none; opacity: 1;position:relative;"
+            ></video>
+    <br /><button> rot </button>
   </div>
   <div class="pre-scrollable">
     <table class="table">
