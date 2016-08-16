@@ -435,14 +435,14 @@ var fm = {
   link.href = decodeURIComponent(fm.join_path() + file);
   link.target = "_blank";
   link.click();
-  //  fm_refresh();
+  //  fm.refresh();
 }
 , refresh_current: function () {
 
   switch (this.state.current) {
     case this.state.upload:
       if (this.stack.length === 0) {
-        fm_refresh();
+        fm.refresh();
       }
       else {
         create_upload_form();
@@ -452,7 +452,7 @@ var fm = {
       create_folder_form();
       break;
     case this.state.navigator:
-      fm_refresh();
+      fm.refresh();
       break;
     default:
       break;
@@ -778,7 +778,7 @@ function fm_create_folder() {
   var folder_name = encodeURI(elem.value);
   load_async_json("/mkdir?folder=" + encodeURI(fm.join_path()) + "&name=" + folder_name, function (data) {
     if (data.result) {
-      fm_refresh();
+      fm.refresh();
     }
     else {
       alert(data.name + "\n" + data.msg);
@@ -795,7 +795,7 @@ function make_popup() {
 
   if (fm.is_popup_visible) {
     fm.is_popup_visible = false;
-    fm_refresh();
+    fm.refresh();
     return;
   }
   fm.is_popup_visible = true;

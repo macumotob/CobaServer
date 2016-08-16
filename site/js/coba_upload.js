@@ -113,16 +113,19 @@ var uploader = (function () {
       $("#fm-current-upload").text("загрузка завершена");
       error_upload = [];
       file_selector.value = [];
-    //  fm_refresh();
+    //  fm.refresh();
     }
+    var dop_index = 0;
 
     function gen_file_name() {
+      dop_index++;
       var d = new Date();
       var dMonth = d.getMonth() + 1;
-      var dMinutes = d.getMinutes() + '_' + d.getSeconds();
-      var df = d.getDate() + '-' + dMonth + '-' + d.getFullYear() + ' ' + d.getHours() + '_' + dMinutes;
+      var dMinutes = d.getMinutes() + 'm' + d.getSeconds();
+      var df = d.getDate() + '-' + dMonth + '-' + d.getFullYear() + ' ' + d.getHours() + 'h' + dMinutes + "(" + dop_index +")";
       return df;
     }
+
     function upload_next_or_stop(file) {
       //    dv.innerHTML = "100%";
       COBA_UPLOAD_FILES = COBA_UPLOAD_FILES.filter(function (el) {

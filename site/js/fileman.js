@@ -89,12 +89,12 @@ var lng = {
 
 var img = {
   images: [],
-  index : 0,
+  index: 0,
   image: null,
   elem_index: null,
   elem_count: null,
   elem_caption: null,
-  path : null
+  path: null
 , reg: function (file) {
   this.images.push(file);
 }
@@ -138,7 +138,7 @@ var img = {
   }
   this.refresh();
 }
-,get_current : function(){
+, get_current: function () {
   var name = this.images[this.index];
   return fm.join_path() + name;
 
@@ -153,36 +153,49 @@ var img = {
   this.elem_caption.innerHTML = name;
 
 }
-, refresh_by_name : function(name){
-  for(var i = 0, count=this.images.length; i < count; i++){
-    if(this.images[i] == name){
+, refresh_by_name: function (name) {
+  for (var i = 0, count = this.images.length; i < count; i++) {
+    if (this.images[i] == name) {
       this.index = i;
       this.refresh();
       return;
     }
   }
 }
-, show_modal : function(filename){
-  var d =  document.getElementById("dd");
-  generator.gen([],"i", "dd");
+, show_modal: function (filename) {
+  var d = document.getElementById("dd");
+  generator.gen([], "i", "dd");
   img.find();
   img.refresh_by_name(decodeURIComponent(filename));
   //d.requestFullScreen();
 }
-,scale : 1
-, zoomin:function(){
-  //var d = document.getElementById("dd");
-  //d.clientWidth += d.clientWidth *0.1;
+, scale: 1
+, scale_step: 0.1
+  , set_transform: function () {
+    this.image.style.transform = "rotate(" + this.degree + "deg)" + " scale(" + this.scale + ")";
+  }
+, zoomin: function () {
 
-  this.image.clientWidth += this.image.clientWidth *0.2;
+  this.scale += this.scale_step;
+  this.set_transform();
+  //this.image.style.transform = "rotate(" + this.degree + "deg)" + " scale(" + this.scale + ")";
+
 }
-,zoomout : function(){
-//  var d = document.getElementById("dd");
-//  d.clientWidth -= d.clientWidth *0.1;
-  this.scale -= 0.5;
-  this.image.style = "transform:scale(" + this.scale + ")";
-
- }
+, zoomout: function () {
+  //  var d = document.getElementById("dd");
+  //  d.clientWidth -= d.clientWidth *0.1;
+  this.scale -= this.scale_step;
+  //this.image.style = "transform:scale(" + this.scale + ")";
+  //this.image.style.transform = "rotate(" + this.degree + "deg)" + " scale(" + this.scale + ")";
+  this.set_transform();
+}
+  , degree : 0
+  , rotate: function () {
+    this.degree += 90;
+    if (this.degree >= 360) this.degree = 0;
+    //this.image.style.transform = "rotate(" + this.degree + "deg)" + " scale(" + this.scale + ")";
+    this.set_transform();
+  }
 };
 
 //         -----------------------------------
@@ -191,9 +204,9 @@ var img = {
 var fm = {
   stack: [],
   is_popup_visible: false,
-  consts: {
-    main_content: "fm-main-content"
-  },
+  //consts: {
+  //  main_content: "fm-main-content"
+  //},
   state: {
     current: 0,
     upload: 1,
@@ -351,7 +364,7 @@ var fm = {
   return (this.stack.length > 0);
 }
 
-, get_main_content: function () { return id(this.consts.main_content); }
+, get_main_content: function () { return id("fm-main-content"); }
 , set_folder: function (folder) {
   if (folder !== "root") {
     if (folder === "..") {
@@ -442,14 +455,14 @@ var fm = {
   link.href = decodeURIComponent(fm.join_path() + file);
   link.target = "_blank";
   link.click();
-  //  fm_refresh();
+  //  fm.refresh();
 }
 , refresh_current: function () {
 
   switch (this.state.current) {
     case this.state.upload:
       if (this.stack.length === 0) {
-        fm_refresh();
+        this.refresh();
       }
       else {
         create_upload_form();
@@ -459,7 +472,7 @@ var fm = {
       create_folder_form();
       break;
     case this.state.navigator:
-      fm_refresh();
+      this.refresh();
       break;
     default:
       break;
@@ -509,6 +522,27 @@ var fm = {
   this.offset = 0;
   this.last_notes = false;
 }
+  , refresh: function () {
+
+    
+      try {
+        fm.state.current = fm.state.navigator;
+        var folder = (fm.stack.length > 0) ? fm.recreate_stack(fm.stack.length - 1) : "root";
+        //folder = encodeURI(folder);
+        //alert('refresh:' + folder);
+
+        init_document(folder);
+        // fm.dropdown_hide("dropdown-right");
+      } catch (err) {
+        alert('error refresh ' + err);
+      }
+    
+  },
+  restore_main: function () {
+    generator.gen([], "main", "dd");
+    this.refresh();
+}
+
 //, show_notes_offset: function (delta) {
 
   
@@ -620,7 +654,11 @@ delete_file : function(name,onsuccess){
 
   load_async_json("file.delete?name=" + url, function (data) {
     if (data.result) {
-      if (onsuccess) onsuccess(data);
+
+      if (onsuccess) {
+        onsuccess(data);
+        fm.refresh();
+      }
       else {
         alert(data.msg);
       }
@@ -787,7 +825,7 @@ function fm_create_folder() {
   var folder_name = encodeURI(elem.value);
   load_async_json("/mkdir?folder=" + encodeURI(fm.join_path()) + "&name=" + folder_name, function (data) {
     if (data.result) {
-      fm_refresh();
+      fm.refresh();
     }
     else {
       alert(data.name + "\n" + data.msg);
@@ -804,7 +842,7 @@ function make_popup() {
 
   if (fm.is_popup_visible) {
     fm.is_popup_visible = false;
-    fm_refresh();
+    fm.refresh();
     return;
   }
   fm.is_popup_visible = true;

@@ -60,7 +60,7 @@
     <label for="input-folder-name">Название новой папки</label>
     <input type="text" class="form-control" id="input-folder-name" placeholder="Укажите название папки">
   </div>
-  <button class="btn btn-default" data-method="fm_refresh">Отменить</button>
+  <button class="btn btn-default" data-method="fm.refresh">Отменить</button>
   <button class="btn btn-success" data-method="fm_create_folder">Создать папку</button>
 </form>
 
@@ -114,7 +114,7 @@
   <!--#fm-upload-complete-->
   <div class="container">
     <p class="text-primary"> Upload complete successfully</p>
-    <p> <b data-method="fm_refresh">Refresh folder content</b></p>
+    <p> <b data-method="fm.refresh">Refresh folder content</b></p>
     <p> <b data-method="create_upload_form">Upload More files</b></p>
   </div>
 
@@ -408,13 +408,13 @@
   <div class="row-fluid navbar-inverse navbar-fixed-bottom" style="height:30%;opacity:0.5;">
     <!--
     <a class="left carousel-control" data-method="img.prev">‹</a>
-    <a class="right carousel-control" data-method="fm_restore_main">home</a>
+    <a class="right carousel-control" data-method="fm.restore_main">home</a>
     <a class="right carousel-control" data-method="img.next">›</a>
     -->
     <table class="table">
       <tr>
         <td>
-          <button type="button" class="btn btn-primary btn-circle navbar-inverse" data-method="fm_restore_main">
+          <button type="button" class="btn btn-primary btn-circle navbar-inverse" data-method="fm.restore_main">
             <i class="glyphicon glyphicon-list"></i>
           </button>
         </td>
@@ -423,6 +423,12 @@
             <i class="glyphicon glyphicon-step-backward"></i>
           </button>
         </td>
+        <td>
+          <button type="button" class="btn btn-primary btn-circle navbar-inverse" data-method="img.rotate">
+            <i class="glyphicon glyphicon-refresh"></i>
+          </button>
+        </td>
+
         <td>
           <button type="button" class="btn btn-primary btn-circle navbar-inverse" data-method="img.zoomin">
             <i class="glyphicon glyphicon-zoom-in"></i>
@@ -455,12 +461,12 @@
 
     <!--
       <div class="col-xs-2"ondblclick2 ="toggleFullScreen();">
-       <span class="glyphicon glyphicon-home"  onclick="fm_restore_main();"
+       <span class="glyphicon glyphicon-home"  onclick="fm.restore_main();"
         style="color:white;opacity:1;height:100%;background-color:black;">home</span>
       </div>
       <div id="xxx" style="color:white;" class="col-xs-2">121</div>
       <div class="col-xs-2">+</div>
-      <div class="col-xs-2" onclick="fm_restore_main();" style="color:white;cursor:pointer;zindex:-1000;">1:1</div>
+      <div class="col-xs-2" onclick="fm.restore_main();" style="color:white;cursor:pointer;zindex:-1000;">1:1</div>
       <div class="col-xs-2">-</div>
               <div class="carousel-caption">
               <h4 id="img-caption">121</h4>
@@ -507,7 +513,7 @@
         <td class="fm-main-menu-td" onclick="create_folder_form();">
           <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-folder-open"></span></button>
         </td>
-        <td class="fm-main-menu-td" onclick="fm_refresh();">
+        <td class="fm-main-menu-td" onclick="fm.refresh();">
           <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-refresh"></span></button>
         </td>
 

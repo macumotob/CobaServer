@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CobaClient.cs" />
+    <Compile Include="CobaMail.cs" />
     <Compile Include="CobaServer.cs" />
     <Compile Include="Extender.cs" />
     <Compile Include="Fb2Reader.cs" />

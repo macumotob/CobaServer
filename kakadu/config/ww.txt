@@ -11,8 +11,9 @@ php D:/apache/php5445mt/php.exe
 
  folders
  Ivan = E:/Ivan/
+ Наташа = E:/Ivan/Наташа/
   CobaDevs = E:/CobaDevs/
-   Проекты на D = D:/devs/
+   Films = D:/Films/
    Загрузки на D = D:/downloads/
    Тесты на D = D:/test/
    Книги = E:/Books/

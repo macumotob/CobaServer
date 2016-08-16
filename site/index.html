@@ -98,46 +98,21 @@ img1:active {
   window.addEventListener('popstate', function (event) {
     event.returnValue = false;
     event.preventDefault();
-    init_document("..");
+    var iview = document.getElementById("img-view");
+    if (iview) {
+      
+      fm.restore_main();
+    }
+    else {
+      init_document("..");
+    }
+    
   });
   
   
   //
   ////////////////////////-
-  function fm_refresh() {
-    try {
-      fm.state.current = fm.state.navigator;
-      var folder = (fm.stack.length > 0) ? fm.recreate_stack(fm.stack.length - 1) : "root";
-      //folder = encodeURI(folder);
-      //alert('refresh:' + folder);
 
-      init_document(folder);
-      // fm.dropdown_hide("dropdown-right");
-    } catch (err) {
-      alert('error refresh ' + err);
-    }
-  }
-
-  function fm_restore_main() {
-    generator.gen([], "main", "dd");
-    fm_refresh();
-
-  }
-/*
-  window.addEventListener('load', function () {
-    try{
-      //      fm_load_document();
-      alert(fm);
-      generator.load(function () {
-        fm_restore_main();
-      });
-
-    }
-    catch (e) {
-      alert(e);
-    }
- });
- */
  window.addEventListener('click',function(){
  	mb.onclick();
  });
@@ -150,7 +125,7 @@ img1:active {
 
  function on_page_loaded() {
    generator.load(function () {
-     fm_restore_main();
+     fm.restore_main();
    });
  }
 </script>
