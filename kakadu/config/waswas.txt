@@ -34,10 +34,10 @@ end
 #
 #
 #
- server
+# server
 
- host 192.168.0.105
-port 3000
-https_port 8000
-root E:/Develops/VoiceRecorder/
-php D:/apache/php5445mt/php.exe 
+ #host 192.168.0.105
+#ort 3000
+#https_port 8000
+#root E:/Develops/VoiceRecorder/
+#php D:/apache/php5445mt/php.exe 

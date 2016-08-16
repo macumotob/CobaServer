@@ -3,7 +3,7 @@
 <table id="fm-drive-content" class="table table-striped" style="cursor:pointer">
   <!--#fm-list-folder-body-->
   <tr class="text-primary">
-    <td onclick="init_document('{{item.name}}');"><b><i>{{item.name}}</i></b></td>
+    <td data-method="init_document" data-args="{{item.name}}" ><b><i>{{item.name}}</i></b></td>
     <td data-method="init_document" data-args="{{item.name}}"><span class="glyphicon glyphicon-folder-open"></span></td>
     <td data-method="fm.download_folder" data-args="{{item.name}}"><span class="glyphicon glyphicon-download-alt"></span></td>
   </tr>

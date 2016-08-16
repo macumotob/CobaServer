@@ -395,7 +395,12 @@ public void Stop()
         else
         {
           string dir = _redirect(folder + "/");
-
+          if (!System.IO.Directory.Exists(dir))
+          {
+            result += "],'files':[],'error' : 'folder not exists'}";
+            CobaServer.SendJson(context, result);
+            return;
+          }
           string[] dirs = System.IO.Directory.GetDirectories(dir);
           for (int i = 0; i < dirs.Length; i++)
           {

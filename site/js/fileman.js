@@ -204,9 +204,7 @@ var img = {
 var fm = {
   stack: [],
   is_popup_visible: false,
-  //consts: {
-  //  main_content: "fm-main-content"
-  //},
+  loading : false,
   state: {
     current: 0,
     upload: 1,
@@ -878,11 +876,13 @@ function fm_append_images() {
 
 
 }
+
 function init_document(folder) {
 
   
   try {
-
+    if (fm.loading) return;
+    fm.loading = true;
     history.pushState(null, null, '/');
 
     fm.state.current = fm.state.navigator;
@@ -894,9 +894,16 @@ function init_document(folder) {
     fm.audio.reset();
     
     load_async_json("get.folder?folder=" + encodeURIComponent(folder) + "&tm=" +(new Date).getTime(), function (data) {
-      
+      if (data.error) {
+        fm.refresh("..");
+        fm.loading = false;
+        return;
+      }
+
       if (data.length === 0) {
-        return fm_set_main_content(generator.generate_one(decodeURIComponent(folder), "fm-empty-folder", null));
+        fm_set_main_content(generator.generate_one(decodeURIComponent(folder), "fm-empty-folder", null));
+        fm.loading = false;
+        return;
       }
     
       $("#fm-current-folder").text(folder + " " + data.folders.length + "/" + data.files.length);
@@ -938,10 +945,11 @@ function init_document(folder) {
       if (!fm.is_mobile()) {
           fm_append_images();
       }
-      
+      fm.loading = false;
    });
   }
   catch (err) {
+    fm.loading = false;
     alert(err);
   }
 }
