@@ -27,6 +27,7 @@ root E:/github/CobaServer/site/
 php E:/Develops/php5/php.exe 
 
 folders
+  Иван = E:/Ivan/
   Книги=E:/Books/
   Рисуем=E:/Books/paint/
 end

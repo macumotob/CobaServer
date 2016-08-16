@@ -872,7 +872,7 @@ function fm_append_images() {
     }
     else if ( fm.is_video(ext)  ) {
       var url = $(item).attr("fm-path")
-      $(item).append("<video src='" + url + "' width='100' height='100' preload='metadata'/>");
+      $(item).append("<video src='" + url + "' width='160' preload='metadata'/>");
     }
     //   break;
   }
