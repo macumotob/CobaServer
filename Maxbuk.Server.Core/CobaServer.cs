@@ -405,6 +405,11 @@ public void Stop()
           for (int i = 0; i < dirs.Length; i++)
           {
             string item = dirs[i].Replace('\\', '/');
+            if(item.IndexOf(',') != -1)
+            {
+              System.IO.Directory.Move(item, item.Replace(',', '_'));
+              item = item.Replace(',', '_');
+            }
             item = item.Substring(dir.Length);
             result += (i == 0 ? "" : ",") + "{\"name\":\"" + item + "\",d:1,size:0}";
           }

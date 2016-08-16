@@ -416,7 +416,7 @@ var fm = {
     $("<a href='" + url + "' target='_blank'></a>")[0].click();
     return;
   }
-  if (ext === "doc") {
+  if (ext === "doc" ) {
     //alert(url);
     var link = document.createElement("a");
     link.href = url;
@@ -478,6 +478,9 @@ var fm = {
 }
 , recreate_stack: function (max) {
   var new_stack = [];
+
+  max = max || this.stack.length - 1;
+
   for (var i = 0; i < max; i++) {
     new_stack.push(this.stack[i]);
   }
@@ -895,8 +898,9 @@ function init_document(folder) {
     
     load_async_json("get.folder?folder=" + encodeURIComponent(folder) + "&tm=" +(new Date).getTime(), function (data) {
       if (data.error) {
-        fm.refresh("..");
         fm.loading = false;
+        fm.recreate_stack();
+        fm.refresh(".");
         return;
       }
 
