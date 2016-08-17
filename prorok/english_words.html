@@ -17,9 +17,38 @@
   <script type="text/javascript" src="http://134.249.167.212:3035/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="http://134.249.167.212:3035/js/bootstrap-dialog.min.js"></script>
   <script type="text/javascript" src="/js/english_words.js"></script>
-
+  <style>
+    .table tbody tr:hover td, .table tbody tr:hover th {
+    background-color: blue;
+}
+  </style>
   </head>
   <body>
-            English words
-  </body>
+            
+    <div style="padding:30px;">
+      <div class="form-group">
+        <label for="en-word">English:</label>
+        <input type="text" class="form-control" id="en-word">
+      </div>
+      <div class="form-group">
+        <label for="ru-word">Russian:</label>
+        <input type="text" class="form-control" id="ru-word">
+      </div>
+      </div>
+      <div style="padding:30px;">
+        <button id="btn-speak" class="btn btn-default">Speak <span class="glyphicon glyphicon-volume-down"></span></button>
+        <button id="btn-save" class="btn btn-default">Save <span class="glyphicon glyphicon-save"></span></button>
+        <button id="btn-random" class="btn btn-default" onclick="">Next Word <span class="glyphicon glyphicon-refresh"></span></button>
+        <button id="btn-delete" class="btn btn-default" onclick="">Delete <span class="glyphicon glyphicon-trash"></span></button>
+        <button id="btn-list" class="btn btn-default" onclick="">Results <span class="glyphicon glyphicon-th-list"></span></button>
+        
+      </div>
+      <div id="dv-error" class="alert alert-danger" style="visibility:hidden;">
+        <strong>Error</strong> Invalid translation
+      </div>
+    <div id="dv-words" style="padding:30px;cursor:pointer;">
+
+    </div>
+
+</body>
 </html>
