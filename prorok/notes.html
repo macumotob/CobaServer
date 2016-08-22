@@ -8,195 +8,89 @@
   <meta http-equiv="expires" content="0">
   <meta http-equiv="pragma" content="no-cache">
 	<meta charset="utf-8" />
-
+<!--
   <link rel="stylesheet" href="http://134.249.167.212:3035/css/bootstrap.min.css" />
   <link rel="stylesheet" href="http://134.249.167.212:3035/css/bootstrap-dialog.min.css" />
+  <link rel="stylesheet" href="/css/notes.css" />
 
-  <link rel="stylesheet" href="http://134.249.167.212:3035/css/vasyl.css" />
-<style>
 
-#left-panel{
- left:0%;
- top:0%;
- width:30%;
- height:90%;
- position:absolute;
+  <script type="text/javascript" src="http://134.249.167.212:3035/js/jquery.min.js"></script>
+  <script type="text/javascript" src="http://134.249.167.212:3035/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="http://134.249.167.212:3035/js/bootstrap-dialog.min.js"></script>
+  <script type="text/javascript" src="http://134.249.167.212:3035/js/loader.js"></script>
+  <script type="text/javascript" src="js/notes.js"></script>
+-->
+  <link rel="stylesheet" href="http://192.168.0.46:3035/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="http://192.168.0.46:3035/css/bootstrap-dialog.min.css" />
+  <link rel="stylesheet" href="/css/notes.css" />
 
- border : 1px solid green;
-}
-#right-panel{
- left:30%;
- top:0%;
- width:70%;
- height:90%;
- position:absolute;
- border : 1px solid blue;
-}
-#bottom-panel{
- left:0%;
- bottom:0%;
- width:100%;
- height:10%;
- position:absolute;
-}
- .note-file {
-    width:95%;
-    margin:10px;
-    cursor:pointer;
-    color:#78CC4F;
-  }
-  .note-file:hover { 
-    background-color: yellow;
-    color: black;
-  }
 
-    /*          */
-
-  div.container {
-    width: 100%;
-    margin: 0px;
-    line-height: 150%;
-  }
-  div.header {
-    color: white;
-    background-color: gray;
-    clear: left;
-    width: 100%;
-  }
-  div.footer {
-    color: white;
-    background-color: gray;
-    clear: left;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    text-align:right;
-    font-family:Tahoma;
-    font-size:0.6em;
-  }
-  div.header table {
-    width: 100%;
-  }
-  h1.header {
-    padding: 0;
-    margin: 0;
-  }
-
-#note  {
-  font-size:1.3em;
-  width:100%;
-  color:#669C4C;
-  height:100%;
-  background-color:black;  
-}
-</style>
-
-<script type="text/javascript" src="http://134.249.167.212:3035/js/loader.js"></script>
-
-  <script type="text/javascript">
-    var notes = (function () {
-      var file_name;
-      var current_note;
-      var note_value;
-      var current_note_name;
-
-      function init() {
-        if (current_note_name) {
-          return;
-        }
-        current_note = id("current-note");
-        note_value = id("note");
-        current_note_name = id("current-note-name");
-      }
-      //
-      function get_list() {
-        init();
-        load_async_json("notes.list?tm=" + new Date().getTime(), function (data) {
-          var s = "";
-          
-          data.forEach(function (item) {
-            s += "<div class='note-file' data-method='notes.edit' data-args='" + item + "'>" + item
-              + "<span class='glyphicon glyphicon-trash pull-right' data-method='notes.drop' data-args='" + item + "'></span></div>";
-          });
-          id("left-panel").innerHTML = s;
-
-          var file = data[0];
-          get(file);
-        });
-      }
-      //
-      function save(onsuccess) {
-        var txt = encodeURI(note_value.value);
-        post("note.save?", "date=" + file_name + "&txt=" + txt, function (data) {
-          id("note-save-result").innerText = "Файл: " + file_name + " " + data.msg;
-          if (onsuccess) onsuccess();
-        });
-      }
-      //
-      function get(file) {
-        load_async("/notes?date=" + file, function (data) {
-          current_note.innerHTML = file;
-          //current_note_name.value = file;
-          file_name = file;
-          note_value.value = data;
-        });
-      }
-      function edit(file) {
-        var ext = mb.get_file_ext(file);
-        if (ext === "txt") {
-          save(function () { get(file); });
-        }
-        else {
-          current_note.innerHTML = file;
-          id("audio").src = "/notes.wav?file="+file;
-        }
-      }
-      //
-      function drop(file) {
-        if(confirm("Do you real want drop file " + file)){
-          load_async_json("/notes.remove?file=" + file_name, function (data) {
-            get_list();
-          });
-        }
-      }
-      //
-      function create() {
-        save(function () {
-          file_name = current_note_name.value;
-          post("note.save?", "date=" + file_name + "&txt=new file", function (data) {
-            id("note-save-result").innerText = "Файл: " + file_name + " " + data.msg;
-          });
-        });
-      }
-      return {
-        "list": get_list,
-        "edit": edit,
-        "create":create,
-        "save": save,
-        "drop": drop
-      };
-    })();
-
-    window.addEventListener('click', function () {
-      mb.onclick();
-    });
-    document.addEventListener("keydown", function (e) {
-      if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
-        e.preventDefault();
-        notes.save();
-      }
-    }, false);
-
-  </script>
+  <script type="text/javascript" src="http://192.168.0.46:3035/js/jquery.min.js"></script>
+  <script type="text/javascript" src="http://192.168.0.46:3035/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="http://192.168.0.46:3035/js/bootstrap-dialog.min.js"></script>
+  <script type="text/javascript" src="http://192.168.0.46:3035/js/loader.js"></script>
+  <script type="text/javascript" src="js/notes.js"></script>
+    
 </head>
-<body onload="notes.list();">
+<body >
+
+  <div class="row-fluid navbar-inverse navbar-fixed-bottom" style="height:15%;opacity:0.8;">
+    <table style="width:100%;margin-top:10px;">
+      <tr>
+        <td  data-method="notes.list" style="cursor:pointer;width:16%;text-align:center">
+          <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-refresh"></span></button>
+        </td>
+        <td  data-method="notes.view">
+          <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span></button>
+        </td>
+
+        <td  data-method="notes.show_files">
+          <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-list"></span></button>
+        </td>
+        <td  data-method="toggleFullScreen">
+          <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-resize-full"></span></button>
+        </td>
+        <td  data-method="notes.drop">
+          <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-trash"></span></button>
+        </td>
+<!--
+        <td class="fm-main-menu-td">
+          <div class="dropdown" id="dropdown-left">
+            <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">
+              <span class="glyphicon glyphicon-th-list"></span>
+            </button>
+
+            <ul class="dropdown-menu">
+              <li><a href="#" data-method="fm.download_folder">Ссылки</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Сайты</li>
+              <li><a href="#" data-method="fm.show_servers">Список серверов</a></li>
+              <li><a href="http://www.maxbuk.com" target="_blank">Сайт www.maxbuk.com</a></li>
+              <li class="divider"></li>
+              <li><a href="#" data-method="fm.show_notes_page">Notes</a></li>
+              <li><a href="#" data-method="make_popup">Path</a></li>
+            </ul>
+          </div>
+        </td> -->
+      </tr>
+      <tr><td colspan="5" id="current-file-info" style="color:yellow;text-align:center"></td></tr>
+      
+    </table>
+
+  </div>
+  <div id="content">MAIN CONTENT</div>
+  
+  <div style="visibility:hidden"><audio controls autoplay id="audio"></audio></div>
+  <div id="note-view" style="font-size:1.3em;">
+
+  </div>
+  <div style="width:100%;text-align:center;color:yellowgreen;background-color:black;">end of page</div>  
+  <div style="width:100%;height:80px;text-align:center;"></div>  
+  <!--   JLD CODE -->
+  <!--
   <div id="left-panel" class="coba-scrolable"></div>  
   <div id="right-panel">
     <div id="current-note" style="font-size:2em;text-align:center;color:yellow;padding:20px;width:100%;">File not selected</div>
-    <!--<div  style="width:100%;">
-      <audio controls autoplay id="audio"></audio>
-    </div>-->
     <div  style="width:100%;position:relative;height:75%;">
       <textarea id="note"  value=""></textarea>
     </div>
@@ -211,14 +105,14 @@
         <td id="btn-login-form"><li><a class="chat-li"><span class="glyphicon glyphicon-user"></span></a></li></td>
         <td id="btn-search-contact"><li><a class="chat-li"><span class="glyphicon glyphicon-search"></span></a></li></td>
 
-        <td id="note-save-result" colspan="4">Status</td>
+        
       </tr>
       <tr>
       <td colspan="5"><audio controls autoplay id="audio"></audio></td>
       </tr>
     </table>
   </div>
-
+-->
 
 </body>
 </html>

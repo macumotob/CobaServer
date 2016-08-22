@@ -233,11 +233,16 @@ public void Stop()
       try
       {
         _listener = new HttpListener();
-        _listener.Prefixes.Add(string.Format("http://{0}:{1}/", _host, _port));
+        
         if (HttpsPort > 0)
         {
-          _listener.Prefixes.Add(string.Format("https:/:{0}/", HttpsPort));
+          string url = string.Format("https:/{0}:{1}/", _host, HttpsPort);
+          _listener.Prefixes.Add(url);
           ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+        }
+        else
+        {
+          _listener.Prefixes.Add(string.Format("http://{0}:{1}/", _host, _port));
         }
         //  _listener.AuthenticationSchemes = AuthenticationSchemes.Basic;
 
@@ -250,7 +255,7 @@ public void Stop()
       catch (Exception ex)
       {
         IsWorking = false;
-        _logger.Log(ex, "Listen function host {0} port {1}", _host, _port);
+        Logger.Log(ex, "Listen function host {0} port {1}", _host, _port);
       }
     }
 
@@ -357,7 +362,7 @@ public void Stop()
 
     }
 
-    private string _redirect(string folder)
+    protected string _redirect(string folder)
     {
       for (int i = 0; i < _disks.Count; i++)
       {
@@ -443,6 +448,10 @@ public void Stop()
         context.Response.ContentType = "application/json";
         context.Response.ContentLength64 = data.Length;
         context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
+        context.Response.AddHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        //context.Response.AddHeader("Access-Control-Allow-Headers","*");
+        context.Response.AddHeader("Access-Control-Allow-Origin", "*");
+        
         //context.Response.KeepAlive = true;
         context.Response.OutputStream.Write(data, 0, data.Length);
       }
@@ -471,7 +480,7 @@ public void Stop()
       cmd = cmd.Substring(cmd.IndexOf(command) + command.Length);
       return _parse_query_string(cmd);
     }
-    private void Process(HttpListenerContext context)
+    protected virtual void Process(HttpListenerContext context)
 		{
       //HttpListenerBasicIdentity identity = (HttpListenerBasicIdentity)context.User.Identity;
      // string user_name = identity.Name;
@@ -645,7 +654,11 @@ public void Stop()
       context.Response.OutputStream.Close();
     }
 
-
+    public static string GetContentType(string fileName)
+    {
+      string mime;
+      return _mimeTypeMappings.TryGetValue(Path.GetExtension(fileName), out mime) ? mime : "application/octet-stream";
+    }
     public static void SendFile(HttpListenerContext context, string filename)
     {
       if (File.Exists(filename))

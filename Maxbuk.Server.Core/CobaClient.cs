@@ -732,14 +732,15 @@ namespace Maxbuk.Server.Core
 								response.ContentLength64 = fs.Length;
 								response.SendChunked = true;
 								response.KeepAlive = false;
-								if(ext == ".txt"){
-									response.ContentType = "text/plain";
-									response.ContentEncoding= Encoding.UTF8;// Encoding.GetEncoding(1251);
-								}
-									
-								response.ContentType = System.Net.Mime.MediaTypeNames.Application.Octet;
-
-							} else {
+                
+                if (ext == ".txt" || ext ==".html"){
+								//	response.ContentType = "text/plain";
+									response.ContentEncoding= Encoding.GetEncoding(1252);//Encoding.UTF8;
+                }
+								//response.ContentType = System.Net.Mime.MediaTypeNames.Application.Octet;
+                
+                response.ContentType = CobaServer.GetContentType(filename);
+              } else {
 								response.StatusCode = (int)HttpStatusCode.PartialContent;
 
 								response.Headers ["Content-Range"] = "bytes " +

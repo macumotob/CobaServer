@@ -1,0 +1,115 @@
+﻿::-webkit-scrollbar
+{
+  width: 2px;  /* for vertical scrollbars */
+  height: 2px; /* for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track
+{
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb
+{
+  background: rgba(0, 0, 0, 0.5);
+}
+
+
+  /*background-color: #f8f8f8; 
+  height:100%;*/
+html, body {
+    width:100%;
+    position:relative;
+    margin:0;
+    padding:0;
+    background: rgba(0, 0, 0, 0.5);
+    color:white;
+}
+texteare, input, pre{
+ color:yellow;
+ background-color:black;  
+}
+
+p{
+  margin: 130px 10px;
+}
+#left-panel{
+ left:0%;
+ top:0%;
+ width:30%;
+ height:90%;
+ position:absolute;
+
+ border : 1px solid green;
+}
+#right-panel{
+ left:30%;
+ top:0%;
+ width:70%;
+ height:90%;
+ position:absolute;
+ border : 1px solid blue;
+}
+#bottom-panel{
+ left:0%;
+ bottom:0%;
+ width:100%;
+ height:10%;
+ position:absolute;
+}
+ .note-file {
+    width:95%;
+    padding:20px 20px;
+    cursor:pointer;
+    color:#78CC4F;
+    
+  }
+  .note-file:hover { 
+    background-color: yellow;
+    color: black;
+  }
+
+    /*          */
+
+  div.container {
+    width: 100%;
+    margin: 0px;
+    line-height: 150%;
+  }
+  div.header {
+    color: white;
+    background-color: gray;
+    clear: left;
+    width: 100%;
+  }
+  div.footer {
+    color: white;
+    background-color: gray;
+    clear: left;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align:right;
+    font-family:Tahoma;
+    font-size:0.6em;
+  }
+  div.header table {
+    width: 100%;
+  }
+  h1.header {
+    padding: 0;
+    margin: 0;
+    
+  }
+
+#note  {
+  font-size:1.3em;
+  margin:5%;
+  width:90%;
+  height:400px;
+  background-color:whitesmoke;
+  color:black;
+  border : 0;
+  
+}

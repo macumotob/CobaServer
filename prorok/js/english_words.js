@@ -2,7 +2,8 @@
 
   var words = null;
   var STORE_NAME = "ww_english_words";
-  function load() {
+
+  function load_local() {
     if (typeof (Storage) !== "undefined") {
       // Code for localStorage/sessionStorage.
       words = localStorage.getItem(STORE_NAME);
@@ -11,15 +12,32 @@
         save();
       }
       else {
-        words = JSON.parse(words);
+        JSON.parse(words);
       }
     } else {
-      alert( "Sorry! No Web Storage support..");
+      alert("Sorry! No Web Storage support..");
     }
+
   }
+  function load() {
+
+    $.get("http://134.249.167.212:14094/php/english_words.php?action=load", function (data) {
+      words = JSON.parse(data);
+      //words = eval('('+ data + ')');
+    });
+
+  }
+  function save_to_db(str_words) {
+    var data = { "action": "save", "data": str_words };
+    $.post("http://134.249.167.212:14094/php/english_words.php", data, function (result) {
+      console.log(result);
+    });
+  }
+
   function save() {
     var json = JSON.stringify(words);
     localStorage.setItem(STORE_NAME, json);
+    save_to_db(json);
   }
   
   function add(en, rus) {

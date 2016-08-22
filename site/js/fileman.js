@@ -416,7 +416,13 @@ var fm = {
     $("<a href='" + url + "' target='_blank'></a>")[0].click();
     return;
   }
-  if (ext === "doc" ) {
+  if (ext === "djvu") {
+    //var x = "http://192.168.0.46:14094/php/djvu.php?file=" + file;
+    var x = "/djvu?file=" + url;
+    window.open(x, '_blank');
+    return;
+  }
+  if (ext === "doc" || ext === "pdf" || ext === "html" ) {
     //alert(url);
     var link = document.createElement("a");
     link.href = url;
@@ -436,8 +442,12 @@ var fm = {
     });
     return;
   }
+  else if(ext === "txt"){
+     window.open(window.location.href + "/textview?file=" + url, '_blank', 'toolbar=no, location=no, status=no, menubar=no, scrollbars=yes');
+  }
   else {
-    window.open(window.location.href + "/textview?file=" + url, '_blank', 'toolbar=no, location=no, status=no, menubar=no, scrollbars=yes');
+    // window.open(window.location.href + "/textview?file=" + url, '_blank', 'toolbar=no, location=no, status=no, menubar=no, scrollbars=yes');
+    window.open("/" + url, '_blank' );
   }
 }
 , open_site: function (url) {
