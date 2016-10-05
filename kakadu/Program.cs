@@ -11,14 +11,18 @@ namespace kakadu
 
   class Program
   {
-    //static int thread_id = 0;
-    static void Main(string[] args)
-    {
+        //static int thread_id = 0;
+        static void Main(string[] args)
+        {
             //   CreateDictionary();
             //   return;
             //      _encoding_folder();      return;
-      //      var x = CobaServer.GetIPAddress();
-      Console.WriteLine(Environment.MachineName);
+            var x = CobaServer.GetIPAddress();
+            x.ForEach(item => {
+                Console.WriteLine(item);
+                }  );
+
+            Console.WriteLine(Environment.MachineName);
       
       string fileName = string.Format("{0}\\config\\{1}.txt",  AppDomain.CurrentDomain.BaseDirectory,Environment.MachineName);
       if (!File.Exists(fileName))

@@ -27,18 +27,10 @@ root c:/devs/CobaServer/site/
 #php E:/Develops/php5/php.exe 
 
 folders
-  Иван = E:/Ivan/
-  Книги=E:/Books/
-  Рисуем=E:/Books/paint/
+  Иван = F:/Ivan/
+  Книги= F:/Books/
+  Рисуем= F:/Books/paint/
+  BeProduct.Demo = C:/BeProduct.Demo/
+  Develops = C:/devs/
 end
 
-#
-#
-#
-# server
-
- #host 192.168.0.105
-#ort 3000
-#https_port 8000
-#root E:/Develops/VoiceRecorder/
-#php D:/apache/php5445mt/php.exe 
