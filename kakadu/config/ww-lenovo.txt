@@ -2,27 +2,13 @@
 # lenovo
 #
 
- server
-
-host 192.168.0.101
-port 4035
-root E:/devs/CobaServer/site/
-#php E:/Develo/php5/php.exe 
-
- server
-
-host 192.168.0.101
-port 4036
-root E:/Develops/VoiceRecorder/
-php E:/Develops/php5/php.exe 
-
 #
 #  MyDrives
 #
 server
 
 host 192.168.0.101
-port 3035
+port 4035
 root c:/devs/CobaServer/site/
 #php E:/Develops/php5/php.exe 
 
@@ -31,6 +17,7 @@ folders
   Книги= F:/Books/
   Рисуем= F:/Books/paint/
   BeProduct.Demo = C:/BeProduct.Demo/
+  BeProduct Work = C:/BP/
   Develops = C:/devs/
 end
 
