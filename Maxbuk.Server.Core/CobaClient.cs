@@ -683,129 +683,152 @@ namespace Maxbuk.Server.Core
         CobaServer.SendText(context, "File not found");
       }
     }
-		public void Send(HttpListenerContext context, string url)
-    {
-			//_load_public_folders ();
-			url = System.Web.HttpUtility.UrlDecode (url);
-			string filename = _redirect (url);
+        public void Send(HttpListenerContext context, string url)
+        {
+            //_load_public_folders ();
+            url = System.Web.HttpUtility.UrlDecode(url);
+            string filename = _redirect(url);
 
-			if (File.Exists (filename)) {
-				long start = 0, chunksize = 0;
-				long end = -1;
-				var range = context.Request.Headers ["Range"];					
+            if (File.Exists(filename))
+            {
+                long start = 0, chunksize = 0;
+                long end = -1;
+                var range = context.Request.Headers["Range"];
 
-				try {
-					using (FileStream fs = new FileStream (filename,FileMode.Open,	FileAccess.Read , FileShare.Read)) {
-            
-						if (range != null && range.Length > 0) {
-							string[] positions = range.Replace ("bytes=", "").Split ('-');
-							start = long.Parse (positions [0]);
-							end = positions [1].Length == 0 ? fs.Length - 1 : long.Parse (positions [1]);
-							if(end == -1)
-							{
-								end = fs.Length -1;
-							}
-							chunksize = end - start + 1;
-							string srange ="bytes " + start.ToString () + "-" + end.ToString () 
-								+ "/" + fs.Length.ToString ();
-							//Console.WriteLine ("_________" + srange + " ch:" + chunksize.ToString());
-							fs.Seek (start, SeekOrigin.Begin);
-						}
-
-						string ext = System.IO.Path.GetExtension(filename);
-
-						var response = context.Response;
-						string userAgent = context.Request.Headers ["User-Agent"];
-
-						if (userAgent.IndexOf ("NSPlayer/") != -1) {
-							this.prepareNSPlayerHeader (response, start, end, chunksize, fs.Length);
-						} 
-						else if (userAgent.IndexOf ("iPhone;") != -1) {
-							this.prepareIPhoneHeader (response, start, end, chunksize, fs.Length);
-						} else {
-							if (end == -1) {
-								end = fs.Length-1;
-								chunksize = end-start+1;
-
-								response.StatusCode = (int)HttpStatusCode.OK;
-								response.StatusDescription = "OK";
-								response.ContentLength64 = fs.Length;
-								response.SendChunked = true;
-								response.KeepAlive = false;
-                
-                if (ext == ".txt" || ext ==".html"){
-								//	response.ContentType = "text/plain";
-									response.ContentEncoding= Encoding.GetEncoding(1252);//Encoding.UTF8;
-                }
-								//response.ContentType = System.Net.Mime.MediaTypeNames.Application.Octet;
-                
-                response.ContentType = CobaServer.GetContentType(filename);
-              } else {
-								response.StatusCode = (int)HttpStatusCode.PartialContent;
-
-								response.Headers ["Content-Range"] = "bytes " +
-								start.ToString () + "-" + end.ToString () + "/" + fs.Length.ToString ();
-
-								response.Headers ["Accept-Ranges"] = "bytes";
-								response.ContentLength64 = chunksize;
-								response.SendChunked = true;
-								response.KeepAlive = true;
-								response.Headers ["Content-Type"] = "video/mp4";
-								//Console.WriteLine (start.ToString () + "-" + end.ToString () + "/" + fs.Length.ToString ());
-							}
-						}
-
-						if (end == -1) {
-							end = fs.Length-1;
-							chunksize = end-start+1;
-						}
-						byte[] buffer = new byte[128 * 1024];
-						int read;
-            //Debug.Print("Time out : {0}",context.Response.OutputStream.WriteTimeout);
-						using (BinaryWriter bw = new BinaryWriter (response.OutputStream)) {
-							try {
-								//int i = 0;
-								while (chunksize >= 0 && (read = fs.Read (buffer, 0, buffer.Length)) > 0) {
-									if(chunksize < read){
-										bw.Write (buffer, 0,(int) chunksize);
-									}
-									else{
-										bw.Write (buffer, 0, read);
-									}
-									chunksize -= read;
-									//i++;
-								}
-							}
-              catch(HttpListenerException ex)
-              {
-                if (!(ex.ErrorCode == 995 || ex.ErrorCode == 64))
+                try
                 {
-                  Console.WriteLine("exception :\r\n" + ex.ToString());
-                }
-              }
-              catch (Exception ex)
-              {
-                 Console.WriteLine("exception :\r\n" + ex.ToString());
-              }
-              bw.Close ();
-							response.OutputStream.Flush ();
-							response.OutputStream.Close ();
-						}
-					
-					}
-				} catch (Exception ex) {
-					//Console.WriteLine ("exception: " + ex.ToString ());
-          
-					context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-				}
+                    using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
 
-			} else {
-				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-			}
-			//response.OutputStream.Close();
-			context.Response.OutputStream.Close ();
-			//Console.WriteLine ("client closed : " + context.Request.UserHostAddress.ToString ());
-		}
+                        if (range != null && range.Length > 0)
+                        {
+                            string[] positions = range.Replace("bytes=", "").Split('-');
+                            start = long.Parse(positions[0]);
+                            end = positions[1].Length == 0 ? fs.Length - 1 : long.Parse(positions[1]);
+                            if (end == -1)
+                            {
+                                end = fs.Length - 1;
+                            }
+                            chunksize = end - start + 1;
+                            string srange = "bytes " + start.ToString() + "-" + end.ToString()
+                                + "/" + fs.Length.ToString();
+                            //Console.WriteLine ("_________" + srange + " ch:" + chunksize.ToString());
+                            fs.Seek(start, SeekOrigin.Begin);
+                        }
+
+                        string ext = System.IO.Path.GetExtension(filename);
+
+                        var response = context.Response;
+                        string userAgent = context.Request.Headers["User-Agent"];
+
+                        if (userAgent.IndexOf("NSPlayer/") != -1)
+                        {
+                            this.prepareNSPlayerHeader(response, start, end, chunksize, fs.Length);
+                        }
+                        else if (userAgent.IndexOf("iPhone;") != -1)
+                        {
+                            this.prepareIPhoneHeader(response, start, end, chunksize, fs.Length);
+                        }
+                        else
+                        {
+                            if (end == -1)
+                            {
+                                end = fs.Length - 1;
+                                chunksize = end - start + 1;
+
+                                response.StatusCode = (int)HttpStatusCode.OK;
+                                response.StatusDescription = "OK";
+                                response.ContentLength64 = fs.Length;
+                                response.SendChunked = true;
+                                response.KeepAlive = false;
+
+                                if (ext == ".txt" || ext == ".html")
+                                {
+                                    //	response.ContentType = "text/plain";
+                                    response.ContentEncoding = Encoding.GetEncoding(1252);//Encoding.UTF8;
+                                }
+                                //response.ContentType = System.Net.Mime.MediaTypeNames.Application.Octet;
+
+                                response.ContentType = CobaServer.GetContentType(filename);
+                            }
+                            else
+                            {
+                                response.StatusCode = (int)HttpStatusCode.PartialContent;
+
+                                response.Headers["Content-Range"] = "bytes " +
+                                start.ToString() + "-" + end.ToString() + "/" + fs.Length.ToString();
+
+                                response.Headers["Accept-Ranges"] = "bytes";
+                                response.ContentLength64 = chunksize;
+                                response.SendChunked = true;
+                                response.KeepAlive = true;
+                                response.Headers["Content-Type"] = "video/mp4";
+                                //Console.WriteLine (start.ToString () + "-" + end.ToString () + "/" + fs.Length.ToString ());
+                            }
+                        }
+
+                        if (end == -1)
+                        {
+                            end = fs.Length - 1;
+                            chunksize = end - start + 1;
+                        }
+                        byte[] buffer = new byte[128 * 1024];
+                        int read;
+                        //Debug.Print("Time out : {0}",context.Response.OutputStream.WriteTimeout);
+                        using (BinaryWriter bw = new BinaryWriter(response.OutputStream))
+                        {
+                            try
+                            {
+                                //int i = 0;
+                                while (chunksize >= 0 && (read = fs.Read(buffer, 0, buffer.Length)) > 0)
+                                {
+                                    if (chunksize < read)
+                                    {
+                                        bw.Write(buffer, 0, (int)chunksize);
+                                    }
+                                    else
+                                    {
+                                        bw.Write(buffer, 0, read);
+                                    }
+                                    chunksize -= read;
+                                    //i++;
+                                }
+                            }
+                            catch (HttpListenerException ex)
+                            {
+                                if (!(ex.ErrorCode == 995 || ex.ErrorCode == 64))
+                                {
+                                    Console.WriteLine("exception :\r\n" + ex.ToString());
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("exception :\r\n" + ex.ToString());
+                            }
+                            bw.Close();
+                            response.OutputStream.Flush();
+                            response.OutputStream.Close();
+                        }
+
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //Console.WriteLine ("exception: " + ex.ToString ());
+
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                }
+
+            }
+            else
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            }
+            //response.OutputStream.Close();
+            context.Response.OutputStream.Close();
+            //Console.WriteLine ("client closed : " + context.Request.UserHostAddress.ToString ());
+        }
+
     private void SendException(HttpListenerContext context, Exception ex)
     {
       try

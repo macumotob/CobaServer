@@ -870,7 +870,7 @@ function fm_delete_file(file) {
 }
 
 function fm_append_images() {
-
+    return;
   var x = document.getElementsByTagName("p");
 
   for (var i = 0; i < x.length; i++) {
@@ -905,7 +905,7 @@ function init_document(folder) {
 
     fm.video.reset();
     fm.audio.reset();
-    
+    img.reset(fm.join_path());
     load_async_json("get.folder?folder=" + encodeURIComponent(folder) + "&tm=" +(new Date).getTime(), function (data) {
       if (data.error) {
         fm.loading = false;

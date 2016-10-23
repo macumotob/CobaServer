@@ -247,10 +247,10 @@ public void Stop()
         //  _listener.AuthenticationSchemes = AuthenticationSchemes.Basic;
 
         _listener.Start();
-        //_listener.IgnoreWriteExceptions = true;
+        _listener.IgnoreWriteExceptions = true;
 
         _create_background_thread(_server_thread_procedure, "SERVER_THREAD");
-        _create_background_thread(_server_process_client_query, "SERVER_THREAD 2");
+      //  _create_background_thread(_server_process_client_query, "SERVER_THREAD 2");
       }
       catch (Exception ex)
       {
@@ -289,36 +289,36 @@ public void Stop()
           CobaServer.SendText(context, "server stopped");
           break;
         }
-        if(_queries.Count == 0)
-        {
-          _run_client_thread(context);
-        }
-        else
-        {
-          _queries.Add(context);
-        }
-        //_run_client_thread(context);
+        //if(_queries.Count == 0)
+        //{
+        //  _run_client_thread(context);
+        //}
+        //else
+        //{
+        //  _queries.Add(context);
+        //}
+        _run_client_thread(context);
       }
       CobaServer.Logger.Log("Server thread stopped.");
       _listener.Stop();
     }
 
-   volatile List<HttpListenerContext> _queries = new List<HttpListenerContext>();
-    private void _server_process_client_query()
-    {
-      while (IsWorking)
-      {
-        while (_queries.Count > 0)
-        {
-          HttpListenerContext data = _queries[0];
-          _queries.RemoveAt(0);
-          _run_client_thread(data);
-          Debug.Print("Queries: {0}", _queries.Count);
-          Thread.Sleep(10);
-        }
-        Thread.Sleep(100);
-      }
-    }
+   //volatile List<HttpListenerContext> _queries = new List<HttpListenerContext>();
+    //private void _server_process_client_query()
+    //{
+    //  while (IsWorking)
+    //  {
+    //    while (_queries.Count > 0)
+    //    {
+    //      HttpListenerContext data = _queries[0];
+    //      _queries.RemoveAt(0);
+    //      _run_client_thread(data);
+    //      Debug.Print("Queries: {0}", _queries.Count);
+    //      Thread.Sleep(10);
+    //    }
+    //    Thread.Sleep(100);
+    //  }
+    //}
 
     private void _run_client_thread(object context)
     {

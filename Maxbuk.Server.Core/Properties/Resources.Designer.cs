@@ -61,27 +61,18 @@ namespace Maxbuk.Server.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;html&gt;
-        ///  
-        ///	&lt;head&gt;
-        ///		&lt;title&gt;##file_name##&lt;/title&gt;
-        ///    &lt;meta charset=&quot;utf-8&quot; /&gt;
-        ///
-        ///
-        ///
-        ///
-        ///&lt;!--CONTAINER
-        ///
-        ///  epigraph: &lt;br/&gt;&lt;div class=&apos;fb2-{0}&apos; {2}&gt;{1}, &lt;/div&gt;&lt;div class=&apos;fb2-break&apos;&gt;&lt;/div&gt;
-        ///  emphasis: &lt;u class=&apos;fb2-{0}&apos; {2}&gt;&amp;nbsp;{1},&amp;nbsp;&lt;/u&gt;
-        ///  section:  &lt;br/&gt;&lt;div class=&apos;fb2-{0}&apos; {2}&gt;{1},&lt;/div&gt;&lt;br/&gt;
-        ///
-        ///  description : &lt;div class=&apos;fb2-{0} {2}&apos;&gt;{1} , &lt;/div&gt;
-        ///
-        ///  title-info    : &lt;div class=&apos;fb2-{0} {2}&apos;&gt;{1}, &lt;/div&gt;&lt;div class=&apos;fb2-break&apos;&gt;&lt;/div&gt;
-        ///  document-info : &lt;div class=&apos;fb2-{0} {2}&apos;&gt;{1} , &lt;/div&gt;
-        ///
-        ///  [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
+        ///&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+        ///&lt;head&gt;
+        ///  &lt;title&gt;{{TITLE}}&lt;/title&gt;
+        ///  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;
+        ///  &lt;meta name=&quot;HandheldFriendly&quot; content=&quot;true&quot;&gt;
+        ///  &lt;meta http-equiv=&quot;cache-control&quot; content=&quot;no-cache&quot;&gt;
+        ///  &lt;meta http-equiv=&quot;expires&quot; content=&quot;0&quot;&gt;
+        ///  &lt;meta http-equiv=&quot;pragma&quot; content=&quot;no-cache&quot;&gt;
+        ///  &lt;meta charset=&quot;utf-8&quot; /&gt;
+        ///  &lt;link rel=&quot;stylesheet&quot; href=&quot;css/bootstrap.min.css&quot; /&gt;
+        ///  &lt;link rel=&quot;style [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Fb2Template {
             get {
