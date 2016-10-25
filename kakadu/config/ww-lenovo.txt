@@ -16,8 +16,5 @@ folders
   Иван = F:/Ivan/
   Книги= F:/Books/
   Рисуем= F:/Books/paint/
-  BeProduct.Demo = C:/BeProduct.Demo/
-  BeProduct Work = C:/BP/
-  Develops = C:/devs/
 end
 
