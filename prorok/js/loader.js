@@ -148,6 +148,17 @@ function load_async(file,onsuccess) {
   };
   xhr.send(null);
 }
+function load_sync(file) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("get", file, false, "waswas", "pwd");
+    xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+    xhr.send(null);
+    if (xhr.status == 200) {
+        return xhr.responseText;
+    }
+    return "";
+}
+
 function post(url,data,cb) {
   var xhr = new XMLHttpRequest();
   xhr.open("POST", url, true);

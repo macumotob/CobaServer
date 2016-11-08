@@ -153,6 +153,17 @@ var notes = (function () {
     });
     */
   }
+  function view_all() {
+    //  alert(files.length);
+      var i = 0;
+      s = "";
+      while (i < files.length) {
+          s += "<pre>"+load_sync("/notes?date=" + files[i++] + "&tm=" + new Date().getTime());
+          s += "</pre><hr>";
+      }
+      $("#content").html(s);
+
+  }
   return {
     "list": get_list,
     "edit": edit,
@@ -161,7 +172,8 @@ var notes = (function () {
     "drop": drop,
     "view": view,
     "show_files": show_files,
-    "create_file":create_file
+    "create_file": create_file,
+      "view_all": view_all
   };
 })();
 
