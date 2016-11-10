@@ -91,7 +91,9 @@ namespace kakadu
             {
                 _run_server_in_thread(srv);
             }
-            Console.ReadLine();
+
+            Console.WriteLine("Press Q to exit");
+            while (Console.ReadKey().Key != ConsoleKey.Q) ;
 
         }
 
