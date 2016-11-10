@@ -1,0 +1,98 @@
+﻿/*
+  vasyl
+  sqlite.css
+
+*/
+::-webkit-scrollbar
+{
+  width: 4px;  /* for vertical scrollbars */
+  height: 4px; /* for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track
+{
+  background: rgba(10, 10, 10, 0.1);
+}
+
+::-webkit-scrollbar-thumb
+{
+  background: rgba(110, 110, 110, 0.5);
+}
+
+html, body {
+    height: 100%;
+}
+table tr {
+  cursor:pointer;
+}
+table caption {
+  text-align:center;
+  color:green;
+  font-size:1.5em;
+}
+pre {
+    display: block;
+    font-family: monospace;
+    white-space: pre;
+    margin: 1em 0;
+} 
+.chat-input {
+  background-color:black;
+  color:#5cb85c;
+}
+.fill_height { 
+    min-height: 85%;
+    height: 85%;
+}
+/*               */
+.treeview ul:before {
+    content:"";
+    display:block;
+    width:0;
+    position:absolute;
+    top:0;
+    left:0;
+    border-left:1px solid;
+    
+    /* creates a more theme-ready standard for the bootstrap themes */
+    bottom:15px;
+}
+.treeview li {
+    margin:0;
+    padding:0 1em;
+    line-height:2em;
+    font-weight:700;
+    position:relative
+}
+.treeview ul li:before {
+    content:"";
+    display:block;
+    width:10px;
+    height:0;
+    border-top:1px solid;
+    margin-top:-1px;
+    position:absolute;
+    top:1em;
+    left:0
+}
+.tree-indicator {
+    margin-right:5px;
+    
+    cursor:pointer;
+}
+.treeview li a {
+    text-decoration: none;
+    color:inherit;
+    
+    cursor:pointer;
+}
+.treeview li button, .treeview li button:active, .treeview li button:focus {
+    text-decoration: none;
+    color:inherit;
+    border:none;
+    background:transparent;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+    outline: 0;
+}
+

@@ -1,0 +1,15 @@
+#AddCharset UTF-8 .html
+#AddType text/fb2 .fb2
+#Options +Includes
+DirectoryIndex index.php
+#RedirectMatch ^/sqlite(.*)$ /php/sqlite$1
+#RewriteRule ^/sqlite?(.*)  /php/sqlite.php$1 [L,R]
+#RewriteRule ^/sqlite\?(.*) /php/sqlite.php?$1 [R]
+
+#IndexOptions +charset=utf-8
+#IndexOptions +charset=windows-1251
+#Redirect /books/nauka/  /php/fb2.php
+#RewriteEngine on
+#RewriteRule ^/books/(.*).fb2 D:/github/fb2editor/php/fb2.php?file=$1 [PT,QSA]
+#IndexIgnore *.tps *.TPS *.rgb
+

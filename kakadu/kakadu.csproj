@@ -62,6 +62,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="config\RA.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="config\ww-lenovo.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

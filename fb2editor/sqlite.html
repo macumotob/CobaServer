@@ -1,0 +1,34 @@
+﻿<div id="result" style='color:red;'>result</div>
+<div class="row" style="width:90%" >
+   <div class="col-xs-2">
+    <button class="btn btn-success" data-method="refresh_tables">Refresh</button>
+   </div>
+   <div class="col-xs-6">
+    <button class="btn btn-success" data-method="execute">Execute</button>
+    <button class="btn btn-success" data-method="execute_select">Select</button>
+     <textarea rows="30" cols="50" style="width:100%;" id="command"></textarea>
+   </div>
+   <div class="col-xs-2" id="right-panel">
+   </div>
+</div>
+
+<script type="text/javascript">
+
+ function execute(){
+    var s = $("#command").val();
+    if(s.length >0)    {
+    $("#result").text("wait...")  ;
+    var data = {"exec":s};     
+    $.post("/php/sqlite.php", data, function(s){
+        //var result = JSON.parse(s);
+        //var t = decodeURIComponent(result.msg);
+        $("#result").text(s)  ;
+    });
+
+    }
+    else {
+      $("#result").text("command is empty")  ;
+    }
+ }
+ 
+</script>

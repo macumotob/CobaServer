@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+ <feed 
+   xmlns="http://www.w3.org/2005/Atom" 
+   xmlns:dc="http://purl.org/dc/terms/" 
+   xmlns:os="http://a9.com/-/spec/opensearch/1.1/" 
+   xmlns:opds="http://opds-spec.org/2010/catalog"> 
+ <id>tag:root</id>
+ <title>Библиотека FB2</title>
+ <updated>2016-02-03T00:21:01+03:00</updated>
+ <icon>http://134.249.167.212:14094/favicon.ico</icon>
+ <link href="http://coollib.com/opds-opensearch.xml" rel="search" type="application/opensearchdescription+xml" />
+ <link href="http://coollib.com/opds/search?searchTerm={searchTerms}" rel="search" type="application/atom+xml" />
+ <link href="http://coollib.com/opds" rel="start" type="application/atom+xml;profile=opds-catalog" />
+ <link href="http://coollib.com/opds" rel="self" type="application/atom+xml;profile=opds-catalog" />
+ <entry>
+    <updated>2016-02-03T00:21:01+03:00</updated>
+    <id>tag:root:new</id>
+    <title>Наука</title>
+    <content type="text">Книги научные</content>
+    <link href="http://coollib.com/opds/new" 
+         rel="http://opds-spec.org/sort/new" 
+         type="application/atom+xml;profile=opds-catalog" />
+    <link href="http://coollib.com/opds/new" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2016-02-03T00:21:01+03:00</updated>
+ <id>tag:root:authors</id>
+ <title>По авторам</title>
+ <content type="text">Поиск книг по авторам</content>
+ <link href="http://coollib.com/opds/authorsindex" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2016-02-03T00:21:01+03:00</updated>
+ <id>tag:root:sequences</id>
+ <title>По сериям</title>
+ <content type="text">Поиск книг по сериям</content>
+ <link href="http://coollib.com/opds/sequencesindex" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2016-02-03T00:21:01+03:00</updated>
+ <id>tag:root:genre</id>
+ <title>По жанрам</title>
+ <content type="text">Поиск книг по жанрам</content>
+ <link href="http://coollib.com/opds/genres" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2016-02-03T00:21:01+03:00</updated>
+ <id>tag:root:shelf</id>
+ <title>Моя полка</title>
+ <content type="text">Отложенные книги (требуется логин)</content>
+ <link href="http://coollib.com/opds/polka" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+</feed>

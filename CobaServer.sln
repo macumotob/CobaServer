@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxbuk.Server.Admin", "Maxbuk.Server.Admin\Maxbuk.Server.Admin.csproj", "{56C4829E-2EFF-4C62-A263-66FF1ECB05B7}"
 EndProject
@@ -56,6 +56,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dlls", "dlls", "{4A47F9E8-D
 		dlls\System.Data.SQLite.dll = dlls\System.Data.SQLite.dll
 	EndProjectSection
 EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "fb2editor", "fb2editor\", "{69407E33-B173-4698-A4F5-494B61B823F2}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_50407"
+		Debug.AspNetCompiler.PhysicalPath = "fb2editor\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_50407\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_50407"
+		Release.AspNetCompiler.PhysicalPath = "fb2editor\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_50407\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "50407"
+		SlnRelativePath = "fb2editor\"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +101,10 @@ Global
 		{2E7EF15C-1E90-4DD4-BCAE-9FB3193FBAD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E7EF15C-1E90-4DD4-BCAE-9FB3193FBAD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E7EF15C-1E90-4DD4-BCAE-9FB3193FBAD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69407E33-B173-4698-A4F5-494B61B823F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69407E33-B173-4698-A4F5-494B61B823F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69407E33-B173-4698-A4F5-494B61B823F2}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{69407E33-B173-4698-A4F5-494B61B823F2}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

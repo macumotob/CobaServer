@@ -1,0 +1,284 @@
+﻿::-webkit-scrollbar
+{
+  width: 2px;  /* for vertical scrollbars */
+  height: 2px; /* for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track
+{
+  background: rgba(100, 100, 0, 0.5);
+}
+
+::-webkit-scrollbar-thumb
+{
+  background: rgba(100, 100, 0, 0.5);
+}
+
+html, body {
+    height:100%;
+    width:100%;
+    position:relative;
+    margin:0;
+    padding:0;
+    background-color: #000000; 
+}
+    
+  .fb2-container{
+    left:0px;
+    width:100%;
+    position: fixed;
+    background-color: rgb(100,100,100);
+    
+   }
+  .fb2-text-center {
+    text-align:center;
+    color:white;
+  }
+  .fb2-button {
+    text-align:center;
+/*    background-color: rgba(150,150,150, 0.6);*//*green;*/
+    color:rgba(200, 200, 200, 0.6);
+    cursor:pointer;
+  }
+  .fb2-button :hover{
+    color:rgba(200, 200, 0, 0.6);
+  }
+  table  tr:hover {
+    color: yellow;
+    background-color: black;
+  }
+
+  #main-content {
+    top: 0%;
+    left:25%;
+    width:50%;
+    height: 90%;
+    position:absolute;
+    overflow:scroll;
+    color:#BABABA;
+    font-family: Georgia,Times,Times New Roman,serif; 
+  }
+  #book-content {
+    top: 0%;
+    left:0%;
+    width:100%;
+  }
+  
+  #fb2-menu-bottom {
+    bottom: 0;
+    left:0%;
+    height: 10%;
+    width:100%;
+    display:block;
+    position:absolute;
+  }
+  
+#div-bookmarks{
+    top : 0%;
+    left:75%;
+    height: 90%;
+    width:25%;
+    background-color:rgba(200, 200, 0, 0.5);
+    color:black;
+    display:block;
+    position:absolute;
+    z-index:100;
+    
+}   
+.bookmark {
+  width:100%;
+  position:relative;
+  color:white;
+  cursor:pointer;
+  
+  background-color:rgba(100, 100, 0, 0.8);
+}
+.bookmark  td  {
+  text-align: center;
+  width:30%;
+}
+/*
+#main-content:-webkit-full-screen #main-content{
+  display: none;
+}
+#main-content:-moz-full-screen #main-content {
+  display: none;
+}  
+#main-content:-ms-fullscreen #main-content {
+  display: none;
+}
+#main-content:fullscreen #main-content {
+  display: none;
+} 
+*/   
+    .bg-center{
+      background-color: #f8f8f8;
+    }
+    .fb2-table{
+      width:100%;
+      margin:0 auto;
+      padding-left: 15px;
+      padding-right: 15px;
+      font-size: 1.45em;
+    }
+    .fb2-annotation  i  p{
+      font-size:small;
+    }
+    .fb2-p {
+      padding-left:15px;
+      padding-right:15px;
+      font-size:1.45em;
+    }
+
+    .shadow {
+    position: relative;
+    -moz-box-shadow: 1px 2px 4px rgba(0, 0, 0,0.5);
+    -webkit-box-shadow: 1px 2px 4px rgba(0, 0, 0, .5);
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, .5);
+    padding: 10px;
+    background: white;
+   }
+  .shadow::after {
+    content: '';
+    position: absolute;
+    z-index: -1; /* hide shadow behind image */
+    -webkit-box-shadow: 0 15px 20px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 0 15px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 10px 15px 20px rgba(0, 0, 0, 0.3);                
+    width: 97%; 
+    left: 3%; /* one half of the remaining 30% */
+    height: 70px;
+    bottom: 0;
+    }
+
+    .fb2-popup{
+      display:none;
+      
+      /*background-color:rgb(254,254,250);
+      color:gray;*/
+      background-color:rgb(0,0,0);
+      color:white;
+      
+      z-index:1000;
+
+      margin:0 auto;  
+      border-radius:8px;
+      border:5px solid gray;
+      left:20%;
+      width:60%;
+      
+      position: absolute;
+      top:10%;
+
+    }
+    .fb2-description{
+      display:none;
+    }
+    .fb2-popup-header {
+      height:30px;
+      text-align:center;
+      font-size:2em;
+    }
+    .fb2-popup-body {
+      overflow:auto;
+      width:100%;
+      height:440px;
+    }
+    .fb2-popup-footer {
+      width:100%;
+      height:30px;
+    }
+
+    #fb2-popup-close{
+      font-size: medium;
+      margin: 5px;
+      cursor:pointer;
+    }
+
+    .fb2-title{
+      text-align:center;
+      font-size:2em;
+      width:100%;
+      margin:0 auto;
+      padding:0;
+      padding-top:25px;
+      padding-bottom:25px;
+    }
+    .fb2-title  p {
+      font-size:2em;
+    }
+
+    /*GROW*/
+.grow1 img {
+  height: 300px;
+  width: 300px;
+
+  -webkit-transition: all 1s ease;
+     -moz-transition: all 1s ease;
+       -o-transition: all 1s ease;
+      -ms-transition: all 1s ease;
+          transition: all 1s ease;
+}
+
+.grow1 img:hover {
+  width: 800px;
+  height: 800px;
+}
+    .fb2-image{
+  
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+    }
+
+    .fb2-subtitle{
+      text-align:center;
+      font-size:1.7em;
+      width:100%;
+      margin:0 auto;
+      padding-top:25px;
+      padding-bottom:25px;
+    }
+    .fb2-title  p {
+      font-size:1.7em;
+    }
+    .fb2-epigraph{
+      left:30%;
+      width:70%;
+      position:relative;
+    }
+    .fb2-cite{
+      left:30%;
+      width:70%;
+      position:relative;
+      /*font-weight: bold;*/
+      font-family: "Comic Sans MS";
+    }
+    .fb2-poem{
+      /*text-align:center;*/
+      margin-top:20px;
+      margin-bottom:20px;
+    }
+    .fb2-stanza{
+      left:10%;
+      
+      font-family: "Comic Sans MS";
+      position:relative;
+    }
+    .fb2-v{
+
+      font-family: "Comic Sans MS";
+      
+    }
+    .fb2-publish-info{
+      text-align:center;
+    }
+    .fb2-document-info{
+      text-align:center;
+    }
+    .fb2-src-title-info{
+      text-align:center;
+    }
+    .fb2-sup { vertical-align: 1.8ex; font-size:55%; }
+    .fb2-sub { vertical-align: -0.6ex; font-size:55%; }
