@@ -1,0 +1,34 @@
+﻿#
+# lenovo
+#
+
+#
+#  MyDrives
+#
+server
+
+host 192.168.0.101
+port 4035
+root c:/devs/CobaServer/site/
+#php E:/Develops/php5/php.exe 
+
+folders
+  Иван = F:/Ivan/
+  Книги= F:/Books/
+  Рисуем= F:/Books/paint/
+end
+
+#  notes
+#
+server
+
+host 192.168.0.101
+port 4036
+root c:/devs/CobaServer/prorok/
+php F:/Develops/php5/php.exe 
+
+folders
+  Иван = F:/Ivan/
+  Книги= F:/Books/
+  Рисуем= F:/Books/paint/
+end
