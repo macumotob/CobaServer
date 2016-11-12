@@ -81,7 +81,8 @@ var mb = (function () {
       }
       x.method = x.method.split('.');
       if (x.method.length === 1) {
-        window[x.method[0]].apply(this, x.args);
+		var mname = x.method[0];
+        window[mname].apply(this, x.args);
       }
       else if (x.method.length === 2) {
         var obj = eval(x.method[0]);
@@ -276,67 +277,8 @@ function load_style(url, callback) {
   document.getElementsByTagName("head")[0].appendChild(style);
 }
 
-window.addEventListener('click',function(){	mb.onclick();});
-
-//--------------------------------------------------------------------------
+window.addEventListener('click',function(){	mb.onclick();}, true);
 
 
-//XMLHttpRequest.prototype.setRequestHeader = function (header, value) {
-//  alert(header + ": " + value);
-//  this.xhr.setRequestHeader(header, value);
 
-//};
 
-//var open = XMLHttpRequest.prototype.open;
-
-//XMLHttpRequest.prototype.open = function (method, uri, async, user, pass) {
-
-// // this.setRequestHeader('range', 'bytes 0-');
-//  this.addEventListener("readystatechange", function (event) {
-//    if (this.readyState == 4) {
-//      var self = this;
-//      var response = {
-//        method: method,
-//        uri: uri,
-//        responseText: self.responseText
-//      };
-//      console.log(response);
-//    } else if (this.readyState === 2) {
-//      var self = this;
-//    //  self.setRequestHeader("accept-range", "bytes");
-//      this.onloadstart = function () {
-//        self.setRequestHeader("accept-range", "bytes");
-//      };
-//    } else {
-//      console.log(this.readyState);
-//    }
-//  }, false);
-//  var self = this;
-//  this.onloadstart = function () {
-//    self.setRequestHeader("accept-range", "bytes");
-//  };
-
-//  return open.apply(this, arguments);
-////  open.call(this, method, uri, async, user, pass);
-//};
-  //XMLHttpRequest.prototype.open = function (method, url, async, user, password)
-  //{
-  //  alert(url);
-  //  if (this.__proto__ && this.__proto__.open) {
-  //    return this.__proto__.open(method, url, async, user, password); //send it on
-  //  }
-  //  if (this.open) {
-  ////    return this.open(method, url, async, user, password); 
-  //  }
-//}
-//var send = XMLHttpRequest.prototype.send;
-
-//XMLHttpRequest.prototype.send = function (data) {
-//  this.setRequestHeader('range','bytes 0-');
-
-//  console.log('send');
-
-//  // send.call(this, data);
-
-// return send.apply(this, arguments);
-//}

@@ -71,7 +71,7 @@ var mb = (function () {
 
     var x = find_data_method(target);
     if (!x) {
-      return;
+      return true;
     }
     if (x.method) {
       if (x.args) {

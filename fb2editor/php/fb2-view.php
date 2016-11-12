@@ -73,17 +73,18 @@ else{
   <meta name="mobile-web-app-capable" content="yes">
   <meta http-equiv="Content-Type" content="text/html;charset=<?=$encoding;?>"/>
   <meta charset="<?=$encoding;?>" /> 
-  
+
   <link rel="stylesheet" href="/css/bootstrap.min.css" />
   <link rel="stylesheet" href="/css/bootstrap-dialog.min.css" />
   <link rel="stylesheet" href="/css/fb2.css" />
 
-  <script type="text/javascript" src="/js/jquery.min.js"></script>
+ <script type="text/javascript" src="/js/jquery-3.1.1.js"></script> 
+
   <script type="text/javascript" src="/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="/js/bootstrap-dialog.min.js"></script>
   <script type="text/javascript" src="/js/loader.js"></script>
   <script type="text/javascript" src="/js/coba_popup.js"></script>
-  
+
 </head>
 
 <body onresize="fb2.resize();" onload="fb2.resize();">
@@ -103,12 +104,12 @@ else{
 <div id="fb2-menu-bottom">
     <table style="width:100%;font-size:1.0em;">
       <tr>
-       <td class="fb2-button" onclick="fb2.toogle_description();"><span class="glyphicon glyphicon-book"></span></td>
-       <td class="fb2-button" onclick="fb2.zoomin();"><span class="glyphicon glyphicon-zoom-in"></span></td>
-       <td class="fb2-button" onclick="fb2.zoomout();"><span class="glyphicon glyphicon-zoom-out"></span></td>
-       <td class="fb2-button" onclick="fb2.night();"><span class="glyphicon glyphicon-adjust"></span></td>
-       <td class="fb2-button" id="btn-bm-list" ><span class="glyphicon glyphicon-bookmark"></span></td>
-       <td class="fb2-button" id="btn-bm-add" ><span class="glyphicon glyphicon-bookmark"></span><span class="glyphicon glyphicon-plus"></span></td>
+       <td class="fb2-button" data-method="fb2.toogle_description"><span class="glyphicon glyphicon-book"></span></td>
+       <td class="fb2-button" data-method="fb2.zoomin"><span class="glyphicon glyphicon-zoom-in"></span></td>
+       <td class="fb2-button" data-method="fb2.zoomout"><span class="glyphicon glyphicon-zoom-out"></span></td>
+       <td class="fb2-button" data-method="fb2.night"><span class="glyphicon glyphicon-adjust"></span></td>
+       <td class="fb2-button" data-method="fb2.bookmarks_toggle" ><span class="glyphicon glyphicon-bookmark"></span></td>
+       <td class="fb2-button" data-method="fb2.bookmark_add"  ><span class="glyphicon glyphicon-bookmark"></span><span class="glyphicon glyphicon-plus"></span></td>
       </tr>
     </table>      
     <table style="width:100%;font-size:1.0em;">
@@ -251,9 +252,7 @@ else{
     }
     //
     //
-    id("btn-bm-list").onclick = bookmarks_toggle;
-    id("btn-bm-add").onclick = bookmark_add;
-
+    
         
 
     function bookmarks_toggle(){
@@ -315,8 +314,8 @@ else{
     function zoomit(){
       main.style.left = zoom.main.left + zoom.mesure;
       main.style.width = zoom.main.width  + zoom.mesure;
-      popup.style.left = zoom.popup.left + zoom.mesure;
-      popup.style.width = zoom.popup.width  + zoom.mesure;
+    //  popup.style.left = zoom.popup.left + zoom.mesure;
+    //  popup.style.width = zoom.popup.width  + zoom.mesure;
       //onscroll();
     }
     function zoomin(){
@@ -466,7 +465,10 @@ else{
       "delete_quote":book_delete_quote,
       "navigate_local":navigate_local,
       "navigate" :navigate,
-      "show_quote":show_quote
+      "show_quote":show_quote,
+	  "bookmarks_toggle":bookmarks_toggle,
+	  "bookmark_add":bookmark_add
+	  
       };
     })();
     
