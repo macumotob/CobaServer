@@ -12,8 +12,8 @@ php C:/apache/php5445mt/php.exe
  folders
  Ivan = G:/Ivan/
  Наташа = G:/Ivan/Наташа/
- Книги = G:/Books/
- Книги fb2 = G:/Books/fb2/
+ Книги = E:/Books/
+ Книги fb2 = E:/Books/fb2/
  Музыка = F:/_music/
  Аудио Книги =G:/Books/_Audio/
 
