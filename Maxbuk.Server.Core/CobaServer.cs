@@ -125,7 +125,7 @@ namespace Maxbuk.Server.Core
         {
             get
             {
-                string folder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/CobaServer/";
+                string folder = AppDomain.CurrentDomain.BaseDirectory + "\\";//Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/CobaServer/";
                 return folder;
             }
         }
